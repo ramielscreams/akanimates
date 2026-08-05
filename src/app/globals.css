@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
-  --foreground: #f4f1eb;
+  --background: #050507;
+  --foreground: #f4f5f7;
+  --surface: #0c0c10;
+  --surface-elevated: #14141a;
+  --eggplant: #2b1638;
+  --plum: #4a2b63;
+  --iris: #7d67e6;
+  --secondary-text: #a5abb5;
 }
 
 @theme inline {
@@ -12,75 +18,190 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #050505;
-    --foreground: #f4f1eb;
+    --background: #050507;
+    --foreground: #f4f5f7;
   }
+}
+
+html {
+  background: var(--background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(244, 241, 235, 0.2);
+  background: rgba(125, 103, 230, 0.32);
   color: #ffffff;
 }
 
-@keyframes chapter-reveal {
-  from {
-    opacity: 0.24;
-    filter: blur(18px);
-    transform: translateY(48px) scale(0.985);
+.rolodex-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background:
+    radial-gradient(circle at 72% 8%, rgba(74, 43, 99, 0.34), transparent 30rem),
+    radial-gradient(circle at 10% 44%, rgba(43, 22, 56, 0.28), transparent 28rem),
+    linear-gradient(180deg, #050507 0%, #0c0c10 48%, #050507 100%);
+}
+
+.rolodex-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 18vw 18vw;
+  mask-image: linear-gradient(180deg, transparent, black 18%, black 82%, transparent);
+  opacity: 0.42;
+}
+
+.rolodex-track {
+  position: relative;
+  perspective: 1300px;
+  transform-style: preserve-3d;
+}
+
+.rolodex-frame {
+  position: sticky;
+  top: clamp(5.75rem, 11svh, 8rem);
+  min-height: calc(100svh - clamp(5.75rem, 11svh, 8rem));
+  display: flex;
+  align-items: center;
+  padding: 6svh clamp(1.5rem, 4vw, 3rem);
+  transform-style: preserve-3d;
+}
+
+.rolodex-frame + .rolodex-frame {
+  margin-top: -18svh;
+}
+
+.rolodex-frame:last-child {
+  margin-bottom: 16svh;
+}
+
+.rolodex-card {
+  width: min(100%, 80rem);
+  height: min(74svh, 46rem);
+  min-height: 34rem;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.075), transparent 30%),
+    linear-gradient(180deg, rgba(20, 20, 26, 0.96), rgba(12, 12, 16, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2.5rem 7rem rgba(0, 0, 0, 0.42);
+  transform-origin: 50% 42%;
+  transform-style: preserve-3d;
+}
+
+.rolodex-copy {
+  transform: translateZ(42px);
+}
+
+.rolodex-media {
+  transform: translateZ(72px);
+}
+
+@keyframes rolodex-depth {
+  0% {
+    opacity: 0.34;
+    transform: translateY(26svh) translateZ(-150px) rotateX(-7deg) scale(0.88);
+    filter: saturate(0.82) brightness(0.74);
   }
 
-  to {
+  32%,
+  58% {
     opacity: 1;
-    filter: blur(0);
-    transform: translateY(0) scale(1);
+    transform: translateY(0) translateZ(0) rotateX(0) scale(1);
+    filter: saturate(1) brightness(1);
+  }
+
+  100% {
+    opacity: 0.28;
+    transform: translateY(-24svh) translateZ(-180px) rotateX(6deg) scale(0.86);
+    filter: saturate(0.76) brightness(0.66);
   }
 }
 
-@keyframes media-drift {
-  from {
-    transform: translateX(-24px) scale(1.06);
+@keyframes rolodex-media-drift {
+  0% {
+    transform: translateY(18px) translateZ(36px) scale(1.045);
   }
 
-  to {
-    transform: translateX(24px) scale(1);
-  }
-}
-
-@keyframes copy-lift {
-  from {
-    opacity: 0.35;
-    transform: translateY(36px);
+  45%,
+  60% {
+    transform: translateY(0) translateZ(72px) scale(1);
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  100% {
+    transform: translateY(-18px) translateZ(34px) scale(1.035);
   }
 }
 
 @supports (animation-timeline: view()) {
-  .cinematic-chapter {
-    animation: chapter-reveal both;
-    animation-range: entry 8% cover 36%;
+  .rolodex-card {
+    animation: rolodex-depth both linear;
+    animation-range: entry -8% exit 108%;
     animation-timeline: view();
   }
 
-  .cinematic-media {
-    animation: media-drift both;
-    animation-range: entry 0% exit 100%;
+  .rolodex-media {
+    animation: rolodex-media-drift both linear;
+    animation-range: entry -8% exit 108%;
     animation-timeline: view();
   }
+}
 
-  .cinematic-copy {
-    animation: copy-lift both;
-    animation-range: entry 12% cover 34%;
-    animation-timeline: view();
+@media (max-width: 767px) {
+  .rolodex-frame {
+    top: 7.25rem;
+    min-height: calc(100svh - 7.25rem);
+    padding: 4svh 1rem;
+  }
+
+  .rolodex-frame + .rolodex-frame {
+    margin-top: -12svh;
+  }
+
+  .rolodex-card {
+    height: auto;
+    min-height: min(76svh, 42rem);
+    padding: 1rem;
+  }
+
+  .rolodex-copy,
+  .rolodex-media {
+    transform: none;
+  }
+
+  @supports (animation-timeline: view()) {
+    .rolodex-card {
+      animation-name: rolodex-mobile-depth;
+    }
+  }
+}
+
+@keyframes rolodex-mobile-depth {
+  0% {
+    opacity: 0.54;
+    transform: translateY(12svh) scale(0.95);
+  }
+
+  32%,
+  62% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0.48;
+    transform: translateY(-10svh) scale(0.95);
   }
 }
 
@@ -92,5 +213,24 @@ body {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .rolodex-track {
+    perspective: none;
+  }
+
+  .rolodex-frame {
+    position: relative;
+    top: auto;
+    min-height: auto;
+    margin-top: 0 !important;
+    padding-block: 2rem;
+  }
+
+  .rolodex-card,
+  .rolodex-copy,
+  .rolodex-media {
+    filter: none !important;
+    transform: none !important;
   }
 }
