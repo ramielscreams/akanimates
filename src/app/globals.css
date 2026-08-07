@@ -42,11 +42,12 @@ body {
 .rolodex-shell {
   position: relative;
   isolation: isolate;
-  overflow: clip;
+  min-height: 100dvh;
+  overflow-x: clip;
   background:
-    radial-gradient(circle at 72% 8%, rgba(74, 43, 99, 0.34), transparent 30rem),
-    radial-gradient(circle at 10% 44%, rgba(43, 22, 56, 0.28), transparent 28rem),
-    linear-gradient(180deg, #050507 0%, #0c0c10 48%, #050507 100%);
+    radial-gradient(circle at 78% 12%, rgba(74, 43, 99, 0.24), transparent 32rem),
+    radial-gradient(circle at 6% 48%, rgba(43, 22, 56, 0.24), transparent 34rem),
+    #050507;
 }
 
 .rolodex-atmosphere {
@@ -67,121 +68,189 @@ body {
   transform-style: preserve-3d;
 }
 
-.rolodex-frame {
+.rolodex-scene-wrap {
+  position: relative;
+  z-index: var(--rolodex-depth);
+  height: 170dvh;
+  transform-style: preserve-3d;
+}
+
+.rolodex-scene-wrap:last-child {
+  height: 100dvh;
+}
+
+.rolodex-panel {
   position: sticky;
-  top: clamp(5.75rem, 11svh, 8rem);
-  min-height: calc(100svh - clamp(5.75rem, 11svh, 8rem));
-  display: flex;
-  align-items: center;
-  padding: 6svh clamp(1.5rem, 4vw, 3rem);
+  top: 0;
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--rolodex-surface);
+  transform-origin: left center;
   transform-style: preserve-3d;
 }
 
-.rolodex-frame + .rolodex-frame {
-  margin-top: -18svh;
+.rolodex-media-layer,
+.rolodex-overlay-layer,
+.rolodex-content-layer {
+  position: absolute;
+  inset: 0;
 }
 
-.rolodex-frame:last-child {
-  margin-bottom: 16svh;
-}
-
-.rolodex-card {
-  width: min(100%, 80rem);
-  height: min(74svh, 46rem);
-  min-height: 34rem;
-  margin: 0 auto;
-  padding: clamp(1.25rem, 3vw, 2.5rem);
+.rolodex-media-layer {
+  z-index: 0;
+  overflow: hidden;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.075), transparent 30%),
-    linear-gradient(180deg, rgba(20, 20, 26, 0.96), rgba(12, 12, 16, 0.98));
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 2.5rem 7rem rgba(0, 0, 0, 0.42);
-  transform-origin: 50% 42%;
-  transform-style: preserve-3d;
+    radial-gradient(circle at 72% 22%, var(--rolodex-accent), transparent 34rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 28%),
+    var(--rolodex-surface);
 }
 
-.rolodex-copy {
-  transform: translateZ(42px);
+.rolodex-media-field {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(110deg, transparent 14%, rgba(255, 255, 255, 0.13) 42%, transparent 45%),
+    radial-gradient(circle at 62% 58%, rgba(255, 255, 255, 0.12), transparent 18rem),
+    linear-gradient(180deg, rgba(244, 245, 247, 0.08), rgba(5, 5, 7, 0.6));
+  opacity: 0.72;
+  transform: scale(1.02);
 }
 
-.rolodex-media {
-  transform: translateZ(72px);
+.rolodex-media-lines {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0 11%, rgba(255, 255, 255, 0.1) 11% calc(11% + 1px), transparent calc(11% + 1px)),
+    linear-gradient(90deg, transparent 0 69%, rgba(255, 255, 255, 0.08) 69% calc(69% + 1px), transparent calc(69% + 1px)),
+    linear-gradient(180deg, transparent 0 24%, rgba(255, 255, 255, 0.12) 24% calc(24% + 1px), transparent calc(24% + 1px)),
+    linear-gradient(180deg, transparent 0 72%, rgba(255, 255, 255, 0.1) 72% calc(72% + 1px), transparent calc(72% + 1px));
+  opacity: 0.55;
+}
+
+.rolodex-media-label,
+.rolodex-media-note {
+  position: absolute;
+  right: clamp(1.5rem, 5vw, 4.5rem);
+  max-width: 20rem;
+  color: rgba(244, 245, 247, 0.46);
+  text-transform: uppercase;
+}
+
+.rolodex-media-label {
+  bottom: clamp(1.5rem, 5vw, 4rem);
+  font-size: 0.6875rem;
+  letter-spacing: 0.26em;
+}
+
+.rolodex-media-note {
+  top: clamp(1.5rem, 5vw, 4rem);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  line-height: 1.8;
+}
+
+.rolodex-overlay-layer {
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(5, 5, 7, 0.88), rgba(5, 5, 7, 0.48) 42%, rgba(5, 5, 7, 0.1) 70%),
+    linear-gradient(180deg, rgba(5, 5, 7, 0.3), transparent 34%, rgba(5, 5, 7, 0.72));
+}
+
+.rolodex-content-layer {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: clamp(5rem, 8vh, 7rem) clamp(1.5rem, 6vw, 5rem) clamp(2rem, 6vh, 5rem);
+  pointer-events: none;
+}
+
+.rolodex-content-layer a {
+  pointer-events: auto;
 }
 
 @keyframes rolodex-depth {
   0% {
-    opacity: 0.34;
-    transform: translateY(26svh) translateZ(-150px) rotateX(-7deg) scale(0.88);
-    filter: saturate(0.82) brightness(0.74);
+    opacity: 0.72;
+    transform: translateY(28dvh) translateZ(-120px) rotateX(-3deg) scale(0.92);
+    filter: saturate(0.82) brightness(0.72);
   }
 
-  32%,
-  58% {
+  34%,
+  56% {
     opacity: 1;
     transform: translateY(0) translateZ(0) rotateX(0) scale(1);
     filter: saturate(1) brightness(1);
   }
 
   100% {
-    opacity: 0.28;
-    transform: translateY(-24svh) translateZ(-180px) rotateX(6deg) scale(0.86);
-    filter: saturate(0.76) brightness(0.66);
+    opacity: 0.58;
+    transform: translateY(-18dvh) translateZ(-150px) rotateX(3deg) scale(0.92);
+    filter: saturate(0.78) brightness(0.66);
   }
 }
 
 @keyframes rolodex-media-drift {
   0% {
-    transform: translateY(18px) translateZ(36px) scale(1.045);
+    transform: scale(1.06) translateY(1.8dvh);
   }
 
-  45%,
-  60% {
-    transform: translateY(0) translateZ(72px) scale(1);
+  34%,
+  56% {
+    transform: scale(1.02) translateY(0);
   }
 
   100% {
-    transform: translateY(-18px) translateZ(34px) scale(1.035);
+    transform: scale(1.06) translateY(-1.8dvh);
   }
 }
 
 @supports (animation-timeline: view()) {
-  .rolodex-card {
+  .rolodex-panel {
     animation: rolodex-depth both linear;
-    animation-range: entry -8% exit 108%;
+    animation-range: entry 0% exit 100%;
     animation-timeline: view();
   }
 
-  .rolodex-media {
+  .rolodex-media-field {
     animation: rolodex-media-drift both linear;
-    animation-range: entry -8% exit 108%;
+    animation-range: entry 0% exit 100%;
     animation-timeline: view();
   }
 }
 
 @media (max-width: 767px) {
-  .rolodex-frame {
-    top: 7.25rem;
-    min-height: calc(100svh - 7.25rem);
-    padding: 4svh 1rem;
+  .rolodex-scene-wrap {
+    height: 150dvh;
   }
 
-  .rolodex-frame + .rolodex-frame {
-    margin-top: -12svh;
+  .rolodex-scene-wrap:last-child {
+    height: 100dvh;
   }
 
-  .rolodex-card {
-    height: auto;
-    min-height: min(76svh, 42rem);
-    padding: 1rem;
+  .rolodex-panel {
+    transform-origin: left top;
   }
 
-  .rolodex-copy,
-  .rolodex-media {
-    transform: none;
+  .rolodex-content-layer {
+    padding: 4.5rem 1.5rem 2rem;
+  }
+
+  .rolodex-media-note {
+    display: none;
+  }
+
+  .rolodex-media-label {
+    left: 1.5rem;
+    right: 1.5rem;
+    bottom: 1.25rem;
   }
 
   @supports (animation-timeline: view()) {
-    .rolodex-card {
+    .rolodex-panel {
       animation-name: rolodex-mobile-depth;
     }
   }
@@ -189,19 +258,19 @@ body {
 
 @keyframes rolodex-mobile-depth {
   0% {
-    opacity: 0.54;
-    transform: translateY(12svh) scale(0.95);
+    opacity: 0.82;
+    transform: translateY(16dvh) scale(0.96);
   }
 
-  32%,
-  62% {
+  34%,
+  60% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 
   100% {
-    opacity: 0.48;
-    transform: translateY(-10svh) scale(0.95);
+    opacity: 0.76;
+    transform: translateY(-10dvh) scale(0.96);
   }
 }
 
@@ -219,17 +288,20 @@ body {
     perspective: none;
   }
 
-  .rolodex-frame {
-    position: relative;
-    top: auto;
-    min-height: auto;
-    margin-top: 0 !important;
-    padding-block: 2rem;
+  .rolodex-scene-wrap,
+  .rolodex-scene-wrap:last-child {
+    height: auto;
   }
 
-  .rolodex-card,
-  .rolodex-copy,
-  .rolodex-media {
+  .rolodex-panel {
+    position: relative;
+    top: auto;
+    min-height: 100dvh;
+    margin-top: 0 !important;
+  }
+
+  .rolodex-panel,
+  .rolodex-media-field {
     filter: none !important;
     transform: none !important;
   }
