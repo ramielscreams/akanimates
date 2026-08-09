@@ -16,24 +16,41 @@ export type RolodexEntry = {
 type RolodexItemProps = {
   entry: RolodexEntry;
   depth: number;
+  logicalIndex: number;
+  visualIndex: number;
+  primaryHeading: boolean;
 };
 
-export function RolodexItem({ entry, depth }: RolodexItemProps) {
+export function RolodexItem({
+  entry,
+  depth,
+  logicalIndex,
+  visualIndex,
+  primaryHeading,
+}: RolodexItemProps) {
   const style = {
     "--rolodex-accent": entry.accent,
     "--rolodex-surface": entry.surface,
     "--rolodex-depth": depth,
   } as CSSProperties;
-  const TitleTag = depth === 1 ? "h1" : "h2";
+  const TitleTag = primaryHeading ? "h1" : "h2";
 
   return (
     <article className="rolodex-scene-wrap" style={style}>
-      <div className="rolodex-panel">
+      <div
+        className="rolodex-panel"
+        aria-hidden="true"
+        data-logical-index={logicalIndex}
+        data-rolodex-panel
+        data-visual-index={visualIndex}
+      >
         <div className="rolodex-media-layer" aria-hidden="true">
           {/* Replace this placeholder with a future full-screen image, video, or render. */}
-          <div className="rolodex-media-field" />
+          <div className="rolodex-media-field" data-rolodex-media-field />
           <div className="rolodex-media-lines" />
-          <p className="rolodex-media-label">{entry.mediaLabel}</p>
+          <p className="rolodex-media-label" data-rolodex-media-label>
+            {entry.mediaLabel}
+          </p>
           <p className="rolodex-media-note">{entry.mediaNote}</p>
         </div>
 
@@ -54,6 +71,7 @@ export function RolodexItem({ entry, depth }: RolodexItemProps) {
 
           <Link
             href={entry.href}
+            tabIndex={-1}
             className="group inline-flex min-h-12 w-fit items-center gap-4 bg-[#f4f5f7] px-5 text-xs font-medium uppercase tracking-[0.22em] text-[#050507] transition duration-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7d67e6]"
           >
             {entry.cta}

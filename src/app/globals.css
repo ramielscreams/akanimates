@@ -25,6 +25,8 @@
 
 html {
   background: var(--background);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 body {
@@ -32,6 +34,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 ::selection {
@@ -66,17 +75,14 @@ body {
   position: relative;
   perspective: 1300px;
   transform-style: preserve-3d;
+  --rolodex-step: 118dvh;
 }
 
 .rolodex-scene-wrap {
   position: relative;
   z-index: var(--rolodex-depth);
-  height: 170dvh;
+  height: var(--rolodex-step);
   transform-style: preserve-3d;
-}
-
-.rolodex-scene-wrap:last-child {
-  height: 100dvh;
 }
 
 .rolodex-panel {
@@ -89,6 +95,14 @@ body {
   background: var(--rolodex-surface);
   transform-origin: left center;
   transform-style: preserve-3d;
+  opacity: var(--rolodex-opacity, 1);
+  filter: saturate(1) brightness(var(--rolodex-brightness, 1));
+  transform:
+    translateY(var(--rolodex-y, 0))
+    translateZ(0)
+    rotateX(var(--rolodex-rotate, 0deg))
+    scale(var(--rolodex-scale, 1));
+  will-change: transform, opacity, filter;
 }
 
 .rolodex-media-layer,
@@ -115,7 +129,10 @@ body {
     radial-gradient(circle at 62% 58%, rgba(255, 255, 255, 0.12), transparent 18rem),
     linear-gradient(180deg, rgba(244, 245, 247, 0.08), rgba(5, 5, 7, 0.6));
   opacity: 0.72;
-  transform: scale(1.02);
+  transform:
+    scale(var(--rolodex-media-scale, 1.02))
+    translateY(var(--rolodex-media-y, 0));
+  will-change: transform;
 }
 
 .rolodex-media-lines {
@@ -172,63 +189,9 @@ body {
   pointer-events: auto;
 }
 
-@keyframes rolodex-depth {
-  0% {
-    opacity: 0.72;
-    transform: translateY(28dvh) translateZ(-120px) rotateX(-3deg) scale(0.92);
-    filter: saturate(0.82) brightness(0.72);
-  }
-
-  34%,
-  56% {
-    opacity: 1;
-    transform: translateY(0) translateZ(0) rotateX(0) scale(1);
-    filter: saturate(1) brightness(1);
-  }
-
-  100% {
-    opacity: 0.58;
-    transform: translateY(-18dvh) translateZ(-150px) rotateX(3deg) scale(0.92);
-    filter: saturate(0.78) brightness(0.66);
-  }
-}
-
-@keyframes rolodex-media-drift {
-  0% {
-    transform: scale(1.06) translateY(1.8dvh);
-  }
-
-  34%,
-  56% {
-    transform: scale(1.02) translateY(0);
-  }
-
-  100% {
-    transform: scale(1.06) translateY(-1.8dvh);
-  }
-}
-
-@supports (animation-timeline: view()) {
-  .rolodex-panel {
-    animation: rolodex-depth both linear;
-    animation-range: entry 0% exit 100%;
-    animation-timeline: view();
-  }
-
-  .rolodex-media-field {
-    animation: rolodex-media-drift both linear;
-    animation-range: entry 0% exit 100%;
-    animation-timeline: view();
-  }
-}
-
 @media (max-width: 767px) {
   .rolodex-scene-wrap {
-    height: 150dvh;
-  }
-
-  .rolodex-scene-wrap:last-child {
-    height: 100dvh;
+    height: var(--rolodex-step);
   }
 
   .rolodex-panel {
@@ -248,30 +211,6 @@ body {
     right: 1.5rem;
     bottom: 1.25rem;
   }
-
-  @supports (animation-timeline: view()) {
-    .rolodex-panel {
-      animation-name: rolodex-mobile-depth;
-    }
-  }
-}
-
-@keyframes rolodex-mobile-depth {
-  0% {
-    opacity: 0.82;
-    transform: translateY(16dvh) scale(0.96);
-  }
-
-  34%,
-  60% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  100% {
-    opacity: 0.76;
-    transform: translateY(-10dvh) scale(0.96);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -288,20 +227,18 @@ body {
     perspective: none;
   }
 
-  .rolodex-scene-wrap,
-  .rolodex-scene-wrap:last-child {
-    height: auto;
+  .rolodex-scene-wrap {
+    height: var(--rolodex-step);
   }
 
   .rolodex-panel {
-    position: relative;
-    top: auto;
-    min-height: 100dvh;
-    margin-top: 0 !important;
+    position: sticky;
+    top: 0;
   }
 
   .rolodex-panel,
   .rolodex-media-field {
+    opacity: 1 !important;
     filter: none !important;
     transform: none !important;
   }
