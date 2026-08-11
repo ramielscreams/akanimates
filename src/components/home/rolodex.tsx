@@ -1,6 +1,7 @@
 "use client";
 
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { RolodexItem, type RolodexEntry } from "@/components/home/rolodex-item";
 import { RolodexNav } from "@/components/home/rolodex-nav";
 
@@ -238,10 +239,13 @@ export function Rolodex() {
   const trackRef = useRef<HTMLDivElement>(null);
   const activeIndexRef = useRef(0);
   const gestureDeltaRef = useRef(0);
+  const gestureRearmAtRef = useRef(0);
   const lockRef = useRef(false);
+  const phaseRef = useRef<TransitionState["phase"] | null>(null);
   const reducedMotionRef = useRef(false);
-  const rotationFrameRef = useRef<number | null>(null);
-  const timersRef = useRef<number[]>([]);
+  const rotationProgressRef = useRef(0);
+  const sceneRefs = useRef<Array<HTMLElement | null>>([]);
+  const timelineFrameRef = useRef<number | null>(null);
   const triggerTransitionRef = useRef<
     (direction: Direction, targetIndex?: number, distance?: number) => void
   >(() => {});
@@ -249,7 +253,7 @@ export function Rolodex() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [focusDuration, setFocusDuration] = useState(EXPAND_DURATION_MS);
   const [isAutoNavigating, setIsAutoNavigating] = useState(false);
-  const [rotationProgress, setRotationProgress] = useState(0);
+  const [renderProgress, setRenderProgress] = useState(0);
   const [transition, setTransition] = useState<TransitionState | null>(null);
 
   const renderedEntries = useMemo(
@@ -267,9 +271,8 @@ export function Rolodex() {
 
   useEffect(
     () => () => {
-      timersRef.current.forEach((timer) => window.clearTimeout(timer));
-      if (rotationFrameRef.current !== null) {
-        window.cancelAnimationFrame(rotationFrameRef.current);
+      if (timelineFrameRef.current !== null) {
+        window.cancelAnimationFrame(timelineFrameRef.current);
       }
     },
     [],
@@ -284,33 +287,23 @@ export function Rolodex() {
 
     const loopLength = rolodexEntries.length;
 
-    const queueTimer = (callback: () => void, delay: number) => {
-      const timer = window.setTimeout(() => {
-        timersRef.current = timersRef.current.filter((item) => item !== timer);
-        callback();
-      }, delay);
+    const applySlotStyles = (from: number, progress: number) => {
+      for (let index = 0; index < loopLength; index += 1) {
+        const scene = sceneRefs.current[index];
 
-      timersRef.current.push(timer);
-    };
-
-    const animateRotationProgress = (
-      signedDistance: number,
-      rotationDuration: number,
-    ) => {
-      const startTime = window.performance.now();
-
-      const animate = (timestamp: number) => {
-        const elapsed = timestamp - startTime;
-        const progress = clamp(elapsed / rotationDuration, 0, 1);
-
-        setRotationProgress(signedDistance * easeOutSine(progress));
-
-        if (progress < 1) {
-          rotationFrameRef.current = window.requestAnimationFrame(animate);
+        if (!scene) {
+          continue;
         }
-      };
 
-      rotationFrameRef.current = window.requestAnimationFrame(animate);
+        const slot = circularProgressSlot(index, from, progress, loopLength);
+        const slotStyle = getSlotStyle(slot);
+
+        scene.dataset.slot = String(Math.round(slot * 1000) / 1000);
+
+        for (const [property, value] of Object.entries(slotStyle)) {
+          scene.style.setProperty(property, String(value));
+        }
+      }
     };
 
     const triggerTransition = (
@@ -353,52 +346,80 @@ export function Rolodex() {
 
       lockRef.current = true;
       gestureDeltaRef.current = 0;
-      setFocusDuration(focusDuration);
-      setRotationProgress(0);
-      setTransition({
-        direction,
-        from,
-        phase: "contract",
-        to,
+      gestureRearmAtRef.current = 0;
+      phaseRef.current = "contract";
+      rotationProgressRef.current = 0;
+      flushSync(() => {
+        setFocusDuration(focusDuration);
+        setRenderProgress(0);
+        setTransition({
+          direction,
+          from,
+          phase: "contract",
+          to,
+        });
       });
 
-      queueTimer(() => {
-        setTransition({
-          direction,
-          from,
-          phase: "rotate",
-          to,
-        });
-        animateRotationProgress(signedDistance, rotationDuration);
-      }, contractDuration);
+      const transitionStart = window.performance.now();
 
-      queueTimer(() => {
-        if (rotationFrameRef.current !== null) {
-          window.cancelAnimationFrame(rotationFrameRef.current);
-          rotationFrameRef.current = null;
+      const updatePhase = (phase: TransitionState["phase"]) => {
+        if (phaseRef.current === phase) {
+          return;
         }
 
-        setRotationProgress(signedDistance);
-        setTransition({
-          direction,
-          from,
-          phase: "expand",
-          to,
+        phaseRef.current = phase;
+        flushSync(() => {
+          setRenderProgress(rotationProgressRef.current);
+          setTransition({
+            direction,
+            from,
+            phase,
+            to,
+          });
         });
-      }, expandStart);
+      };
 
-      queueTimer(() => {
-        activeIndexRef.current = to;
-        setActiveIndex(to);
-        setRotationProgress(0);
-        setTransition(null);
-        setIsAutoNavigating(false);
-      }, duration);
+      const runTimeline = (timestamp: number) => {
+        const elapsed = timestamp - transitionStart;
 
-      queueTimer(() => {
-        gestureDeltaRef.current = 0;
-        lockRef.current = false;
-      }, duration + INPUT_DEBOUNCE_MS);
+        if (elapsed >= duration) {
+          activeIndexRef.current = to;
+          gestureDeltaRef.current = 0;
+          gestureRearmAtRef.current = timestamp + INPUT_DEBOUNCE_MS;
+          lockRef.current = false;
+          phaseRef.current = null;
+          timelineFrameRef.current = null;
+          flushSync(() => {
+            setActiveIndex(to);
+            rotationProgressRef.current = 0;
+            setRenderProgress(0);
+            setTransition(null);
+            setIsAutoNavigating(false);
+          });
+          return;
+        }
+
+        if (elapsed >= expandStart) {
+          updatePhase("expand");
+        } else if (elapsed >= contractDuration) {
+          updatePhase("rotate");
+        }
+
+        const rotationElapsed = clamp(
+          elapsed - contractDuration,
+          0,
+          rotationDuration,
+        );
+        const rotationProgress = rotationElapsed / rotationDuration;
+        const easedProgress = signedDistance * easeOutSine(rotationProgress);
+
+        rotationProgressRef.current = easedProgress;
+        applySlotStyles(from, easedProgress);
+
+        timelineFrameRef.current = window.requestAnimationFrame(runTimeline);
+      };
+
+      timelineFrameRef.current = window.requestAnimationFrame(runTimeline);
     };
 
     triggerTransitionRef.current = triggerTransition;
@@ -416,7 +437,10 @@ export function Rolodex() {
 
       event.preventDefault();
 
-      if (lockRef.current) {
+      if (
+        lockRef.current ||
+        window.performance.now() < gestureRearmAtRef.current
+      ) {
         return;
       }
 
@@ -445,14 +469,20 @@ export function Rolodex() {
       }
     };
     const onTouchStart = (event: TouchEvent) => {
-      if (lockRef.current) {
+      if (
+        lockRef.current ||
+        window.performance.now() < gestureRearmAtRef.current
+      ) {
         return;
       }
 
       touchStartYRef.current = event.touches[0]?.clientY ?? null;
     };
     const onTouchMove = (event: TouchEvent) => {
-      if (lockRef.current) {
+      if (
+        lockRef.current ||
+        window.performance.now() < gestureRearmAtRef.current
+      ) {
         event.preventDefault();
         return;
       }
@@ -497,9 +527,9 @@ export function Rolodex() {
 
     return () => {
       triggerTransitionRef.current = () => {};
-      if (rotationFrameRef.current !== null) {
-        window.cancelAnimationFrame(rotationFrameRef.current);
-        rotationFrameRef.current = null;
+      if (timelineFrameRef.current !== null) {
+        window.cancelAnimationFrame(timelineFrameRef.current);
+        timelineFrameRef.current = null;
       }
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKeyDown);
@@ -556,7 +586,7 @@ export function Rolodex() {
         }
       >
         {renderedEntries.map(({ entry, logicalIndex }) => {
-          const progress = transition?.phase === "contract" ? 0 : rotationProgress;
+          const progress = transition?.phase === "contract" ? 0 : renderProgress;
           const slot = transition
             ? circularProgressSlot(
                 logicalIndex,
@@ -581,6 +611,9 @@ export function Rolodex() {
               depth={logicalIndex + 1}
               logicalIndex={logicalIndex}
               primaryHeading={logicalIndex === 0}
+              sceneRef={(node) => {
+                sceneRefs.current[logicalIndex] = node;
+              }}
               slot={slot}
               slotStyle={getSlotStyle(slot)}
               state={state}

@@ -19,6 +19,7 @@ type RolodexItemProps = {
   depth: number;
   logicalIndex: number;
   primaryHeading: boolean;
+  sceneRef?: (node: HTMLElement | null) => void;
   slot: number;
   slotStyle: CSSProperties;
   state: "active" | "entering" | "exiting" | "stack";
@@ -29,6 +30,7 @@ export function RolodexItem({
   depth,
   logicalIndex,
   primaryHeading,
+  sceneRef,
   slot,
   slotStyle,
   state,
@@ -47,6 +49,7 @@ export function RolodexItem({
       className="rolodex-scene-wrap"
       data-slot={slot}
       data-state={state}
+      ref={sceneRef}
       style={style}
     >
       <div
