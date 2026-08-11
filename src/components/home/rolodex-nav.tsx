@@ -29,8 +29,7 @@ export function RolodexNav({
                 data-navigating={isNavigating ? "true" : "false"}
                 onClick={() => onNavigate(index)}
               >
-                <span className="rolodex-nav-number">{entry.index}</span>
-                <span className="rolodex-nav-title">{entry.title}</span>
+                {entry.index} / {entry.title.toLowerCase()}
               </button>
             </li>
           );
