@@ -51,8 +51,9 @@ body::-webkit-scrollbar {
 .rolodex-shell {
   position: relative;
   isolation: isolate;
+  height: 100dvh;
   min-height: 100dvh;
-  overflow-x: clip;
+  overflow: hidden;
   background:
     radial-gradient(circle at 78% 12%, rgba(74, 43, 99, 0.24), transparent 32rem),
     radial-gradient(circle at 6% 48%, rgba(43, 22, 56, 0.24), transparent 34rem),
@@ -72,37 +73,185 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-track {
-  position: relative;
-  perspective: 1300px;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  perspective: 1600px;
+  perspective-origin: 50% 42%;
   transform-style: preserve-3d;
-  --rolodex-step: 118dvh;
+  --rolodex-panel-width: min(90vw, calc(86dvh * 1.5));
+  --rolodex-panel-height: calc(var(--rolodex-panel-width) * 0.6666667);
+  --rolodex-transition-frame-scale: 0.68;
+  --rolodex-contract-duration: 220ms;
+  --rolodex-rotation-duration: 520ms;
+  --rolodex-expand-duration: 260ms;
+  --rolodex-transition-duration: var(--rolodex-rotation-duration);
+  --rolodex-transition-easing: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .rolodex-scene-wrap {
-  position: relative;
-  z-index: var(--rolodex-depth);
-  height: var(--rolodex-step);
+  position: absolute;
+  width: var(--rolodex-panel-width);
+  aspect-ratio: 3 / 2;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  filter: saturate(1) brightness(0.78);
+  transform:
+    translate3d(0, 0, -420px)
+    rotateX(0deg);
+  transform-origin: 50% 72%;
   transform-style: preserve-3d;
+  transition:
+    opacity var(--rolodex-rotation-duration) var(--rolodex-transition-easing),
+    filter var(--rolodex-rotation-duration) var(--rolodex-transition-easing),
+    transform var(--rolodex-rotation-duration) var(--rolodex-transition-easing);
+  will-change: transform, opacity, filter;
+  pointer-events: none;
+}
+
+.rolodex-scene-wrap[data-slot="0"] {
+  z-index: 50;
+  opacity: 1;
+  filter: saturate(1) brightness(1);
+  transform:
+    translate3d(0, 0, 0)
+    rotateX(0deg);
+}
+
+.rolodex-scene-wrap[data-slot="1"] {
+  z-index: 34;
+  opacity: 0.62;
+  filter: saturate(0.9) brightness(0.68) blur(0.25px);
+  transform:
+    translate3d(0, 76%, -520px)
+    rotateX(-34deg);
+}
+
+.rolodex-scene-wrap[data-slot="-1"] {
+  z-index: 36;
+  opacity: 0.62;
+  filter: saturate(0.9) brightness(0.68) blur(0.25px);
+  transform:
+    translate3d(0, -76%, -520px)
+    rotateX(34deg);
+}
+
+.rolodex-scene-wrap[data-slot="2"] {
+  z-index: 18;
+  opacity: 0.28;
+  filter: saturate(0.78) brightness(0.44) blur(1px);
+  transform:
+    translate3d(0, 132%, -900px)
+    rotateX(-58deg);
+}
+
+.rolodex-scene-wrap[data-slot="-2"] {
+  z-index: 20;
+  opacity: 0.28;
+  filter: saturate(0.78) brightness(0.44) blur(1px);
+  transform:
+    translate3d(0, -132%, -900px)
+    rotateX(58deg);
 }
 
 .rolodex-panel {
-  position: sticky;
-  top: 0;
-  width: 100vw;
-  height: 100dvh;
-  min-height: 100dvh;
+  position: relative;
+  width: var(
+    --rolodex-frame-width,
+    calc(var(--rolodex-panel-width) * var(--rolodex-frame-scale, var(--rolodex-transition-frame-scale)))
+  );
+  height: var(
+    --rolodex-frame-height,
+    calc(var(--rolodex-frame-width, calc(var(--rolodex-panel-width) * var(--rolodex-frame-scale, var(--rolodex-transition-frame-scale)))) * 0.6666667)
+  );
+  aspect-ratio: 3 / 2;
   overflow: hidden;
   background: var(--rolodex-surface);
-  transform-origin: left center;
-  transform-style: preserve-3d;
-  opacity: var(--rolodex-opacity, 1);
-  filter: saturate(1) brightness(var(--rolodex-brightness, 1));
-  transform:
-    translateY(var(--rolodex-y, 0))
-    translateZ(0)
-    rotateX(var(--rolodex-rotate, 0deg))
-    scale(var(--rolodex-scale, 1));
-  will-change: transform, opacity, filter;
+  border: 1px solid rgba(244, 245, 247, 0.12);
+  box-shadow:
+    0 2rem 5rem rgba(0, 0, 0, 0.5),
+    0 0 8rem rgba(74, 43, 99, 0.18);
+  container-type: inline-size;
+  transition:
+    width var(--rolodex-contract-duration) var(--rolodex-transition-easing),
+    height var(--rolodex-contract-duration) var(--rolodex-transition-easing),
+    border-color var(--rolodex-contract-duration) var(--rolodex-transition-easing),
+    box-shadow var(--rolodex-contract-duration) var(--rolodex-transition-easing);
+  will-change: width, height;
+  pointer-events: none;
+}
+
+.rolodex-track[data-phase="idle"] .rolodex-scene-wrap:not([data-state="active"]),
+.rolodex-track[data-phase="contract"] .rolodex-scene-wrap:not([data-state="exiting"]),
+.rolodex-track[data-phase="expand"] .rolodex-scene-wrap:not([data-state="entering"]) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rolodex-scene-wrap[data-state="active"] {
+  width: 100vw;
+  height: 100dvh;
+  aspect-ratio: auto;
+  pointer-events: auto;
+}
+
+.rolodex-panel[data-state="active"] {
+  --rolodex-frame-width: 100vw;
+  --rolodex-frame-height: 100dvh;
+  aspect-ratio: auto;
+  border-color: transparent;
+  box-shadow: none;
+  pointer-events: auto;
+}
+
+.rolodex-track[data-phase="contract"] .rolodex-scene-wrap[data-state="exiting"],
+.rolodex-track[data-phase="expand"] .rolodex-scene-wrap[data-state="entering"] {
+  width: var(--rolodex-panel-width);
+  height: auto;
+  aspect-ratio: 3 / 2;
+}
+
+.rolodex-scene-wrap[data-slot="1"] .rolodex-panel,
+.rolodex-scene-wrap[data-slot="-1"] .rolodex-panel {
+  --rolodex-frame-scale: 0.58;
+}
+
+.rolodex-scene-wrap[data-slot="2"] .rolodex-panel,
+.rolodex-scene-wrap[data-slot="-2"] .rolodex-panel {
+  --rolodex-frame-scale: 0.42;
+}
+
+.rolodex-track[data-phase="contract"] .rolodex-panel[data-state="exiting"],
+.rolodex-track[data-phase="rotate"] .rolodex-panel[data-state="entering"] {
+  --rolodex-frame-scale: var(--rolodex-transition-frame-scale);
+}
+
+.rolodex-track[data-phase="rotate"] .rolodex-scene-wrap[data-state="entering"] {
+  opacity: 0.92;
+  filter: saturate(0.98) brightness(0.9);
+  pointer-events: none;
+}
+
+.rolodex-track[data-phase="expand"] .rolodex-scene-wrap[data-state="entering"] {
+  z-index: 52;
+  width: 100vw;
+  height: 100dvh;
+  aspect-ratio: auto;
+  opacity: 1;
+  filter: saturate(1) brightness(1);
+  transition-duration: var(--rolodex-expand-duration);
+}
+
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] {
+  --rolodex-frame-width: 100vw;
+  --rolodex-frame-height: 100dvh;
+  aspect-ratio: auto;
+  border-color: transparent;
+  box-shadow: none;
+  transition-duration: var(--rolodex-expand-duration);
 }
 
 .rolodex-media-layer,
@@ -121,6 +270,26 @@ body::-webkit-scrollbar {
     var(--rolodex-surface);
 }
 
+.rolodex-media-layer img,
+.rolodex-media-layer video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rolodex-panel[data-focused-media-fit="contain"][data-state="active"] .rolodex-media-layer img,
+.rolodex-panel[data-focused-media-fit="contain"][data-state="active"] .rolodex-media-layer video,
+.rolodex-track[data-phase="expand"]
+  .rolodex-panel[data-focused-media-fit="contain"][data-state="entering"]
+  .rolodex-media-layer
+  img,
+.rolodex-track[data-phase="expand"]
+  .rolodex-panel[data-focused-media-fit="contain"][data-state="entering"]
+  .rolodex-media-layer
+  video {
+  object-fit: contain;
+}
+
 .rolodex-media-field {
   position: absolute;
   inset: 0;
@@ -130,9 +299,15 @@ body::-webkit-scrollbar {
     linear-gradient(180deg, rgba(244, 245, 247, 0.08), rgba(5, 5, 7, 0.6));
   opacity: 0.72;
   transform:
-    scale(var(--rolodex-media-scale, 1.02))
-    translateY(var(--rolodex-media-y, 0));
+    scale(1.04)
+    translateY(0);
+  transition: transform var(--rolodex-transition-duration) var(--rolodex-transition-easing);
   will-change: transform;
+}
+
+.rolodex-panel[data-state="active"] .rolodex-media-field,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-media-field {
+  transform: none;
 }
 
 .rolodex-media-lines {
@@ -149,21 +324,21 @@ body::-webkit-scrollbar {
 .rolodex-media-label,
 .rolodex-media-note {
   position: absolute;
-  right: clamp(1.5rem, 5vw, 4.5rem);
+  right: clamp(1rem, 6cqw, 4.5rem);
   max-width: 20rem;
   color: rgba(244, 245, 247, 0.46);
   text-transform: uppercase;
 }
 
 .rolodex-media-label {
-  bottom: clamp(1.5rem, 5vw, 4rem);
-  font-size: 0.6875rem;
+  bottom: clamp(1rem, 6cqw, 4rem);
+  font-size: clamp(0.5625rem, 1cqw, 0.6875rem);
   letter-spacing: 0.26em;
 }
 
 .rolodex-media-note {
-  top: clamp(1.5rem, 5vw, 4rem);
-  font-size: 0.6875rem;
+  top: clamp(1rem, 6cqw, 4rem);
+  font-size: clamp(0.5625rem, 1cqw, 0.6875rem);
   letter-spacing: 0.18em;
   line-height: 1.8;
 }
@@ -181,25 +356,65 @@ body::-webkit-scrollbar {
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  padding: clamp(5rem, 8vh, 7rem) clamp(1.5rem, 6vw, 5rem) clamp(2rem, 6vh, 5rem);
+  gap: clamp(1rem, 4cqw, 2.5rem);
+  padding: clamp(1.25rem, 6cqw, 4.5rem) clamp(1.25rem, 5.4cqw, 4rem) clamp(1rem, 4.4cqw, 3rem);
   pointer-events: none;
+}
+
+.rolodex-panel[data-state="active"] .rolodex-content-layer,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-content-layer {
+  gap: clamp(1.5rem, 5vw, 4rem);
+  padding: clamp(4.5rem, 9vh, 7rem) clamp(1.5rem, 6vw, 5rem) clamp(2rem, 6vh, 5rem);
 }
 
 .rolodex-content-layer a {
   pointer-events: auto;
 }
 
-@media (max-width: 767px) {
-  .rolodex-scene-wrap {
-    height: var(--rolodex-step);
-  }
+.rolodex-content-layer h1,
+.rolodex-content-layer h2 {
+  font-size: clamp(2.35rem, 10cqw, 7rem);
+}
 
-  .rolodex-panel {
-    transform-origin: left top;
-  }
+.rolodex-panel[data-state="active"] .rolodex-content-layer h1,
+.rolodex-panel[data-state="active"] .rolodex-content-layer h2,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-content-layer h1,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-content-layer h2 {
+  font-size: clamp(4rem, 9vw, 9rem);
+}
 
+.rolodex-content-layer p {
+  max-width: min(28rem, 68cqw);
+  font-size: clamp(0.875rem, 1.55cqw, 1.125rem);
+  line-height: clamp(1.55rem, 2.6cqw, 2rem);
+}
+
+.rolodex-panel[data-state="active"] .rolodex-content-layer p,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-content-layer p {
+  max-width: min(28rem, 48vw);
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+  line-height: 2;
+}
+
+.rolodex-panel a {
+  min-height: clamp(2.5rem, 5cqw, 3rem);
+  padding-inline: clamp(0.875rem, 2.6cqw, 1.25rem);
+  font-size: clamp(0.625rem, 1.1cqw, 0.75rem);
+}
+
+@container (max-width: 520px) {
   .rolodex-content-layer {
-    padding: 4.5rem 1.5rem 2rem;
+    padding: 1.25rem;
+  }
+
+  .rolodex-content-layer h1,
+  .rolodex-content-layer h2 {
+    margin-top: 1rem;
+  }
+
+  .rolodex-content-layer p {
+    max-width: 100%;
+    margin-top: 1.25rem;
   }
 
   .rolodex-media-note {
@@ -210,6 +425,14 @@ body::-webkit-scrollbar {
     left: 1.5rem;
     right: 1.5rem;
     bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .rolodex-track {
+    --rolodex-panel-width: min(calc(100vw - 2rem), calc(76dvh * 1.5));
+    --rolodex-panel-height: calc(var(--rolodex-panel-width) * 0.6666667);
+    perspective: 1200px;
   }
 }
 
@@ -225,21 +448,40 @@ body::-webkit-scrollbar {
 
   .rolodex-track {
     perspective: none;
+    --rolodex-contract-duration: 120ms;
+    --rolodex-rotation-duration: 120ms;
+    --rolodex-expand-duration: 180ms;
   }
 
-  .rolodex-scene-wrap {
-    height: var(--rolodex-step);
-  }
-
-  .rolodex-panel {
-    position: sticky;
-    top: 0;
-  }
-
+  .rolodex-scene-wrap,
   .rolodex-panel,
   .rolodex-media-field {
-    opacity: 1 !important;
     filter: none !important;
+    transition-duration: 260ms !important;
+  }
+
+  .rolodex-scene-wrap[data-state="active"],
+  .rolodex-track[data-phase="expand"] .rolodex-scene-wrap[data-state="entering"] {
+    opacity: 1 !important;
     transform: none !important;
+  }
+
+  .rolodex-panel[data-state="active"],
+  .rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] {
+    --rolodex-frame-width: 100vw;
+    --rolodex-frame-height: 100dvh;
+  }
+
+  .rolodex-track[data-phase="contract"] .rolodex-scene-wrap[data-state="exiting"],
+  .rolodex-track[data-phase="rotate"] .rolodex-scene-wrap[data-state="entering"],
+  .rolodex-track[data-phase="rotate"] .rolodex-scene-wrap[data-state="exiting"],
+  .rolodex-track[data-phase="expand"] .rolodex-scene-wrap[data-state="exiting"] {
+    opacity: 0.4 !important;
+    transform: none !important;
+  }
+
+  .rolodex-track[data-phase="contract"] .rolodex-panel[data-state="exiting"],
+  .rolodex-track[data-phase="rotate"] .rolodex-panel[data-state="entering"] {
+    --rolodex-frame-scale: 0.82;
   }
 }

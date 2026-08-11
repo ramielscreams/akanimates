@@ -9,6 +9,7 @@ export type RolodexEntry = {
   cta: string;
   mediaLabel: string;
   mediaNote: string;
+  focusedMediaFit?: "cover" | "contain";
   accent: string;
   surface: string;
 };
@@ -17,16 +18,18 @@ type RolodexItemProps = {
   entry: RolodexEntry;
   depth: number;
   logicalIndex: number;
-  visualIndex: number;
   primaryHeading: boolean;
+  slot: number;
+  state: "active" | "entering" | "exiting" | "stack";
 };
 
 export function RolodexItem({
   entry,
   depth,
   logicalIndex,
-  visualIndex,
   primaryHeading,
+  slot,
+  state,
 }: RolodexItemProps) {
   const style = {
     "--rolodex-accent": entry.accent,
@@ -34,15 +37,22 @@ export function RolodexItem({
     "--rolodex-depth": depth,
   } as CSSProperties;
   const TitleTag = primaryHeading ? "h1" : "h2";
+  const isActive = state === "active";
 
   return (
-    <article className="rolodex-scene-wrap" style={style}>
+    <article
+      className="rolodex-scene-wrap"
+      data-slot={slot}
+      data-state={state}
+      style={style}
+    >
       <div
         className="rolodex-panel"
-        aria-hidden="true"
+        aria-hidden={isActive ? "false" : "true"}
+        data-focused-media-fit={entry.focusedMediaFit ?? "cover"}
         data-logical-index={logicalIndex}
         data-rolodex-panel
-        data-visual-index={visualIndex}
+        data-state={state}
       >
         <div className="rolodex-media-layer" aria-hidden="true">
           {/* Replace this placeholder with a future full-screen image, video, or render. */}
@@ -71,7 +81,7 @@ export function RolodexItem({
 
           <Link
             href={entry.href}
-            tabIndex={-1}
+            tabIndex={isActive ? 0 : -1}
             className="group inline-flex min-h-12 w-fit items-center gap-4 bg-[#f4f5f7] px-5 text-xs font-medium uppercase tracking-[0.22em] text-[#050507] transition duration-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7d67e6]"
           >
             {entry.cta}

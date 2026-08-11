@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { RolodexItem, type RolodexEntry } from "@/components/home/rolodex-item";
 
 const rolodexEntries: RolodexEntry[] = [
@@ -63,31 +63,83 @@ const rolodexEntries: RolodexEntry[] = [
   },
 ];
 
-const REPEAT_SETS = 7;
-const CENTER_SET = Math.floor(REPEAT_SETS / 2);
+const CONTRACT_DURATION_MS = 220;
+const ROTATION_DURATION_MS = 520;
+const EXPAND_DURATION_MS = 260;
+const TRANSITION_DURATION_MS =
+  CONTRACT_DURATION_MS + ROTATION_DURATION_MS + EXPAND_DURATION_MS;
+const REDUCED_CONTRACT_DURATION_MS = 140;
+const REDUCED_ROTATION_DURATION_MS = 140;
+const REDUCED_EXPAND_DURATION_MS = 220;
+const REDUCED_TRANSITION_DURATION_MS =
+  REDUCED_CONTRACT_DURATION_MS +
+  REDUCED_ROTATION_DURATION_MS +
+  REDUCED_EXPAND_DURATION_MS;
+const INPUT_DEBOUNCE_MS = 110;
+const WHEEL_TRIGGER_THRESHOLD = 14;
+const TOUCH_TRIGGER_THRESHOLD = 34;
 
 function positiveModulo(value: number, modulo: number) {
   return ((value % modulo) + modulo) % modulo;
 }
 
+function circularSlot(index: number, activeIndex: number, length: number) {
+  const forwardDistance = positiveModulo(index - activeIndex, length);
+
+  return forwardDistance > length / 2
+    ? forwardDistance - length
+    : forwardDistance;
+}
+
+function normalizeWheelDelta(event: WheelEvent) {
+  if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+    return event.deltaY * 16;
+  }
+
+  if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+    return event.deltaY * window.innerHeight;
+  }
+
+  return event.deltaY;
+}
+
+type Direction = "next" | "previous";
+
+type TransitionState = {
+  direction: Direction;
+  from: number;
+  phase: "contract" | "rotate" | "expand";
+  to: number;
+};
+
 export function Rolodex() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const frameRef = useRef<number | null>(null);
-  const stepRef = useRef(1);
-  const isRecenteringRef = useRef(false);
+  const activeIndexRef = useRef(0);
+  const gestureDeltaRef = useRef(0);
+  const lockRef = useRef(false);
   const reducedMotionRef = useRef(false);
+  const timersRef = useRef<number[]>([]);
+  const touchStartYRef = useRef<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [transition, setTransition] = useState<TransitionState | null>(null);
 
   const renderedEntries = useMemo(
     () =>
-      Array.from({ length: REPEAT_SETS * rolodexEntries.length }, (_, index) => {
-        const logicalIndex = index % rolodexEntries.length;
+      rolodexEntries.map((entry, index) => ({
+        entry,
+        logicalIndex: index,
+      })),
+    [],
+  );
 
-        return {
-          entry: rolodexEntries[logicalIndex],
-          visualIndex: index,
-          logicalIndex,
-        };
-      }),
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
+  useEffect(
+    () => () => {
+      timersRef.current.forEach((timer) => window.clearTimeout(timer));
+    },
     [],
   );
 
@@ -98,163 +150,201 @@ export function Rolodex() {
       return;
     }
 
-    const panels = Array.from(
-      track.querySelectorAll<HTMLElement>("[data-rolodex-panel]"),
-    );
-    const mediaFields = Array.from(
-      track.querySelectorAll<HTMLElement>("[data-rolodex-media-field]"),
-    );
-    const mediaLabels = Array.from(
-      track.querySelectorAll<HTMLElement>("[data-rolodex-media-label]"),
-    );
     const loopLength = rolodexEntries.length;
-    const centerStart = CENTER_SET * loopLength;
-    const totalItems = REPEAT_SETS * loopLength;
 
-    const setStep = () => {
-      const viewport = window.innerHeight || 1;
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
-      stepRef.current = viewport * (isMobile ? 1.05 : 1.18);
-      track.style.setProperty("--rolodex-step", `${stepRef.current}px`);
+    const queueTimer = (callback: () => void, delay: number) => {
+      const timer = window.setTimeout(() => {
+        timersRef.current = timersRef.current.filter((item) => item !== timer);
+        callback();
+      }, delay);
+
+      timersRef.current.push(timer);
     };
 
-    const centerAtEquivalentPosition = (scrollY: number) => {
-      const loopHeight = stepRef.current * loopLength;
-      const centerScroll = stepRef.current * centerStart;
-      const loopProgress = positiveModulo(scrollY, loopHeight);
-
-      isRecenteringRef.current = true;
-      window.scrollTo(0, centerScroll + loopProgress);
-      isRecenteringRef.current = false;
-    };
-
-    const updatePanels = () => {
-      const position = window.scrollY / stepRef.current;
-      const nearestVisualIndex = Math.round(position);
-      const nearestLogicalIndex = positiveModulo(nearestVisualIndex, loopLength);
-
-      panels.forEach((panel, index) => {
-        const relative = index - position;
-        const distance = Math.min(Math.abs(relative), 1.8);
-        const isExposed = distance < 0.64;
-        const scale = reducedMotionRef.current ? 1 : 1 - Math.min(distance, 1) * 0.08;
-        const translateY = reducedMotionRef.current
-          ? 0
-          : Math.max(-24, Math.min(24, relative * 18));
-        const rotateX = reducedMotionRef.current
-          ? 0
-          : Math.max(-3, Math.min(3, relative * -2.2));
-        const opacity = Math.max(0, 1 - distance * 0.34);
-        const brightness = Math.max(0.62, 1 - distance * 0.22);
-        const zIndex = Math.max(1, 100 - Math.round(distance * 30));
-
-        panel.style.setProperty("--rolodex-scale", scale.toFixed(4));
-        panel.style.setProperty("--rolodex-y", `${translateY.toFixed(2)}dvh`);
-        panel.style.setProperty("--rolodex-rotate", `${rotateX.toFixed(2)}deg`);
-        panel.style.setProperty("--rolodex-opacity", opacity.toFixed(4));
-        panel.style.setProperty("--rolodex-brightness", brightness.toFixed(4));
-        panel.style.zIndex = String(zIndex);
-
-        const logicalIndex = Number(panel.dataset.logicalIndex);
-        const isKeyboardPanel =
-          logicalIndex === nearestLogicalIndex && isExposed;
-
-        panel.setAttribute("aria-hidden", isKeyboardPanel ? "false" : "true");
-        panel
-          .querySelectorAll<HTMLElement>("a, button")
-          .forEach((element) => {
-            element.tabIndex = isKeyboardPanel ? 0 : -1;
-          });
-      });
-
-      mediaFields.forEach((mediaField, index) => {
-        const relative = index - position;
-        const distance = Math.min(Math.abs(relative), 1);
-        const mediaScale = reducedMotionRef.current ? 1.02 : 1.02 + distance * 0.04;
-        const mediaY = reducedMotionRef.current
-          ? 0
-          : Math.max(-1.8, Math.min(1.8, relative * 1.2));
-
-        mediaField.style.setProperty("--rolodex-media-scale", mediaScale.toFixed(4));
-        mediaField.style.setProperty("--rolodex-media-y", `${mediaY.toFixed(2)}dvh`);
-      });
-
-      mediaLabels.forEach((mediaLabel, index) => {
-        const relative = index - position;
-        const distance = Math.min(Math.abs(relative), 1.5);
-        mediaLabel.style.opacity = String(Math.max(0.18, 1 - distance * 0.58));
-      });
-    };
-
-    const scheduleUpdate = () => {
-      if (frameRef.current !== null) {
+    const triggerTransition = (direction: Direction) => {
+      if (lockRef.current) {
         return;
       }
 
-      frameRef.current = window.requestAnimationFrame(() => {
-        frameRef.current = null;
+      const from = activeIndexRef.current;
+      const delta = direction === "next" ? 1 : -1;
+      const to = positiveModulo(from + delta, loopLength);
+      const contractDuration = reducedMotionRef.current
+        ? REDUCED_CONTRACT_DURATION_MS
+        : CONTRACT_DURATION_MS;
+      const rotationDuration = reducedMotionRef.current
+        ? REDUCED_ROTATION_DURATION_MS
+        : ROTATION_DURATION_MS;
+      const duration = reducedMotionRef.current
+        ? REDUCED_TRANSITION_DURATION_MS
+        : TRANSITION_DURATION_MS;
 
-        if (!isRecenteringRef.current) {
-          const scrollY = window.scrollY;
-          const lowBoundary = stepRef.current * loopLength;
-          const highBoundary = stepRef.current * (totalItems - loopLength);
+      lockRef.current = true;
+      gestureDeltaRef.current = 0;
+      setTransition({ direction, from, phase: "contract", to });
 
-          if (scrollY < lowBoundary || scrollY > highBoundary) {
-            centerAtEquivalentPosition(scrollY);
-          }
-        }
+      queueTimer(() => {
+        setTransition({ direction, from, phase: "rotate", to });
+      }, contractDuration);
 
-        updatePanels();
-      });
+      queueTimer(() => {
+        setTransition({ direction, from, phase: "expand", to });
+      }, contractDuration + rotationDuration);
+
+      queueTimer(() => {
+        activeIndexRef.current = to;
+        setActiveIndex(to);
+        setTransition(null);
+      }, duration);
+
+      queueTimer(() => {
+        gestureDeltaRef.current = 0;
+        lockRef.current = false;
+      }, duration + INPUT_DEBOUNCE_MS);
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey) {
+        return;
+      }
+
+      const normalizedDelta = normalizeWheelDelta(event);
+
+      if (normalizedDelta === 0) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (lockRef.current) {
+        return;
+      }
+
+      gestureDeltaRef.current += normalizedDelta;
+
+      if (Math.abs(gestureDeltaRef.current) >= WHEEL_TRIGGER_THRESHOLD) {
+        triggerTransition(gestureDeltaRef.current > 0 ? "next" : "previous");
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key !== "ArrowDown" &&
+        event.key !== "PageDown" &&
+        event.key !== "ArrowUp" &&
+        event.key !== "PageUp"
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (event.key === "ArrowDown" || event.key === "PageDown") {
+        triggerTransition("next");
+      } else {
+        triggerTransition("previous");
+      }
+    };
+    const onTouchStart = (event: TouchEvent) => {
+      if (lockRef.current) {
+        return;
+      }
+
+      touchStartYRef.current = event.touches[0]?.clientY ?? null;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (lockRef.current) {
+        event.preventDefault();
+        return;
+      }
+
+      if (touchStartYRef.current === null) {
+        return;
+      }
+
+      const currentY = event.touches[0]?.clientY;
+
+      if (currentY === undefined) {
+        return;
+      }
+
+      const delta = touchStartYRef.current - currentY;
+
+      if (Math.abs(delta) < TOUCH_TRIGGER_THRESHOLD) {
+        return;
+      }
+
+      event.preventDefault();
+      touchStartYRef.current = null;
+      triggerTransition(delta > 0 ? "next" : "previous");
+    };
+    const onTouchEnd = () => {
+      touchStartYRef.current = null;
     };
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const updateReducedMotion = () => {
       reducedMotionRef.current = motionQuery.matches;
-      updatePanels();
-    };
-    const onResize = () => {
-      const previousStep = stepRef.current;
-      const scrollPosition = window.scrollY / previousStep;
-      setStep();
-      window.scrollTo(0, scrollPosition * stepRef.current);
-      updatePanels();
     };
 
-    setStep();
     reducedMotionRef.current = motionQuery.matches;
-    window.scrollTo(0, stepRef.current * centerStart);
-    updatePanels();
 
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", onResize);
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd);
     motionQuery.addEventListener("change", updateReducedMotion);
 
     return () => {
-      window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", onResize);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       motionQuery.removeEventListener("change", updateReducedMotion);
-
-      if (frameRef.current !== null) {
-        window.cancelAnimationFrame(frameRef.current);
-      }
     };
   }, []);
 
   return (
     <section className="rolodex-shell" aria-label="Primary site navigation">
       <div className="rolodex-atmosphere" aria-hidden="true" />
-      <div ref={trackRef} className="rolodex-track">
-        {renderedEntries.map(({ entry, visualIndex, logicalIndex }) => (
-          <RolodexItem
-            key={`${visualIndex}-${entry.index}`}
-            entry={entry}
-            depth={visualIndex + 1}
-            logicalIndex={logicalIndex}
-            primaryHeading={visualIndex === CENTER_SET * rolodexEntries.length}
-            visualIndex={visualIndex}
-          />
-        ))}
+      <div
+        ref={trackRef}
+        className="rolodex-track"
+        data-direction={transition?.direction ?? "none"}
+        data-phase={transition?.phase ?? "idle"}
+      >
+        {renderedEntries.map(({ entry, logicalIndex }) => {
+          const stackIndex =
+            transition && transition.phase !== "contract"
+              ? transition.to
+              : activeIndex;
+          const slot = circularSlot(
+            logicalIndex,
+            stackIndex,
+            rolodexEntries.length,
+          );
+          const state =
+            transition?.from === logicalIndex
+              ? "exiting"
+              : transition?.to === logicalIndex
+                ? "entering"
+                : activeIndex === logicalIndex
+                  ? "active"
+                  : "stack";
+
+          return (
+            <RolodexItem
+              key={entry.index}
+              entry={entry}
+              depth={logicalIndex + 1}
+              logicalIndex={logicalIndex}
+              primaryHeading={logicalIndex === 0}
+              slot={slot}
+              state={state}
+            />
+          );
+        })}
       </div>
     </section>
   );
