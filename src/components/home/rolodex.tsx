@@ -74,6 +74,7 @@ const INPUT_DEBOUNCE_MS = 110;
 const WHEEL_TRIGGER_THRESHOLD = 14;
 const TOUCH_TRIGGER_THRESHOLD = 34;
 const DISTANCE_TIMING_MULTIPLIERS = [0, 1, 1.35, 1.65, 1.9];
+const ROTATION_EXPAND_OVERLAP_MS = 90;
 
 function positiveModulo(value: number, modulo: number) {
   return ((value % modulo) + modulo) % modulo;
@@ -114,8 +115,8 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
-function easeOutCubic(value: number) {
-  return 1 - Math.pow(1 - value, 3);
+function easeOutSine(value: number) {
+  return Math.sin((value * Math.PI) / 2);
 }
 
 function getDistanceRotationDuration(distance: number, isReducedMotion: boolean) {
@@ -246,6 +247,7 @@ export function Rolodex() {
   >(() => {});
   const touchStartYRef = useRef<number | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [focusDuration, setFocusDuration] = useState(EXPAND_DURATION_MS);
   const [isAutoNavigating, setIsAutoNavigating] = useState(false);
   const [rotationProgress, setRotationProgress] = useState(0);
   const [transition, setTransition] = useState<TransitionState | null>(null);
@@ -301,7 +303,7 @@ export function Rolodex() {
         const elapsed = timestamp - startTime;
         const progress = clamp(elapsed / rotationDuration, 0, 1);
 
-        setRotationProgress(signedDistance * easeOutCubic(progress));
+        setRotationProgress(signedDistance * easeOutSine(progress));
 
         if (progress < 1) {
           rotationFrameRef.current = window.requestAnimationFrame(animate);
@@ -339,10 +341,19 @@ export function Rolodex() {
       const expandDuration = reducedMotionRef.current
         ? REDUCED_EXPAND_DURATION_MS
         : EXPAND_DURATION_MS;
+      const expandOverlap = reducedMotionRef.current
+        ? 0
+        : Math.min(
+            ROTATION_EXPAND_OVERLAP_MS,
+            Math.round(rotationDuration * 0.18),
+          );
+      const focusDuration = expandDuration + expandOverlap;
+      const expandStart = contractDuration + rotationDuration - expandOverlap;
       const duration = contractDuration + rotationDuration + expandDuration;
 
       lockRef.current = true;
       gestureDeltaRef.current = 0;
+      setFocusDuration(focusDuration);
       setRotationProgress(0);
       setTransition({
         direction,
@@ -374,7 +385,7 @@ export function Rolodex() {
           phase: "expand",
           to,
         });
-      }, contractDuration + rotationDuration);
+      }, expandStart);
 
       queueTimer(() => {
         activeIndexRef.current = to;
@@ -538,6 +549,11 @@ export function Rolodex() {
         className="rolodex-track"
         data-direction={transition?.direction ?? "none"}
         data-phase={transition?.phase ?? "idle"}
+        style={
+          {
+            "--rolodex-focus-duration": `${focusDuration}ms`,
+          } as CSSProperties
+        }
       >
         {renderedEntries.map(({ entry, logicalIndex }) => {
           const progress = transition?.phase === "contract" ? 0 : rotationProgress;

@@ -185,8 +185,10 @@ body::-webkit-scrollbar {
   --rolodex-contract-duration: 220ms;
   --rolodex-rotation-duration: 520ms;
   --rolodex-expand-duration: 260ms;
+  --rolodex-focus-duration: var(--rolodex-expand-duration);
   --rolodex-transition-duration: var(--rolodex-rotation-duration);
   --rolodex-transition-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --rolodex-focus-easing: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rolodex-scene-wrap {
@@ -299,7 +301,8 @@ body::-webkit-scrollbar {
   aspect-ratio: auto;
   opacity: 1;
   filter: saturate(1) brightness(1);
-  transition-duration: var(--rolodex-expand-duration);
+  transition-duration: var(--rolodex-focus-duration);
+  transition-timing-function: var(--rolodex-focus-easing);
 }
 
 .rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] {
@@ -308,7 +311,8 @@ body::-webkit-scrollbar {
   aspect-ratio: auto;
   border-color: transparent;
   box-shadow: none;
-  transition-duration: var(--rolodex-expand-duration);
+  transition-duration: var(--rolodex-focus-duration);
+  transition-timing-function: var(--rolodex-focus-easing);
 }
 
 .rolodex-media-layer,
@@ -367,6 +371,11 @@ body::-webkit-scrollbar {
   transform: none;
 }
 
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-media-field {
+  transition-duration: var(--rolodex-focus-duration);
+  transition-timing-function: var(--rolodex-focus-easing);
+}
+
 .rolodex-media-lines {
   position: absolute;
   inset: 0;
@@ -415,6 +424,9 @@ body::-webkit-scrollbar {
   align-items: flex-start;
   gap: clamp(1rem, 4cqw, 2.5rem);
   padding: clamp(1.25rem, 6cqw, 4.5rem) clamp(1.25rem, 5.4cqw, 4rem) clamp(1rem, 4.4cqw, 3rem);
+  transition:
+    gap var(--rolodex-focus-duration) var(--rolodex-focus-easing),
+    padding var(--rolodex-focus-duration) var(--rolodex-focus-easing);
   pointer-events: none;
 }
 
@@ -431,6 +443,7 @@ body::-webkit-scrollbar {
 .rolodex-content-layer h1,
 .rolodex-content-layer h2 {
   font-size: clamp(2.35rem, 10cqw, 7rem);
+  transition: font-size var(--rolodex-focus-duration) var(--rolodex-focus-easing);
 }
 
 .rolodex-panel[data-state="active"] .rolodex-content-layer h1,
@@ -444,6 +457,10 @@ body::-webkit-scrollbar {
   max-width: min(28rem, 68cqw);
   font-size: clamp(0.875rem, 1.55cqw, 1.125rem);
   line-height: clamp(1.55rem, 2.6cqw, 2rem);
+  transition:
+    max-width var(--rolodex-focus-duration) var(--rolodex-focus-easing),
+    font-size var(--rolodex-focus-duration) var(--rolodex-focus-easing),
+    line-height var(--rolodex-focus-duration) var(--rolodex-focus-easing);
 }
 
 .rolodex-panel[data-state="active"] .rolodex-content-layer p,
@@ -457,6 +474,12 @@ body::-webkit-scrollbar {
   min-height: clamp(2.5rem, 5cqw, 3rem);
   padding-inline: clamp(0.875rem, 2.6cqw, 1.25rem);
   font-size: clamp(0.625rem, 1.1cqw, 0.75rem);
+  transition:
+    min-height var(--rolodex-focus-duration) var(--rolodex-focus-easing),
+    padding var(--rolodex-focus-duration) var(--rolodex-focus-easing),
+    font-size var(--rolodex-focus-duration) var(--rolodex-focus-easing),
+    background-color 300ms ease,
+    transform 300ms ease;
 }
 
 @container (max-width: 520px) {
