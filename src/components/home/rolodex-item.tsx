@@ -20,6 +20,7 @@ type RolodexItemProps = {
   logicalIndex: number;
   primaryHeading: boolean;
   slot: number;
+  slotStyle: CSSProperties;
   state: "active" | "entering" | "exiting" | "stack";
 };
 
@@ -29,12 +30,14 @@ export function RolodexItem({
   logicalIndex,
   primaryHeading,
   slot,
+  slotStyle,
   state,
 }: RolodexItemProps) {
   const style = {
     "--rolodex-accent": entry.accent,
     "--rolodex-surface": entry.surface,
     "--rolodex-depth": depth,
+    ...slotStyle,
   } as CSSProperties;
   const TitleTag = primaryHeading ? "h1" : "h2";
   const isActive = state === "active";
