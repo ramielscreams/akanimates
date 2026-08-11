@@ -1,4 +1,4 @@
-import { SiteNavigation } from "@/components/site-navigation";
+import { InteriorMenu } from "@/components/navigation/interior-menu";
 
 type SectionPlaceholderPageProps = {
   title: string;
@@ -10,11 +10,11 @@ export function SectionPlaceholderPage({
   description,
 }: SectionPlaceholderPageProps) {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-6 sm:px-10 lg:px-12">
-      <SiteNavigation />
+    <div className="mx-auto flex min-h-dvh w-full max-w-6xl flex-1 flex-col px-[clamp(1.25rem,6vw,4.5rem)] py-[clamp(4rem,9vh,7rem)]">
+      <InteriorMenu />
       <main className="flex flex-1 items-center py-20 sm:py-28">
         <section className="max-w-2xl">
-          <p className="mb-4 text-sm font-medium tracking-[0.22em] text-foreground/55 uppercase">
+          <p className="mb-4 text-xs font-medium uppercase tracking-[0.38em] text-[#a5abb5]">
             AK
           </p>
           <h1 className="text-4xl font-semibold tracking-normal text-foreground sm:text-5xl">
