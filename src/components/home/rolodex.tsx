@@ -1,7 +1,16 @@
 "use client";
 
-import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import {
+  type CSSProperties,
+  type MouseEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { flushSync } from "react-dom";
+import Link from "next/link";
 import { RolodexItem, type RolodexEntry } from "@/components/home/rolodex-item";
 import { RolodexNav } from "@/components/home/rolodex-nav";
 
@@ -565,8 +574,38 @@ export function Rolodex() {
     triggerTransitionRef.current("next", normalizedTarget, distance);
   };
 
+  const resetHomepage = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+
+    if (
+      window.location.pathname === "/" &&
+      window.location.search === "" &&
+      window.location.hash === ""
+    ) {
+      window.location.reload();
+      return;
+    }
+
+    window.location.assign("/");
+  };
+
   return (
     <section className="rolodex-shell" aria-label="Primary site navigation">
+      <Link
+        href="/"
+        aria-label="Home"
+        className="fixed left-[clamp(1.25rem,2.5vw,2.75rem)] top-[clamp(1.25rem,4vh,2rem)] z-[140] block w-[clamp(2.5rem,4.2vw,4.5rem)] leading-none opacity-[0.88] transition-opacity duration-[160ms] hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[0.35rem] focus-visible:outline-brand-interactive"
+        onClick={resetHomepage}
+      >
+        <Image
+          src="/logo.svg"
+          alt=""
+          width={2000}
+          height={2000}
+          priority
+          className="h-auto w-full"
+        />
+      </Link>
       <RolodexNav
         activeIndex={activeIndex}
         entries={rolodexEntries}
