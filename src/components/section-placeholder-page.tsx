@@ -14,7 +14,7 @@ export function SectionPlaceholderPage({
       <InteriorMenu />
       <main className="flex flex-1 items-center py-20 sm:py-28">
         <section className="max-w-2xl">
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.38em] text-[#a5abb5]">
+          <p className="mb-4 text-xs font-medium uppercase tracking-[0.38em] text-text-muted">
             AK
           </p>
           <h1 className="text-4xl font-semibold tracking-normal text-foreground sm:text-5xl">

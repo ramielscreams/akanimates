@@ -12,12 +12,12 @@ export function PhotographyProjectList({ projects }: PhotographyProjectListProps
       aria-labelledby="selected-photography-work"
     >
       <div className="max-w-2xl">
-        <p className="text-xs font-medium uppercase leading-4 tracking-[0.38em] text-[#a5abb5]">
+        <p className="text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted">
           Selected work
         </p>
         <h2
           id="selected-photography-work"
-          className="mt-6 text-[clamp(2.5rem,7vw,7rem)] font-light uppercase leading-[0.9] tracking-normal text-[#f4f5f7]"
+          className="mt-6 text-[clamp(2.5rem,7vw,7rem)] font-light uppercase leading-[0.9] tracking-normal text-text-primary"
         >
           Automotive index
         </h2>

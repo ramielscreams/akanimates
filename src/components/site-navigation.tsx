@@ -28,12 +28,12 @@ export function SiteNavigation() {
         />
       </Link>
       <nav aria-label="Main navigation">
-        <ul className="flex flex-wrap gap-x-5 gap-y-3 text-xs uppercase tracking-[0.2em] text-[#a5abb5]">
+        <ul className="flex flex-wrap gap-x-5 gap-y-3 text-xs uppercase tracking-[0.2em] text-text-muted">
           {navigationItems.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="transition-colors hover:text-[#f4f5f7] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7d67e6]"
+                className="transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
               >
                 {item.label}
               </Link>

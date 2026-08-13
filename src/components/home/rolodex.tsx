@@ -15,8 +15,8 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore profile",
     mediaLabel: "About media placeholder",
     mediaNote: "Future media: portrait, studio scene, showreel frame, or abstract detail.",
-    accent: "rgba(43,22,56,0.58)",
-    surface: "#050507",
+    accent: "rgb(36 5 63 / 0.58)",
+    surface: "var(--bg)",
   },
   {
     index: "02",
@@ -26,8 +26,8 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore photography",
     mediaLabel: "Photography media placeholder",
     mediaNote: "Future media: full-screen automotive photograph.",
-    accent: "rgba(74,43,99,0.54)",
-    surface: "#08080b",
+    accent: "rgb(36 5 63 / 0.38)",
+    surface: "var(--surface)",
   },
   {
     index: "03",
@@ -37,8 +37,8 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore CGI",
     mediaLabel: "CGI media placeholder",
     mediaNote: "Future media: full-screen render, animation still, or material study.",
-    accent: "rgba(125,103,230,0.26)",
-    surface: "#0c0c10",
+    accent: "rgb(56 110 209 / 0.18)",
+    surface: "var(--surface)",
   },
   {
     index: "04",
@@ -48,8 +48,8 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore design",
     mediaLabel: "Design media placeholder",
     mediaNote: "Future media: sketch, CAD viewport, blueprint, or aero study.",
-    accent: "rgba(43,22,56,0.68)",
-    surface: "#09090d",
+    accent: "rgb(56 110 209 / 0.14)",
+    surface: "var(--surface)",
   },
   {
     index: "05",
@@ -60,8 +60,8 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Get in touch",
     mediaLabel: "Contact media placeholder",
     mediaNote: "Future media: restrained atmospheric image or closing showreel frame.",
-    accent: "rgba(74,43,99,0.42)",
-    surface: "#050507",
+    accent: "rgb(72 32 106 / 0.42)",
+    surface: "var(--bg)",
   },
 ];
 

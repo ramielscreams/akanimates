@@ -74,13 +74,13 @@ export function RolodexItem({
 
         <div className="rolodex-content-layer">
           <div>
-            <p className="text-xs uppercase tracking-[0.38em] text-[#a5abb5]">
+            <p className="text-xs uppercase tracking-[0.38em] text-text-muted">
               {entry.index}
             </p>
-            <TitleTag className="mt-6 text-6xl font-light uppercase leading-[0.86] tracking-normal text-[#f4f5f7] sm:text-8xl lg:text-9xl">
+            <TitleTag className="mt-6 text-6xl font-light uppercase leading-[0.86] tracking-normal text-text-primary sm:text-8xl lg:text-9xl">
               {entry.title}
             </TitleTag>
-            <p className="mt-8 max-w-[28rem] text-base leading-8 text-[#d7d9de] sm:text-lg">
+            <p className="mt-8 max-w-[28rem] text-base leading-8 text-text-secondary sm:text-lg">
               {entry.description}
             </p>
           </div>
@@ -88,7 +88,7 @@ export function RolodexItem({
           <Link
             href={entry.href}
             tabIndex={isActive ? 0 : -1}
-            className="group inline-flex min-h-12 w-fit items-center gap-4 bg-[#f4f5f7] px-5 text-xs font-medium uppercase tracking-[0.22em] text-[#050507] transition duration-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7d67e6]"
+            className="group site-light-cta inline-flex min-h-12 w-fit items-center gap-4 px-5 text-xs font-medium uppercase tracking-[0.22em]"
           >
             {entry.cta}
             <span
