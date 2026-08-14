@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 
 export default function NotFound() {
   return (
@@ -23,18 +24,17 @@ export default function NotFound() {
           <p className="mt-8 max-w-[28rem] text-base leading-8 text-text-secondary sm:text-lg">
             The page you&apos;re looking for isn&apos;t here.
           </p>
-          <Link
-            href="/"
-            className="group site-light-cta mt-10 inline-flex min-h-12 items-center gap-4 px-5 text-xs font-medium uppercase tracking-[0.22em]"
-          >
-            Return Home
-            <span
-              className="transition-transform duration-300 group-hover:translate-x-1"
-              aria-hidden="true"
-            >
-              -&gt;
-            </span>
-          </Link>
+          <LiquidGlassButton asChild className="mt-10">
+            <Link href="/">
+              Return Home
+              <span
+                className="transition-transform duration-300 group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                aria-hidden="true"
+              >
+                -&gt;
+              </span>
+            </Link>
+          </LiquidGlassButton>
         </div>
 
         <div

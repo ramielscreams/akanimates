@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DesignHero } from "@/components/design/design-hero";
 import { DesignProjectList } from "@/components/design/design-project-list";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
+import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 import { designProjects } from "@/data/design-projects";
 
 export default function DesignPage() {
@@ -26,18 +27,17 @@ export default function DesignPage() {
             </Link>
           </div>
           <div className="sm:text-right">
-            <Link
-              href="/"
-              className="group site-light-cta inline-flex min-h-12 items-center gap-4 px-5 text-xs font-medium uppercase tracking-[0.22em]"
-            >
-              Back / Home
-              <span
-                className="transition-transform duration-300 group-hover:translate-x-1"
-                aria-hidden="true"
-              >
-                -&gt;
-              </span>
-            </Link>
+            <LiquidGlassButton asChild>
+              <Link href="/">
+                Back / Home
+                <span
+                  className="transition-transform duration-300 group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                  aria-hidden="true"
+                >
+                  -&gt;
+                </span>
+              </Link>
+            </LiquidGlassButton>
           </div>
         </div>
       </section>

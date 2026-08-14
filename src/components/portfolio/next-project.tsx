@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 import type { BasePortfolioProject } from "@/data/portfolio-projects";
 
 type NextProjectProps = {
@@ -41,12 +42,9 @@ export function NextProject({
           </div>
         )}
         <div className="sm:text-right">
-          <Link
-            href={backHref}
-            className="site-light-cta inline-flex min-h-12 items-center px-5 text-xs font-medium uppercase tracking-[0.22em]"
-          >
-            {backLabel}
-          </Link>
+          <LiquidGlassButton asChild>
+            <Link href={backHref}>{backLabel}</Link>
+          </LiquidGlassButton>
         </div>
       </div>
     </nav>

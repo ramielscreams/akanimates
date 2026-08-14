@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 
 export type RolodexEntry = {
   index: string;
@@ -85,19 +86,17 @@ export function RolodexItem({
             </p>
           </div>
 
-          <Link
-            href={entry.href}
-            tabIndex={isActive ? 0 : -1}
-            className="group site-light-cta inline-flex min-h-12 w-fit items-center gap-4 px-5 text-xs font-medium uppercase tracking-[0.22em]"
-          >
-            {entry.cta}
-            <span
-              className="transition-transform duration-300 group-hover:translate-x-1"
-              aria-hidden="true"
-            >
-              -&gt;
-            </span>
-          </Link>
+          <LiquidGlassButton asChild className="rolodex-liquid-cta">
+            <Link href={entry.href} tabIndex={isActive ? 0 : -1}>
+              {entry.cta}
+              <span
+                className="transition-transform duration-300 group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                aria-hidden="true"
+              >
+                -&gt;
+              </span>
+            </Link>
+          </LiquidGlassButton>
         </div>
       </div>
     </article>

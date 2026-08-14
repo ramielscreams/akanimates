@@ -2,6 +2,7 @@ import Link from "next/link";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
 import { PhotographyHero } from "@/components/photography/photography-hero";
 import { PhotographyProjectList } from "@/components/photography/photography-project-list";
+import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 import { photographyProjects } from "@/data/photography-projects";
 
 export default function PhotographyPage() {
@@ -26,18 +27,17 @@ export default function PhotographyPage() {
           </div>
 
           <div className="sm:text-right">
-            <Link
-              href="/"
-              className="group site-light-cta inline-flex min-h-12 items-center gap-4 px-5 text-xs font-medium uppercase tracking-[0.22em]"
-            >
-              Back / Home
-              <span
-                className="transition-transform duration-300 group-hover:translate-x-1"
-                aria-hidden="true"
-              >
-                -&gt;
-              </span>
-            </Link>
+            <LiquidGlassButton asChild>
+              <Link href="/">
+                Back / Home
+                <span
+                  className="transition-transform duration-300 group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                  aria-hidden="true"
+                >
+                  -&gt;
+                </span>
+              </Link>
+            </LiquidGlassButton>
           </div>
         </div>
       </section>

@@ -68,34 +68,6 @@ body::-webkit-scrollbar {
   color: var(--text-highlight);
 }
 
-.site-light-cta {
-  background: var(--text-primary);
-  color: var(--bg);
-  transition-duration: 300ms;
-  transition-property:
-    color,
-    background-color,
-    border-color,
-    text-decoration-color,
-    fill,
-    stroke,
-    opacity,
-    box-shadow,
-    transform,
-    filter,
-    backdrop-filter;
-  transition-timing-function: ease;
-}
-
-.site-light-cta:hover {
-  background: var(--text-highlight);
-}
-
-.site-light-cta:focus-visible {
-  outline: 2px solid var(--brand-interactive);
-  outline-offset: 4px;
-}
-
 .rolodex-shell {
   position: relative;
   isolation: isolate;
@@ -487,6 +459,16 @@ body::-webkit-scrollbar {
     font-size var(--rolodex-focus-duration) var(--rolodex-focus-easing),
     background-color 300ms ease,
     transform 300ms ease;
+}
+
+.rolodex-liquid-cta {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rolodex-panel[data-state="active"] .rolodex-liquid-cta {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 @container (max-width: 520px) {

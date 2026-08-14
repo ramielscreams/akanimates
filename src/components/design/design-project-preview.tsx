@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 import type { DesignProject } from "@/data/design-projects";
 
 type DesignProjectPreviewProps = {
@@ -77,18 +78,17 @@ export function DesignProjectPreview({ project }: DesignProjectPreviewProps) {
       <footer className="mt-5 flex flex-col gap-2 text-xs font-medium uppercase leading-5 tracking-[0.28em] text-text-muted/70 sm:flex-row sm:items-center sm:justify-between">
         <p>{project.platform}</p>
         {hasCaseStudy ? (
-          <Link
-            href={`/design/${project.slug}`}
-            className="group site-light-cta inline-flex min-h-12 w-fit items-center gap-4 px-5 text-xs font-medium uppercase tracking-[0.22em]"
-          >
-            View
-            <span
-              className="transition-transform duration-300 group-hover:translate-x-1"
-              aria-hidden="true"
-            >
-              -&gt;
-            </span>
-          </Link>
+          <LiquidGlassButton asChild>
+            <Link href={`/design/${project.slug}`}>
+              View
+              <span
+                className="transition-transform duration-300 group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                aria-hidden="true"
+              >
+                -&gt;
+              </span>
+            </Link>
+          </LiquidGlassButton>
         ) : (
           <p>Future route / design/{project.slug}</p>
         )}
