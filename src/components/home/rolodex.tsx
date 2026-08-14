@@ -81,7 +81,9 @@ const REDUCED_CONTRACT_DURATION_MS = 140;
 const REDUCED_ROTATION_DURATION_MS = 140;
 const REDUCED_EXPAND_DURATION_MS = 220;
 const INPUT_DEBOUNCE_MS = 110;
-const WHEEL_TRIGGER_THRESHOLD = 14;
+const WHEEL_TRIGGER_THRESHOLD = 9;
+const WHEEL_NOISE_FLOOR = 1.25;
+const WHEEL_GESTURE_QUIET_MS = 180;
 const TOUCH_TRIGGER_THRESHOLD = 34;
 const DISTANCE_TIMING_MULTIPLIERS = [0, 1, 1.35, 1.65, 1.9];
 const ROTATION_EXPAND_OVERLAP_MS = 90;
@@ -249,8 +251,10 @@ export function Rolodex() {
   const activeIndexRef = useRef(0);
   const gestureDeltaRef = useRef(0);
   const gestureRearmAtRef = useRef(0);
+  const lastWheelAtRef = useRef(0);
   const lockRef = useRef(false);
   const phaseRef = useRef<TransitionState["phase"] | null>(null);
+  const rearmTimeoutRef = useRef<number | null>(null);
   const reducedMotionRef = useRef(false);
   const rotationProgressRef = useRef(0);
   const sceneRefs = useRef<Array<HTMLElement | null>>([]);
@@ -283,6 +287,9 @@ export function Rolodex() {
       if (timelineFrameRef.current !== null) {
         window.cancelAnimationFrame(timelineFrameRef.current);
       }
+      if (rearmTimeoutRef.current !== null) {
+        window.clearTimeout(rearmTimeoutRef.current);
+      }
     },
     [],
   );
@@ -313,6 +320,32 @@ export function Rolodex() {
           scene.style.setProperty(property, String(value));
         }
       }
+    };
+
+    const clearRearmTimeout = () => {
+      if (rearmTimeoutRef.current === null) {
+        return;
+      }
+
+      window.clearTimeout(rearmTimeoutRef.current);
+      rearmTimeoutRef.current = null;
+    };
+
+    const rearmAfterGestureQuiet = () => {
+      clearRearmTimeout();
+
+      const now = window.performance.now();
+      const quietFor = now - lastWheelAtRef.current;
+
+      if (quietFor >= WHEEL_GESTURE_QUIET_MS) {
+        gestureRearmAtRef.current = now + INPUT_DEBOUNCE_MS;
+        return;
+      }
+
+      rearmTimeoutRef.current = window.setTimeout(
+        rearmAfterGestureQuiet,
+        WHEEL_GESTURE_QUIET_MS - quietFor,
+      );
     };
 
     const triggerTransition = (
@@ -356,6 +389,7 @@ export function Rolodex() {
       lockRef.current = true;
       gestureDeltaRef.current = 0;
       gestureRearmAtRef.current = 0;
+      clearRearmTimeout();
       phaseRef.current = "contract";
       rotationProgressRef.current = 0;
       flushSync(() => {
@@ -392,9 +426,11 @@ export function Rolodex() {
         const elapsed = timestamp - transitionStart;
 
         if (elapsed >= duration) {
+          rotationProgressRef.current = signedDistance;
+          applySlotStyles(from, signedDistance);
           activeIndexRef.current = to;
           gestureDeltaRef.current = 0;
-          gestureRearmAtRef.current = timestamp + INPUT_DEBOUNCE_MS;
+          gestureRearmAtRef.current = Number.POSITIVE_INFINITY;
           lockRef.current = false;
           phaseRef.current = null;
           timelineFrameRef.current = null;
@@ -405,6 +441,7 @@ export function Rolodex() {
             setTransition(null);
             setIsAutoNavigating(false);
           });
+          rearmAfterGestureQuiet();
           return;
         }
 
@@ -440,15 +477,16 @@ export function Rolodex() {
 
       const normalizedDelta = normalizeWheelDelta(event);
 
-      if (normalizedDelta === 0) {
+      if (Math.abs(normalizedDelta) < WHEEL_NOISE_FLOOR) {
         return;
       }
 
       event.preventDefault();
+      lastWheelAtRef.current = window.performance.now();
 
       if (
         lockRef.current ||
-        window.performance.now() < gestureRearmAtRef.current
+        lastWheelAtRef.current < gestureRearmAtRef.current
       ) {
         return;
       }
@@ -536,6 +574,7 @@ export function Rolodex() {
 
     return () => {
       triggerTransitionRef.current = () => {};
+      clearRearmTimeout();
       if (timelineFrameRef.current !== null) {
         window.cancelAnimationFrame(timelineFrameRef.current);
         timelineFrameRef.current = null;
