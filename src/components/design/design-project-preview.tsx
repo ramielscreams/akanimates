@@ -82,7 +82,7 @@ export function DesignProjectPreview({ project }: DesignProjectPreviewProps) {
             <Link href={`/design/${project.slug}`}>
               View
               <span
-                className="transition-transform duration-300 group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                 aria-hidden="true"
               >
                 -&gt;

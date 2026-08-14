@@ -20,7 +20,7 @@ export default function PhotographyPage() {
             </p>
             <Link
               href="/cgi"
-              className="site-wrap-anywhere mt-6 inline-flex min-h-11 items-center text-[clamp(2.35rem,min(8vw,10dvh),8rem)] font-light lowercase leading-none tracking-normal text-text-primary transition-opacity duration-300 hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+              className="site-wrap-anywhere mt-6 inline-flex min-h-11 items-center text-[clamp(2.35rem,min(8vw,10dvh),8rem)] font-light lowercase leading-none tracking-normal text-text-primary transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-brand-soft hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
             >
               03 / cgi
             </Link>
@@ -31,7 +31,7 @@ export default function PhotographyPage() {
               <Link href="/">
                 Back / Home
                 <span
-                  className="transition-transform duration-300 group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                  className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                   aria-hidden="true"
                 >
                   -&gt;

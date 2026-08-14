@@ -28,7 +28,7 @@ export default function NotFound() {
             <Link href="/">
               Return Home
               <span
-                className="transition-transform duration-300 group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                 aria-hidden="true"
               >
                 -&gt;

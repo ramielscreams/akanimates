@@ -16,9 +16,9 @@ const liquidGlassButtonVariants = cva(
     "group/liquid relative isolate inline-flex w-fit max-w-full shrink-0 items-center justify-center overflow-hidden text-center",
     "border border-text-primary/18 bg-surface/12 text-text-primary shadow-[0_0.85rem_2.8rem_rgb(var(--brand-rgb)_/_0.16)]",
     "backdrop-blur-xl backdrop-saturate-150",
-    "transition-[transform,background-color,border-color,box-shadow,color,opacity] duration-300 ease-out",
-    "hover:scale-[1.025] hover:border-brand-soft/45 hover:bg-text-highlight/8 hover:text-text-highlight hover:shadow-[0_1.1rem_3.5rem_rgb(var(--brand-interactive-rgb)_/_0.25)]",
-    "active:scale-[0.985] active:border-brand-interactive/60",
+    "transition-[transform,background-color,border-color,box-shadow,color,opacity] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)]",
+    "hover:scale-[1.01] hover:border-brand-soft/45 hover:bg-text-highlight/8 hover:text-text-highlight hover:shadow-[0_1.1rem_3.5rem_rgb(var(--brand-interactive-rgb)_/_0.25)]",
+    "active:scale-[0.99] active:border-brand-interactive/60 active:bg-brand-interactive/16",
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive",
     "disabled:pointer-events-none disabled:opacity-45",
     "motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
@@ -110,8 +110,8 @@ export const LiquidGlassButton = forwardRef<
             } as CSSProperties
           }
         />
-        <span className="pointer-events-none absolute inset-px -z-10 bg-[linear-gradient(115deg,transparent,rgb(var(--text-highlight-rgb)_/_0.16)_36%,transparent_58%)] opacity-35 transition-opacity duration-300 group-hover/liquid:opacity-60 motion-reduce:transition-none" />
-        <span className="pointer-events-none absolute inset-0 -z-10 border border-text-highlight/10 transition-colors duration-300 group-hover/liquid:border-brand-soft/28 motion-reduce:transition-none" />
+        <span className="pointer-events-none absolute inset-px -z-10 bg-[linear-gradient(115deg,transparent,rgb(var(--text-highlight-rgb)_/_0.16)_36%,transparent_58%)] opacity-35 transition-opacity duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:opacity-60 motion-reduce:transition-none" />
+        <span className="pointer-events-none absolute inset-0 -z-10 border border-text-highlight/10 transition-colors duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:border-brand-soft/28 motion-reduce:transition-none" />
         <Slottable>{children}</Slottable>
       </Comp>
     );

@@ -26,6 +26,12 @@
   --text-secondary-rgb: 170 164 173;
   --text-primary-rgb: 242 239 243;
   --text-highlight-rgb: 255 255 255;
+
+  --motion-ui-fast: 160ms;
+  --motion-ui-medium: 240ms;
+  --motion-editorial: 420ms;
+  --ease-ui: cubic-bezier(0.2, 0, 0, 1);
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme inline {
@@ -166,6 +172,7 @@ body::-webkit-scrollbar {
   position: relative;
   display: block;
   border: 0;
+  min-height: 2.75rem;
   padding: 0.45rem 0.75rem 0.45rem 0;
   background: transparent;
   color: var(--text-muted);
@@ -177,17 +184,30 @@ body::-webkit-scrollbar {
   line-height: 1rem;
   letter-spacing: 0.38em;
   transition:
-    opacity 160ms ease,
-    color 160ms ease;
+    opacity var(--motion-ui-fast) var(--ease-ui),
+    color var(--motion-ui-fast) var(--ease-ui);
 }
 
 .rolodex-nav-item:hover {
   opacity: 0.82;
 }
 
+.rolodex-nav-item:active {
+  opacity: 0.68;
+}
+
 .rolodex-nav-item:focus-visible {
   outline: 1px solid var(--brand-interactive);
   outline-offset: 0.35rem;
+}
+
+.rolodex-nav-item[data-navigating="true"] {
+  cursor: default;
+}
+
+.rolodex-nav-item[data-pending="true"] {
+  color: var(--brand-soft);
+  opacity: 0.9;
 }
 
 .rolodex-nav-item[data-active="true"] {

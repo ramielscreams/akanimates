@@ -266,6 +266,7 @@ export function Rolodex() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [focusDuration, setFocusDuration] = useState(EXPAND_DURATION_MS);
   const [isAutoNavigating, setIsAutoNavigating] = useState(false);
+  const [pendingNavIndex, setPendingNavIndex] = useState<number | null>(null);
   const [renderProgress, setRenderProgress] = useState(0);
   const [transition, setTransition] = useState<TransitionState | null>(null);
 
@@ -440,6 +441,7 @@ export function Rolodex() {
             setRenderProgress(0);
             setTransition(null);
             setIsAutoNavigating(false);
+            setPendingNavIndex(null);
           });
           rearmAfterGestureQuiet();
           return;
@@ -593,6 +595,7 @@ export function Rolodex() {
 
     if (normalizedTarget === activeIndexRef.current && !lockRef.current) {
       setIsAutoNavigating(false);
+      setPendingNavIndex(null);
       return;
     }
 
@@ -610,6 +613,7 @@ export function Rolodex() {
     }
 
     setIsAutoNavigating(true);
+    setPendingNavIndex(normalizedTarget);
     triggerTransitionRef.current("next", normalizedTarget, distance);
   };
 
@@ -633,7 +637,7 @@ export function Rolodex() {
       <Link
         href="/"
         aria-label="Home"
-        className="fixed left-[clamp(1.25rem,2.5vw,2.75rem)] top-[clamp(1.25rem,4vh,2rem)] z-[140] block w-[clamp(2.5rem,4.2vw,4.5rem)] leading-none opacity-[0.88] transition-opacity duration-[160ms] hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[0.35rem] focus-visible:outline-brand-interactive"
+        className="fixed left-[clamp(1.25rem,2.5vw,2.75rem)] top-[clamp(1.25rem,4vh,2rem)] z-[140] block w-[clamp(2.5rem,4.2vw,4.5rem)] leading-none opacity-[0.88] transition-opacity duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[0.35rem] focus-visible:outline-brand-interactive"
         onClick={resetHomepage}
       >
         <Image
@@ -650,6 +654,7 @@ export function Rolodex() {
         entries={rolodexEntries}
         isNavigating={isAutoNavigating}
         onNavigate={navigateToPanel}
+        pendingIndex={pendingNavIndex}
       />
       <div className="rolodex-atmosphere" aria-hidden="true" />
       <div

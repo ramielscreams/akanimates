@@ -16,7 +16,7 @@ export function SiteNavigation() {
       <Link
         href="/"
         aria-label="AK home"
-        className="inline-flex w-fit items-center opacity-90 transition hover:opacity-100"
+        className="inline-flex w-fit items-center opacity-90 transition-opacity duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
       >
         <Image
           src="/logo.svg"
@@ -33,7 +33,7 @@ export function SiteNavigation() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+                className="inline-flex min-h-11 items-center transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
               >
                 {item.label}
               </Link>
