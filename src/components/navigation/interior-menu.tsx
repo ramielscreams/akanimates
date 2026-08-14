@@ -90,7 +90,7 @@ export function InteriorMenu() {
         aria-hidden={isOpen ? undefined : "true"}
       >
         <div
-          className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_76%_16%,rgb(72_32_106_/_0.24),transparent_32rem),radial-gradient(circle_at_10%_70%,rgb(36_5_63_/_0.22),transparent_34rem),var(--bg)]"
+          className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_76%_16%,rgb(var(--brand-interactive-rgb)_/_0.24),transparent_32rem),radial-gradient(circle_at_10%_70%,rgb(var(--brand-rgb)_/_0.22),transparent_34rem),var(--bg)]"
           aria-hidden="true"
         />
         <nav

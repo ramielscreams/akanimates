@@ -16,7 +16,7 @@ export function CgiHero() {
 
         <div className="relative mt-[clamp(3rem,8vh,6rem)] min-h-[54dvh] w-full overflow-hidden bg-surface lg:min-h-[62dvh]">
           <div className="absolute inset-[clamp(1rem,4vw,3rem)] bg-bg" />
-          <div className="absolute inset-[clamp(1rem,4vw,3rem)] bg-[radial-gradient(circle_at_50%_36%,rgb(242_239_243_/_0.16),transparent_20rem),linear-gradient(135deg,rgb(142_105_174_/_0.16),transparent_34%),linear-gradient(180deg,rgb(242_239_243_/_0.05),rgb(5_3_7_/_0.78))]" />
+          <div className="absolute inset-[clamp(1rem,4vw,3rem)] bg-[radial-gradient(circle_at_50%_36%,rgb(var(--text-primary-rgb)_/_0.16),transparent_20rem),linear-gradient(135deg,rgb(var(--brand-soft-rgb)_/_0.16),transparent_34%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.05),rgb(var(--bg-rgb)_/_0.78))]" />
           <div className="absolute left-1/2 top-1/2 h-[38%] w-[74%] -translate-x-1/2 -translate-y-1/2 border border-border bg-bg/30" />
           <div className="absolute left-1/2 top-1/2 h-px w-[82%] -translate-x-1/2 bg-technical/35" />
           <div className="absolute left-1/2 top-[28%] h-[44%] w-px bg-technical/35" />

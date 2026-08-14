@@ -17,7 +17,7 @@ export function DesignHero() {
 
           <div className="relative min-h-[42dvh] overflow-hidden bg-surface lg:min-h-[64dvh]">
             <div className="absolute inset-[clamp(1rem,3vw,2.5rem)] bg-bg" />
-            <div className="absolute inset-[clamp(1rem,3vw,2.5rem)] bg-[linear-gradient(90deg,rgb(41_33_46_/_0.8)_1px,transparent_1px),linear-gradient(180deg,rgb(41_33_46_/_0.7)_1px,transparent_1px),linear-gradient(135deg,rgb(56_110_209_/_0.12),transparent_38%),linear-gradient(180deg,rgb(242_239_243_/_0.04),rgb(5_3_7_/_0.72))] bg-[size:4rem_4rem,4rem_4rem,auto,auto]" />
+            <div className="absolute inset-[clamp(1rem,3vw,2.5rem)] bg-[linear-gradient(90deg,rgb(var(--border-rgb)_/_0.8)_1px,transparent_1px),linear-gradient(180deg,rgb(var(--border-rgb)_/_0.7)_1px,transparent_1px),linear-gradient(135deg,rgb(var(--technical-rgb)_/_0.12),transparent_38%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.72))] bg-[size:4rem_4rem,4rem_4rem,auto,auto]" />
             <div className="absolute left-[9%] right-[9%] top-1/2 h-px bg-technical/35" />
             <div className="absolute left-[12%] right-[12%] top-[43%] h-[18%] border-y border-border" />
             <div className="absolute left-[18%] top-[38%] h-[28%] w-[64%] rounded-[50%] border border-border" />

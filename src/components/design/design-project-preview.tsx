@@ -26,7 +26,7 @@ function ProcessFrame({ label }: { label: string }) {
   return (
     <div className="relative w-full overflow-hidden bg-surface">
       <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-bg" />
-      <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-[linear-gradient(90deg,rgb(41_33_46_/_0.7)_1px,transparent_1px),linear-gradient(180deg,rgb(41_33_46_/_0.62)_1px,transparent_1px),radial-gradient(circle_at_58%_38%,rgb(242_239_243_/_0.12),transparent_18rem),linear-gradient(135deg,rgb(56_110_209_/_0.1),transparent_30%)] bg-[size:3.25rem_3.25rem,3.25rem_3.25rem,auto,auto]" />
+      <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-[linear-gradient(90deg,rgb(var(--border-rgb)_/_0.7)_1px,transparent_1px),linear-gradient(180deg,rgb(var(--border-rgb)_/_0.62)_1px,transparent_1px),radial-gradient(circle_at_58%_38%,rgb(var(--text-primary-rgb)_/_0.12),transparent_18rem),linear-gradient(135deg,rgb(var(--technical-rgb)_/_0.1),transparent_30%)] bg-[size:3.25rem_3.25rem,3.25rem_3.25rem,auto,auto]" />
       <div className="absolute left-[12%] right-[12%] top-1/2 h-px bg-technical/30" />
       <div className="absolute left-[18%] right-[18%] top-[38%] h-[24%] border-y border-border" />
       <div className="absolute bottom-5 left-5 text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted/60">

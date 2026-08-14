@@ -17,10 +17,10 @@ export function SectionPlaceholderPage({
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.38em] text-text-muted">
             AK
           </p>
-          <h1 className="text-4xl font-semibold tracking-normal text-foreground sm:text-5xl">
+          <h1 className="text-4xl font-semibold tracking-normal text-text-primary sm:text-5xl">
             {title}
           </h1>
-          <p className="mt-6 text-lg leading-8 text-foreground/65">
+          <p className="mt-6 text-lg leading-8 text-text-secondary">
             {description}
           </p>
         </section>

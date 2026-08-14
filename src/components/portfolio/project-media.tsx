@@ -32,8 +32,8 @@ function MediaPlaceholder({
       aria-label={asset.alt}
       role="img"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_26%,rgb(36_5_63_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(242_239_243_/_0.12),transparent_28%),linear-gradient(180deg,rgb(242_239_243_/_0.04),rgb(5_3_7_/_0.72))]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_20%,rgb(41_33_46_/_0.8)_20%_calc(20%+1px),transparent_calc(20%+1px)),linear-gradient(180deg,transparent_0_64%,rgb(41_33_46_/_0.7)_64%_calc(64%+1px),transparent_calc(64%+1px))] opacity-65" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_26%,rgb(var(--brand-rgb)_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(var(--text-primary-rgb)_/_0.12),transparent_28%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.72))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_20%,rgb(var(--border-rgb)_/_0.8)_20%_calc(20%+1px),transparent_calc(20%+1px)),linear-gradient(180deg,transparent_0_64%,rgb(var(--border-rgb)_/_0.7)_64%_calc(64%+1px),transparent_calc(64%+1px))] opacity-65" />
       <p className="absolute bottom-5 left-5 text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted/60">
         {label}
       </p>

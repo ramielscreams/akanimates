@@ -46,7 +46,7 @@ export function CgiProjectPreview({ project }: CgiProjectPreviewProps) {
         className={`relative w-full overflow-hidden bg-surface sm:min-h-[18rem] ${frameClasses[project.layout]}`}
       >
         <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-bg" />
-        <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-[radial-gradient(circle_at_52%_38%,rgb(242_239_243_/_0.14),transparent_18rem),linear-gradient(120deg,rgb(56_110_209_/_0.14),transparent_26%),linear-gradient(180deg,rgb(242_239_243_/_0.04),rgb(5_3_7_/_0.74))] transition-transform duration-500 group-hover:scale-[1.01]" />
+        <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-[radial-gradient(circle_at_52%_38%,rgb(var(--text-primary-rgb)_/_0.14),transparent_18rem),linear-gradient(120deg,rgb(var(--technical-rgb)_/_0.14),transparent_26%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.74))] transition-transform duration-500 group-hover:scale-[1.01]" />
         <div className="absolute left-[14%] right-[14%] top-1/2 h-px bg-technical/30" />
         <div className="absolute bottom-[18%] left-1/2 h-[42%] w-px bg-technical/30" />
         <div className="absolute left-1/2 top-1/2 h-[42%] w-[58%] -translate-x-1/2 -translate-y-1/2 border border-border bg-bg/20" />

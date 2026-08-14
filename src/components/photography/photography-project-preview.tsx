@@ -43,8 +43,8 @@ export function PhotographyProjectPreview({
       <div
         className={`relative overflow-hidden border border-border bg-surface ${mediaHeightClasses[project.layout]}`}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_22%,rgb(36_5_63_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(242_239_243_/_0.12),transparent_28%),linear-gradient(180deg,rgb(242_239_243_/_0.04),rgb(5_3_7_/_0.72))] transition-transform duration-500 group-hover:scale-[1.015]" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_18%,rgb(41_33_46_/_0.8)_18%_calc(18%+1px),transparent_calc(18%+1px)),linear-gradient(180deg,transparent_0_68%,rgb(41_33_46_/_0.7)_68%_calc(68%+1px),transparent_calc(68%+1px))] opacity-65" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_22%,rgb(var(--brand-rgb)_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(var(--text-primary-rgb)_/_0.12),transparent_28%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.72))] transition-transform duration-500 group-hover:scale-[1.015]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_18%,rgb(var(--border-rgb)_/_0.8)_18%_calc(18%+1px),transparent_calc(18%+1px)),linear-gradient(180deg,transparent_0_68%,rgb(var(--border-rgb)_/_0.7)_68%_calc(68%+1px),transparent_calc(68%+1px))] opacity-65" />
         <p className="absolute bottom-5 left-5 text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted/60">
           Cover media placeholder
         </p>

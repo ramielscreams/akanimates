@@ -4,11 +4,11 @@ export default function NotFound() {
   return (
     <main className="relative isolate min-h-dvh bg-bg text-text-primary">
       <div
-        className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_78%_18%,rgb(72_32_106_/_0.28),transparent_32rem),radial-gradient(circle_at_10%_72%,rgb(36_5_63_/_0.24),transparent_34rem),linear-gradient(180deg,var(--bg),var(--surface))]"
+        className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_78%_18%,rgb(var(--brand-interactive-rgb)_/_0.28),transparent_32rem),radial-gradient(circle_at_10%_72%,rgb(var(--brand-rgb)_/_0.24),transparent_34rem),linear-gradient(180deg,var(--bg),var(--surface))]"
         aria-hidden="true"
       />
       <div
-        className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(41_33_46_/_0.7)_1px,transparent_1px),linear-gradient(180deg,rgb(41_33_46_/_0.52)_1px,transparent_1px)] bg-[size:18vw_18vw] opacity-35 [mask-image:linear-gradient(180deg,transparent,black_18%,black_82%,transparent)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(var(--border-rgb)_/_0.7)_1px,transparent_1px),linear-gradient(180deg,rgb(var(--border-rgb)_/_0.52)_1px,transparent_1px)] bg-[size:18vw_18vw] opacity-35 [mask-image:linear-gradient(180deg,transparent,black_18%,black_82%,transparent)]"
         aria-hidden="true"
       />
 

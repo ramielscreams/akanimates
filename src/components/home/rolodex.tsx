@@ -24,7 +24,7 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore profile",
     mediaLabel: "About media placeholder",
     mediaNote: "Future media: portrait, studio scene, showreel frame, or abstract detail.",
-    accent: "rgb(36 5 63 / 0.58)",
+    accent: "rgb(var(--brand-rgb) / 0.58)",
     surface: "var(--bg)",
   },
   {
@@ -35,7 +35,7 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore photography",
     mediaLabel: "Photography media placeholder",
     mediaNote: "Future media: full-screen automotive photograph.",
-    accent: "rgb(36 5 63 / 0.38)",
+    accent: "rgb(var(--brand-rgb) / 0.38)",
     surface: "var(--surface)",
   },
   {
@@ -46,7 +46,7 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore CGI",
     mediaLabel: "CGI media placeholder",
     mediaNote: "Future media: full-screen render, animation still, or material study.",
-    accent: "rgb(56 110 209 / 0.18)",
+    accent: "rgb(var(--technical-rgb) / 0.18)",
     surface: "var(--surface)",
   },
   {
@@ -57,7 +57,7 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore design",
     mediaLabel: "Design media placeholder",
     mediaNote: "Future media: sketch, CAD viewport, blueprint, or aero study.",
-    accent: "rgb(56 110 209 / 0.14)",
+    accent: "rgb(var(--technical-rgb) / 0.14)",
     surface: "var(--surface)",
   },
   {
@@ -69,7 +69,7 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Get in touch",
     mediaLabel: "Contact media placeholder",
     mediaNote: "Future media: restrained atmospheric image or closing showreel frame.",
-    accent: "rgb(72 32 106 / 0.42)",
+    accent: "rgb(var(--brand-interactive-rgb) / 0.42)",
     surface: "var(--bg)",
   },
 ];

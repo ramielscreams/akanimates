@@ -14,8 +14,8 @@ export function PhotographyHero() {
       </div>
 
       <div className="relative min-h-[52dvh] w-full overflow-hidden border border-border bg-surface lg:min-h-[74dvh]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_28%,rgb(142_105_174_/_0.16),transparent_28rem),linear-gradient(120deg,rgb(242_239_243_/_0.13),transparent_24%),linear-gradient(180deg,rgb(41_33_46_/_0.62),rgb(5_3_7_/_0.72))]" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_12%,rgb(41_33_46_/_0.9)_12%_calc(12%+1px),transparent_calc(12%+1px)),linear-gradient(180deg,transparent_0_72%,rgb(41_33_46_/_0.8)_72%_calc(72%+1px),transparent_calc(72%+1px))] opacity-70" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_28%,rgb(var(--brand-soft-rgb)_/_0.16),transparent_28rem),linear-gradient(120deg,rgb(var(--text-primary-rgb)_/_0.13),transparent_24%),linear-gradient(180deg,rgb(var(--border-rgb)_/_0.62),rgb(var(--bg-rgb)_/_0.72))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_12%,rgb(var(--border-rgb)_/_0.9)_12%_calc(12%+1px),transparent_calc(12%+1px)),linear-gradient(180deg,transparent_0_72%,rgb(var(--border-rgb)_/_0.8)_72%_calc(72%+1px),transparent_calc(72%+1px))] opacity-70" />
         <p className="absolute bottom-6 left-6 text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted/70">
           Featured media placeholder
         </p>

@@ -37,8 +37,8 @@ export function ProjectHero({ discipline, meta, project }: ProjectHeroProps) {
               : "min-h-[58dvh] lg:min-h-[76dvh]"
           }`}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_26%,rgb(36_5_63_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(242_239_243_/_0.12),transparent_28%),linear-gradient(180deg,rgb(242_239_243_/_0.04),rgb(5_3_7_/_0.72))]" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_16%,rgb(41_33_46_/_0.8)_16%_calc(16%+1px),transparent_calc(16%+1px)),linear-gradient(180deg,transparent_0_70%,rgb(41_33_46_/_0.7)_70%_calc(70%+1px),transparent_calc(70%+1px))] opacity-65" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_26%,rgb(var(--brand-rgb)_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(var(--text-primary-rgb)_/_0.12),transparent_28%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.72))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_16%,rgb(var(--border-rgb)_/_0.8)_16%_calc(16%+1px),transparent_calc(16%+1px)),linear-gradient(180deg,transparent_0_70%,rgb(var(--border-rgb)_/_0.7)_70%_calc(70%+1px),transparent_calc(70%+1px))] opacity-65" />
           <figcaption className="absolute bottom-6 left-6 text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted/65">
             Hero {project.hero.type} placeholder / {discipline}
           </figcaption>
