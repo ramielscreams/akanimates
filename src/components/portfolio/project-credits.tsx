@@ -18,9 +18,9 @@ export function ProjectCredits({ entries, project }: ProjectCreditsProps) {
   ];
 
   return (
-    <section className="px-[clamp(1.25rem,6vw,4.5rem)] py-[clamp(5rem,12vw,10rem)]">
+    <section className="site-safe-x site-section-y">
       <div className="border-t border-border pt-10">
-        <p className="mb-8 text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted">
+        <p className="site-technical-label mb-8 text-text-muted">
           Project details
         </p>
         <ProjectMeta entries={projectEntries} />

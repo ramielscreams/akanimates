@@ -65,7 +65,7 @@ export default async function DesignProjectPage({
           project={project}
         />
 
-        <section className="px-[clamp(1.25rem,6vw,4.5rem)] py-[clamp(4rem,10vw,8rem)]">
+        <section className="site-safe-x py-[clamp(4rem,10vw,8rem)]">
           <ProjectMeta
             entries={[
               { label: "Client", value: project.client },

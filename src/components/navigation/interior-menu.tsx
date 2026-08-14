@@ -52,6 +52,16 @@ export function InteriorMenu() {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const closeTimer = window.setTimeout(() => {
+      setIsOpen(false);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(closeTimer);
+    };
+  }, [pathname]);
+
   return (
     <>
       <Link
@@ -59,7 +69,7 @@ export function InteriorMenu() {
         aria-label="Home"
         className={`fixed z-[230] opacity-90 transition-[left,opacity,top,transform,width] duration-200 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive ${
           isOpen
-            ? "left-1/2 top-[clamp(4rem,16vh,8rem)] w-[clamp(5rem,8vw,9rem)] -translate-x-1/2"
+            ? "left-1/2 top-[clamp(3.5rem,13vh,7.5rem)] w-[clamp(4.75rem,min(8vw,14vh),9rem)] -translate-x-1/2"
             : "left-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] w-[clamp(2.4rem,4vw,3.75rem)]"
         }`}
       >
@@ -77,7 +87,7 @@ export function InteriorMenu() {
         aria-controls={menuId}
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-        className="fixed right-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] z-[230] border-0 bg-transparent p-0 text-xs font-medium lowercase leading-4 tracking-[0.38em] text-text-primary opacity-80 transition-opacity duration-[160ms] hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+        className="site-technical-label fixed right-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] z-[230] min-h-11 border-0 bg-transparent p-0 text-text-primary opacity-80 transition-opacity duration-[160ms] hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
         onClick={() => setIsOpen((current) => !current)}
       >
         {isOpen ? "close" : "menu"}
@@ -95,9 +105,9 @@ export function InteriorMenu() {
         />
         <nav
           aria-label="Interior navigation"
-          className="flex min-h-dvh items-center justify-center px-[clamp(1.25rem,6vw,4.5rem)] py-[clamp(7rem,18vh,10rem)] text-center"
+          className="site-safe-x flex min-h-dvh items-center justify-center py-[clamp(7.25rem,22vh,11rem)] text-center"
         >
-          <ul className="flex list-none flex-col items-center gap-[clamp(1.35rem,3.6vh,2.75rem)] p-0">
+          <ul className="flex list-none flex-col items-center gap-[clamp(1rem,3.2vh,2.5rem)] p-0">
             {visibleItems.map((item) => (
               <li
                 key={item.href}
@@ -106,7 +116,7 @@ export function InteriorMenu() {
               >
                 <Link
                   href={item.href}
-                  className="block max-w-[calc(100vw-2.5rem)] py-1 text-[clamp(1.75rem,min(7.2vw,5.2dvh),3.5rem)] font-medium lowercase leading-none tracking-[0.18em] text-text-muted opacity-78 transition-opacity duration-[160ms] hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+                  className="block max-w-[calc(100vw-2.5rem)] py-2 text-[clamp(1.45rem,min(7vw,5dvh),3.5rem)] font-medium lowercase leading-none tracking-[clamp(0.08em,0.8vw,0.18em)] text-text-muted opacity-78 transition-opacity duration-[160ms] hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.index} / {item.label}

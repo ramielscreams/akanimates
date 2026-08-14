@@ -8,8 +8,8 @@ export function ProjectCopy({ paragraphs }: ProjectCopyProps) {
   }
 
   return (
-    <section className="px-[clamp(1.25rem,6vw,4.5rem)] py-[clamp(5rem,12vw,10rem)]">
-      <div className="ml-auto max-w-[42rem] space-y-6 text-lg leading-9 text-text-secondary">
+    <section className="site-safe-x site-section-y">
+      <div className="site-prose ml-auto space-y-6 text-text-secondary">
         {paragraphs.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}

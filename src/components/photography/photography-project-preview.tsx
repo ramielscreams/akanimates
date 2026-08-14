@@ -8,15 +8,15 @@ type PhotographyProjectPreviewProps = {
 };
 
 const layoutClasses: Record<PhotographyProject["layout"], string> = {
-  left: "mr-auto w-full lg:w-[78vw]",
-  right: "ml-auto w-full lg:w-[66vw]",
-  wide: "mx-auto w-full lg:w-[92vw]",
+  left: "mr-auto w-full xl:w-[78vw]",
+  right: "ml-auto w-full xl:w-[66vw]",
+  wide: "mx-auto w-full xl:w-[92vw]",
 };
 
 const mediaHeightClasses: Record<PhotographyProject["layout"], string> = {
-  left: "min-h-[52dvh] lg:min-h-[68dvh]",
-  right: "min-h-[46dvh] lg:min-h-[58dvh]",
-  wide: "min-h-[56dvh] lg:min-h-[74dvh]",
+  left: "min-h-[clamp(20rem,52dvh,42rem)] xl:min-h-[clamp(28rem,68dvh,52rem)]",
+  right: "min-h-[clamp(19rem,46dvh,38rem)] xl:min-h-[clamp(25rem,58dvh,46rem)]",
+  wide: "min-h-[clamp(21rem,56dvh,44rem)] xl:min-h-[clamp(30rem,74dvh,56rem)]",
 };
 
 export function PhotographyProjectPreview({
@@ -29,10 +29,10 @@ export function PhotographyProjectPreview({
     >
       <header className="mb-5 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
         <div>
-          <p className="text-xs font-medium lowercase leading-4 tracking-[0.38em] text-text-muted">
+          <p className="site-technical-label lowercase text-text-muted">
             {project.index} / {project.title.toLowerCase()}
           </p>
-          <h2 className="mt-4 text-[clamp(2rem,5vw,4.5rem)] font-light uppercase leading-none tracking-normal text-text-primary">
+          <h2 className="mt-4 text-[clamp(2rem,min(5vw,7dvh),4.5rem)] font-light uppercase leading-none tracking-normal text-text-primary">
             {project.title}
           </h2>
         </div>
@@ -46,7 +46,7 @@ export function PhotographyProjectPreview({
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_22%,rgb(var(--brand-rgb)_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(var(--text-primary-rgb)_/_0.12),transparent_28%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.72))] transition-transform duration-500 group-hover:scale-[1.015]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_18%,rgb(var(--border-rgb)_/_0.8)_18%_calc(18%+1px),transparent_calc(18%+1px)),linear-gradient(180deg,transparent_0_68%,rgb(var(--border-rgb)_/_0.7)_68%_calc(68%+1px),transparent_calc(68%+1px))] opacity-65" />
-        <p className="absolute bottom-5 left-5 text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted/60">
+        <p className="site-technical-label absolute bottom-5 left-5 max-w-[calc(100%-2.5rem)] text-text-muted/60">
           Cover media placeholder
         </p>
       </div>

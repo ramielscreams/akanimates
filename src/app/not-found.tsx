@@ -13,15 +13,15 @@ export default function NotFound() {
         aria-hidden="true"
       />
 
-      <section className="grid min-h-dvh grid-cols-1 items-center gap-10 px-[clamp(1.25rem,6vw,4.5rem)] py-[clamp(4rem,9vh,7rem)] lg:grid-cols-[minmax(0,0.92fr)_minmax(20rem,1.08fr)]">
+      <section className="site-safe-x site-page-y grid min-h-dvh grid-cols-1 items-center gap-[clamp(2rem,6vw,4rem)] lg:grid-cols-[minmax(0,0.92fr)_minmax(16rem,1.08fr)]">
         <div className="max-w-2xl">
-          <p className="text-xs font-medium uppercase tracking-[0.38em] text-text-muted">
+          <p className="site-technical-label text-text-muted">
             Error / 404
           </p>
-          <h1 className="mt-6 text-[clamp(4rem,9vw,9rem)] font-light uppercase leading-[0.86] tracking-normal text-text-primary">
+          <h1 className="site-display-title mt-6 text-text-primary">
             Off Route.
           </h1>
-          <p className="mt-8 max-w-[28rem] text-base leading-8 text-text-secondary sm:text-lg">
+          <p className="site-prose mt-8 max-w-[28rem] text-text-secondary">
             The page you&apos;re looking for isn&apos;t here.
           </p>
           <LiquidGlassButton asChild className="mt-10">
@@ -38,7 +38,7 @@ export default function NotFound() {
         </div>
 
         <div
-          className="select-none justify-self-start text-[clamp(7.5rem,min(27vw,34dvh),24rem)] font-light leading-none tracking-normal text-brand/40 opacity-20 sm:text-[clamp(9rem,min(30vw,36dvh),28rem)] lg:justify-self-end"
+          className="select-none justify-self-start text-[clamp(6rem,min(25vw,28dvh),22rem)] font-light leading-none tracking-normal text-brand/40 opacity-20 lg:justify-self-end"
           aria-hidden="true"
         >
           404

@@ -68,6 +68,58 @@ body::-webkit-scrollbar {
   color: var(--text-highlight);
 }
 
+.site-safe-x {
+  padding-inline: clamp(1.25rem, 5.5vw, 4.5rem);
+}
+
+.site-section-y {
+  padding-block: clamp(5rem, 11vw, 10rem);
+}
+
+.site-page-y {
+  padding-block: clamp(4.5rem, 9vh, 7rem);
+}
+
+.site-hero-y {
+  padding-block: clamp(6.5rem, 13vh, 9rem) clamp(3rem, 8vh, 6rem);
+}
+
+.site-technical-label {
+  font-size: clamp(0.6875rem, 0.72vw, 0.75rem);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: clamp(0.22em, 0.7vw, 0.38em);
+  text-transform: uppercase;
+}
+
+.site-prose {
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  line-height: 1.9;
+}
+
+.site-wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+
+.site-display-title {
+  overflow-wrap: anywhere;
+  font-size: clamp(2.75rem, min(11vw, 12dvh), 10rem);
+  font-weight: 300;
+  line-height: 0.86;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.site-section-title {
+  overflow-wrap: anywhere;
+  font-size: clamp(2.35rem, min(7vw, 9dvh), 7rem);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
 .rolodex-shell {
   position: relative;
   isolation: isolate;

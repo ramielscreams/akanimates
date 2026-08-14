@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 const liquidGlassButtonVariants = cva(
   [
-    "group/liquid relative isolate inline-flex w-fit shrink-0 items-center justify-center overflow-hidden",
+    "group/liquid relative isolate inline-flex w-fit max-w-full shrink-0 items-center justify-center overflow-hidden text-center",
     "border border-text-primary/18 bg-surface/12 text-text-primary shadow-[0_0.85rem_2.8rem_rgb(var(--brand-rgb)_/_0.16)]",
     "backdrop-blur-xl backdrop-saturate-150",
     "transition-[transform,background-color,border-color,box-shadow,color,opacity] duration-300 ease-out",

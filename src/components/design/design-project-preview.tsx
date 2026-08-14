@@ -8,19 +8,19 @@ type DesignProjectPreviewProps = {
 };
 
 const layoutClasses: Record<DesignProject["layout"], string> = {
-  profile: "mx-auto w-full lg:w-[88vw]",
-  split: "mx-auto w-full lg:w-[84vw]",
-  standard: "ml-auto w-full lg:w-[72vw]",
-  technical: "mr-auto w-full lg:w-[78vw]",
-  wide: "mx-auto w-full lg:w-[94vw]",
+  profile: "mx-auto w-full xl:w-[88vw]",
+  split: "mx-auto w-full xl:w-[84vw]",
+  standard: "ml-auto w-full xl:w-[72vw]",
+  technical: "mr-auto w-full xl:w-[78vw]",
+  wide: "mx-auto w-full xl:w-[94vw]",
 };
 
 const frameClasses: Record<DesignProject["layout"], string> = {
-  profile: "aspect-[5/2]",
-  split: "aspect-[16/9]",
-  standard: "aspect-[16/9]",
+  profile: "aspect-[16/10] md:aspect-[5/2]",
+  split: "aspect-[16/10] md:aspect-[16/9]",
+  standard: "aspect-[16/10] md:aspect-[16/9]",
   technical: "aspect-[4/3]",
-  wide: "aspect-[16/7]",
+  wide: "aspect-[16/10] md:aspect-[16/7]",
 };
 
 function ProcessFrame({ label }: { label: string }) {
@@ -30,7 +30,7 @@ function ProcessFrame({ label }: { label: string }) {
       <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-[linear-gradient(90deg,rgb(var(--border-rgb)_/_0.7)_1px,transparent_1px),linear-gradient(180deg,rgb(var(--border-rgb)_/_0.62)_1px,transparent_1px),radial-gradient(circle_at_58%_38%,rgb(var(--text-primary-rgb)_/_0.12),transparent_18rem),linear-gradient(135deg,rgb(var(--technical-rgb)_/_0.1),transparent_30%)] bg-[size:3.25rem_3.25rem,3.25rem_3.25rem,auto,auto]" />
       <div className="absolute left-[12%] right-[12%] top-1/2 h-px bg-technical/30" />
       <div className="absolute left-[18%] right-[18%] top-[38%] h-[24%] border-y border-border" />
-      <div className="absolute bottom-5 left-5 text-xs font-medium uppercase leading-4 tracking-[0.38em] text-text-muted/60">
+      <div className="site-technical-label absolute bottom-5 left-5 max-w-[calc(100%-2.5rem)] text-text-muted/60">
         {label}
       </div>
     </div>
@@ -48,10 +48,10 @@ export function DesignProjectPreview({ project }: DesignProjectPreviewProps) {
     >
       <header className="mb-5 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
         <div>
-          <p className="text-xs font-medium lowercase leading-4 tracking-[0.38em] text-text-muted">
+          <p className="site-technical-label lowercase text-text-muted">
             {project.index} / {project.title.toLowerCase()}
           </p>
-          <h2 className="mt-4 text-[clamp(2rem,5vw,4.5rem)] font-light uppercase leading-none tracking-normal text-text-primary">
+          <h2 className="mt-4 text-[clamp(2rem,min(5vw,7dvh),4.5rem)] font-light uppercase leading-none tracking-normal text-text-primary">
             {project.title}
           </h2>
         </div>
@@ -61,7 +61,7 @@ export function DesignProjectPreview({ project }: DesignProjectPreviewProps) {
       </header>
 
       {isSplit ? (
-        <div className="grid gap-[clamp(1rem,2.5vw,2rem)] md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:items-stretch">
+        <div className="grid gap-[clamp(1rem,2.5vw,2rem)] lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch">
           <div className="aspect-[4/3]">
             <ProcessFrame label={project.primaryLabel} />
           </div>

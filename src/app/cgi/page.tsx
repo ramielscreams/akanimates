@@ -13,15 +13,15 @@ export default function CgiPage() {
       <CgiHero />
       <CgiProjectList projects={cgiProjects} />
 
-      <section className="px-[clamp(1.25rem,6vw,4.5rem)] pb-[clamp(5rem,12vh,9rem)] pt-[clamp(2rem,8vh,6rem)]">
-        <div className="grid gap-8 border-t border-border pt-10 sm:grid-cols-2 sm:items-end">
-          <div>
-            <p className="text-xs font-medium uppercase leading-4 tracking-[0.38em] text-technical">
+      <section className="site-safe-x pb-[clamp(5rem,12vh,9rem)] pt-[clamp(2rem,8vh,6rem)]">
+        <div className="grid gap-8 border-t border-border pt-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+          <div className="min-w-0">
+            <p className="site-technical-label text-technical">
               Next discipline
             </p>
             <Link
               href="/design"
-              className="mt-6 block text-[clamp(2.75rem,8vw,8rem)] font-light lowercase leading-none tracking-normal text-text-primary transition-opacity duration-300 hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+              className="site-wrap-anywhere mt-6 inline-flex min-h-11 items-center text-[clamp(2.35rem,min(8vw,10dvh),8rem)] font-light lowercase leading-none tracking-normal text-text-primary transition-opacity duration-300 hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
             >
               04 / design
             </Link>
