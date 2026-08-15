@@ -145,6 +145,7 @@ function getDistanceRotationDuration(distance: number, isReducedMotion: boolean)
 
 function getSlotStyle(slot: number) {
   const absSlot = Math.min(Math.abs(slot), 2.5);
+  const typeProgress = clamp(1 - absSlot / 1.4, 0, 1);
   const lowerSlot = Math.floor(absSlot);
   const upperSlot = Math.min(lowerSlot + 1, 3);
   const slotProgress = absSlot - lowerSlot;
@@ -222,6 +223,33 @@ function getSlotStyle(slot: number) {
       slotProgress,
     ),
     "--rolodex-slot-z-index": Math.round(60 - absSlot * 14),
+    "--panel-progress": typeProgress,
+    "--type-opacity": interpolate(0.45, 1, typeProgress),
+    "--type-scale-x": interpolate(0.9, 1, typeProgress),
+    "--type-scale-y": interpolate(0.96, 1, typeProgress),
+    "--type-tracking": `${interpolate(0.02, -0.02, typeProgress)}em`,
+    "--type-line-height": interpolate(0.94, 0.86, typeProgress),
+    "--type-weight": interpolate(400, 500, typeProgress),
+    "--type-about-weight": interpolate(380, 470, typeProgress),
+    "--type-design-weight": interpolate(300, 470, typeProgress),
+    "--type-index-opacity": interpolate(0.62, 1, typeProgress),
+    "--type-index-scale-x": interpolate(0.92, 1, typeProgress),
+    "--type-index-y": `${interpolate(0.2, 0, typeProgress)}rem`,
+    "--type-copy-opacity": interpolate(0.68, 1, typeProgress),
+    "--type-copy-y": `${interpolate(0.35, 0, typeProgress)}rem`,
+    "--type-photo-scale-x": interpolate(0.88, 1.02, typeProgress),
+    "--type-photo-scale-y": interpolate(0.95, 1, typeProgress),
+    "--type-photo-tracking": `${interpolate(0.025, -0.02, typeProgress)}em`,
+    "--type-cgi-scale-x": interpolate(0.76, 1, typeProgress),
+    "--type-cgi-scale-y": interpolate(0.94, 1, typeProgress),
+    "--type-cgi-tracking": `${interpolate(0.11, 0.055, typeProgress)}em`,
+    "--type-design-scale-x": interpolate(0.84, 1.02, typeProgress),
+    "--type-design-scale-y": interpolate(0.94, 1, typeProgress),
+    "--type-design-tracking": `${interpolate(0.08, 0.02, typeProgress)}em`,
+    "--type-recursive-casl": interpolate(0.18, 0.62, typeProgress),
+    "--type-recursive-crsv": interpolate(0.32, 0.5, typeProgress),
+    "--type-recursive-mono": interpolate(0.72, 1, typeProgress),
+    "--type-recursive-slnt": interpolate(-4, 0, typeProgress),
   } as CSSProperties;
 }
 

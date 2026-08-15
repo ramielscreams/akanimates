@@ -85,15 +85,15 @@ export function RolodexItem({
 
         <div className="rolodex-content-layer">
           <div>
-            <p className="font-technical text-xs uppercase tracking-[0.38em] text-text-muted">
+            <p className="rolodex-panel-index font-technical text-xs uppercase tracking-[0.38em] text-text-muted">
               {entry.index}
             </p>
             <TitleTag
-              className={`${titleFontClass} mt-6 text-6xl font-light uppercase leading-[0.86] tracking-normal text-text-primary sm:text-8xl lg:text-9xl`}
+              className={`${titleFontClass} rolodex-heading mt-6 text-6xl font-light uppercase leading-[0.86] tracking-normal text-text-primary sm:text-8xl lg:text-9xl`}
             >
               {entry.title}
             </TitleTag>
-            <p className="mt-8 max-w-[28rem] text-base leading-8 text-text-secondary sm:text-lg">
+            <p className="rolodex-copy mt-8 max-w-[28rem] text-base leading-8 text-text-secondary sm:text-lg">
               {entry.description}
             </p>
           </div>

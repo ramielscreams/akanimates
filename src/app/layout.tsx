@@ -15,11 +15,13 @@ const geist = Geist({
 });
 
 const recursive = Recursive({
+  axes: ["CASL", "CRSV", "MONO", "slnt"],
   subsets: ["latin"],
   variable: "--font-technical",
 });
 
 const robotoSerif = Roboto_Serif({
+  axes: ["GRAD", "opsz", "wdth"],
   subsets: ["latin"],
   variable: "--font-editorial",
 });
