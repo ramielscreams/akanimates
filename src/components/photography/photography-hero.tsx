@@ -5,7 +5,7 @@ export function PhotographyHero() {
         <p className="site-technical-label text-text-muted">
           02 / photography
         </p>
-        <h1 className="site-display-title mt-8 text-text-primary">
+        <h1 className="site-display-title font-panel-photography mt-8 text-text-primary">
           Photography
         </h1>
         <p className="site-prose mt-8 max-w-[28rem] text-text-secondary">

@@ -27,6 +27,8 @@
   --text-primary-rgb: 242 239 243;
   --text-highlight-rgb: 255 255 255;
 
+  --font-about: var(--font-ui);
+
   --motion-ui-fast: 160ms;
   --motion-ui-medium: 240ms;
   --motion-editorial: 420ms;
@@ -58,7 +60,7 @@ html {
 body {
   background: var(--bg);
   color: var(--text-primary);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -91,6 +93,7 @@ body::-webkit-scrollbar {
 }
 
 .site-technical-label {
+  font-family: var(--font-technical), var(--font-ui), sans-serif;
   font-size: clamp(0.6875rem, 0.72vw, 0.75rem);
   font-weight: 500;
   line-height: 1.35;
@@ -99,6 +102,7 @@ body::-webkit-scrollbar {
 }
 
 .site-prose {
+  font-family: var(--font-editorial), Georgia, serif;
   max-width: 42rem;
   font-size: clamp(1rem, 1.35vw, 1.125rem);
   line-height: 1.9;
@@ -109,6 +113,7 @@ body::-webkit-scrollbar {
 }
 
 .site-display-title {
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
   overflow-wrap: anywhere;
   font-size: clamp(2.75rem, min(11vw, 12dvh), 10rem);
   font-weight: 300;
@@ -118,11 +123,50 @@ body::-webkit-scrollbar {
 }
 
 .site-section-title {
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
   overflow-wrap: anywhere;
   font-size: clamp(2.35rem, min(7vw, 9dvh), 7rem);
   font-weight: 300;
   line-height: 0.9;
   letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.font-ui {
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
+}
+
+.font-technical {
+  font-family: var(--font-technical), var(--font-ui), sans-serif;
+}
+
+.font-editorial {
+  font-family: var(--font-editorial), Georgia, serif;
+}
+
+.font-panel-about {
+  font-family: var(--font-about), var(--font-ui), sans-serif;
+}
+
+.font-panel-photography {
+  font-family: var(--font-photography), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.font-panel-cgi {
+  font-family: var(--font-cgi), var(--font-ui), sans-serif;
+  font-weight: 400;
+  letter-spacing: clamp(0.04em, 0.8vw, 0.12em);
+  text-transform: uppercase;
+}
+
+.font-panel-design {
+  font-family: var(--font-design), var(--font-ui), sans-serif;
+  font-stretch: condensed;
+  font-weight: 400;
+  letter-spacing: clamp(0.02em, 0.55vw, 0.08em);
   text-transform: uppercase;
 }
 
@@ -179,6 +223,7 @@ body::-webkit-scrollbar {
   cursor: pointer;
   opacity: 0.4;
   text-align: left;
+  font-family: var(--font-technical), var(--font-ui), sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1rem;
@@ -444,6 +489,7 @@ body::-webkit-scrollbar {
   right: clamp(1rem, 6cqw, 4.5rem);
   max-width: 20rem;
   color: rgb(var(--text-secondary-rgb) / 0.5);
+  font-family: var(--font-technical), var(--font-ui), sans-serif;
   text-transform: uppercase;
 }
 
@@ -493,8 +539,43 @@ body::-webkit-scrollbar {
 
 .rolodex-content-layer h1,
 .rolodex-content-layer h2 {
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
   font-size: clamp(2.35rem, 10cqw, 7rem);
   transition: font-size var(--rolodex-focus-duration) var(--rolodex-focus-easing);
+}
+
+.rolodex-panel[data-panel="about"] .rolodex-content-layer h1,
+.rolodex-panel[data-panel="about"] .rolodex-content-layer h2 {
+  font-family: var(--font-about), var(--font-ui), sans-serif;
+  letter-spacing: 0;
+}
+
+.rolodex-panel[data-panel="photography"] .rolodex-content-layer h1,
+.rolodex-panel[data-panel="photography"] .rolodex-content-layer h2 {
+  font-family: var(--font-photography), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.rolodex-panel[data-panel="cgi"] .rolodex-content-layer h1,
+.rolodex-panel[data-panel="cgi"] .rolodex-content-layer h2 {
+  font-family: var(--font-cgi), var(--font-ui), sans-serif;
+  font-weight: 400;
+  letter-spacing: clamp(0.03em, 0.8cqw, 0.12em);
+}
+
+.rolodex-panel[data-panel="design"] .rolodex-content-layer h1,
+.rolodex-panel[data-panel="design"] .rolodex-content-layer h2 {
+  font-family: var(--font-design), var(--font-ui), sans-serif;
+  font-weight: 400;
+  letter-spacing: clamp(0.02em, 0.55cqw, 0.08em);
+}
+
+.rolodex-panel[data-panel="cgi"] .rolodex-content-layer h1,
+.rolodex-panel[data-panel="cgi"] .rolodex-content-layer h2,
+.rolodex-panel[data-panel="design"] .rolodex-content-layer h1,
+.rolodex-panel[data-panel="design"] .rolodex-content-layer h2 {
+  font-size: clamp(1.8rem, 7.4cqw, 5rem);
 }
 
 .rolodex-panel[data-state="active"] .rolodex-content-layer h1,
@@ -504,7 +585,19 @@ body::-webkit-scrollbar {
   font-size: clamp(4rem, 9vw, 9rem);
 }
 
+.rolodex-panel[data-panel="cgi"][data-state="active"] .rolodex-content-layer h1,
+.rolodex-panel[data-panel="cgi"][data-state="active"] .rolodex-content-layer h2,
+.rolodex-panel[data-panel="design"][data-state="active"] .rolodex-content-layer h1,
+.rolodex-panel[data-panel="design"][data-state="active"] .rolodex-content-layer h2,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-panel="cgi"][data-state="entering"] .rolodex-content-layer h1,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-panel="cgi"][data-state="entering"] .rolodex-content-layer h2,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-panel="design"][data-state="entering"] .rolodex-content-layer h1,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-panel="design"][data-state="entering"] .rolodex-content-layer h2 {
+  font-size: clamp(3.1rem, 7.2vw, 7.25rem);
+}
+
 .rolodex-content-layer p {
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
   max-width: min(28rem, 68cqw);
   font-size: clamp(0.875rem, 1.55cqw, 1.125rem);
   line-height: clamp(1.55rem, 2.6cqw, 2rem);
@@ -522,6 +615,7 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-panel a {
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
   min-height: clamp(2.5rem, 5cqw, 3rem);
   padding-inline: clamp(0.875rem, 2.6cqw, 1.25rem);
   font-size: clamp(0.625rem, 1.1cqw, 0.75rem);

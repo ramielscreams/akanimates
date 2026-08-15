@@ -6,7 +6,7 @@ export function CgiHero() {
           <p className="site-technical-label text-text-muted">
             03 / cgi
           </p>
-          <h1 className="site-wrap-anywhere mt-8 text-[clamp(3.5rem,min(16vw,14dvh),14rem)] font-light uppercase leading-[0.82] tracking-normal text-text-primary">
+          <h1 className="font-panel-cgi site-wrap-anywhere mt-8 text-[clamp(2.6rem,min(11vw,12dvh),9.5rem)] uppercase leading-[0.92] text-text-primary">
             CGI
           </h1>
           <p className="site-prose mt-8 max-w-[30rem] text-text-secondary">

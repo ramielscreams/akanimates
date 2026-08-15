@@ -38,7 +38,7 @@ export function CgiProjectPreview({ project }: CgiProjectPreviewProps) {
             {project.title}
           </h2>
         </div>
-        <p className="text-xs font-medium uppercase leading-5 tracking-[0.28em] text-text-secondary/75 sm:text-right">
+        <p className="font-technical text-xs font-medium uppercase leading-5 tracking-[0.28em] text-text-secondary/75 sm:text-right">
           {project.client} / {project.category} / {project.year}
         </p>
       </header>
@@ -56,7 +56,7 @@ export function CgiProjectPreview({ project }: CgiProjectPreviewProps) {
         </p>
       </div>
 
-      <footer className="mt-5 flex flex-col gap-2 text-xs font-medium uppercase leading-5 tracking-[0.28em] text-text-muted/70 sm:flex-row sm:items-center sm:justify-between">
+      <footer className="font-technical mt-5 flex flex-col gap-2 text-xs font-medium uppercase leading-5 tracking-[0.28em] text-text-muted/70 sm:flex-row sm:items-center sm:justify-between">
         <p>{project.category}</p>
         {hasCaseStudy ? (
           <LiquidGlassButton asChild>

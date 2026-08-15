@@ -26,6 +26,13 @@ type RolodexItemProps = {
   state: "active" | "entering" | "exiting" | "stack";
 };
 
+const panelTitleFontClasses: Record<string, string> = {
+  about: "font-panel-about",
+  photography: "font-panel-photography",
+  cgi: "font-panel-cgi",
+  design: "font-panel-design",
+};
+
 export function RolodexItem({
   entry,
   depth,
@@ -44,6 +51,8 @@ export function RolodexItem({
   } as CSSProperties;
   const TitleTag = primaryHeading ? "h1" : "h2";
   const isActive = state === "active";
+  const panelKey = entry.title.toLowerCase();
+  const titleFontClass = panelTitleFontClasses[panelKey] ?? "font-ui";
 
   return (
     <article
@@ -58,6 +67,7 @@ export function RolodexItem({
         aria-hidden={isActive ? "false" : "true"}
         data-focused-media-fit={entry.focusedMediaFit ?? "cover"}
         data-logical-index={logicalIndex}
+        data-panel={panelKey}
         data-rolodex-panel
         data-state={state}
       >
@@ -75,10 +85,12 @@ export function RolodexItem({
 
         <div className="rolodex-content-layer">
           <div>
-            <p className="text-xs uppercase tracking-[0.38em] text-text-muted">
+            <p className="font-technical text-xs uppercase tracking-[0.38em] text-text-muted">
               {entry.index}
             </p>
-            <TitleTag className="mt-6 text-6xl font-light uppercase leading-[0.86] tracking-normal text-text-primary sm:text-8xl lg:text-9xl">
+            <TitleTag
+              className={`${titleFontClass} mt-6 text-6xl font-light uppercase leading-[0.86] tracking-normal text-text-primary sm:text-8xl lg:text-9xl`}
+            >
               {entry.title}
             </TitleTag>
             <p className="mt-8 max-w-[28rem] text-base leading-8 text-text-secondary sm:text-lg">

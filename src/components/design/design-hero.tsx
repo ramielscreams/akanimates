@@ -7,7 +7,7 @@ export function DesignHero() {
             <p className="site-technical-label text-text-muted">
               04 / design
             </p>
-            <h1 className="site-display-title mt-8 text-text-primary">
+            <h1 className="site-display-title font-panel-design mt-8 text-text-primary">
               Design
             </h1>
             <p className="site-prose mt-8 max-w-[31rem] text-text-secondary">
