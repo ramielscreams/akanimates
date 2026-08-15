@@ -49,6 +49,18 @@
   --type-display-cgi: clamp(2.35rem, min(6.8vw, 8dvh), 6.6rem);
   --type-display-design: clamp(3.15rem, min(10vw, 11dvh), 9rem);
   --type-display-photography: clamp(3rem, min(8.2vw, 10dvh), 8.25rem);
+
+  --font-section-display: var(--font-ui);
+  --section-display-size: var(--type-display-xl);
+  --section-project-title-size: var(--type-project-title);
+  --section-heading-size: var(--type-section-heading);
+  --section-preview-title-size: var(--type-preview-title);
+  --section-display-line-height: 0.9;
+  --section-heading-line-height: 0.92;
+  --section-display-tracking: 0;
+  --section-display-max: 13ch;
+  --section-heading-max: 16ch;
+  --section-preview-max: 18ch;
 }
 
 @theme inline {
@@ -110,7 +122,9 @@ body::-webkit-scrollbar {
 .site-technical-label {
   font-family: var(--font-technical), var(--font-ui), sans-serif;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
   font-size: var(--type-meta);
   font-weight: 500;
   line-height: 1.35;
@@ -131,7 +145,9 @@ body::-webkit-scrollbar {
   font-family: var(--font-editorial), Georgia, serif;
   width: min(100%, 65ch);
   max-width: 42rem;
-  overflow-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
   font-size: var(--type-body);
   line-height: 1.9;
   font-variation-settings:
@@ -140,20 +156,37 @@ body::-webkit-scrollbar {
     "GRAD" 0;
 }
 
-.site-wrap-anywhere {
-  overflow-wrap: anywhere;
+.type-nowrap {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.type-controlled-wrap {
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.type-wrap {
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-wrap: balance;
 }
 
 .site-display-title {
-  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
-  max-width: min(100%, 13ch);
-  overflow-wrap: break-word;
+  font-family: var(--font-section-display), var(--font-ui), Arial, Helvetica, sans-serif;
+  max-width: min(100%, var(--section-display-max));
+  white-space: nowrap;
+  overflow-wrap: normal;
   word-break: normal;
-  text-wrap: balance;
-  font-size: var(--type-display-xl);
+  font-size: var(--section-display-size);
   font-weight: 300;
-  line-height: 0.9;
-  letter-spacing: 0;
+  line-height: var(--section-display-line-height);
+  letter-spacing: var(--section-display-tracking);
   text-transform: uppercase;
   animation: site-type-enter var(--motion-editorial) var(--ease-editorial) both;
   font-variation-settings: "wght" 360;
@@ -161,15 +194,15 @@ body::-webkit-scrollbar {
 }
 
 .site-section-title {
-  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
-  max-width: min(100%, 16ch);
-  overflow-wrap: break-word;
+  font-family: var(--font-section-display), var(--font-ui), Arial, Helvetica, sans-serif;
+  max-width: min(100%, var(--section-heading-max));
+  white-space: nowrap;
+  overflow-wrap: normal;
   word-break: normal;
-  text-wrap: balance;
-  font-size: var(--type-section-heading);
+  font-size: var(--section-heading-size);
   font-weight: 300;
-  line-height: 0.9;
-  letter-spacing: 0;
+  line-height: var(--section-heading-line-height);
+  letter-spacing: var(--section-display-tracking);
   text-transform: uppercase;
   animation: site-type-enter var(--motion-editorial) var(--ease-editorial) both;
   font-variation-settings: "wght" 360;
@@ -230,84 +263,132 @@ body::-webkit-scrollbar {
   text-transform: uppercase;
 }
 
+.section-about,
+.section-contact {
+  --font-section-display: var(--font-about);
+  --section-display-size: clamp(3rem, min(7vw, 9dvh), 8rem);
+  --section-project-title-size: clamp(2.7rem, min(6.8vw, 8.8dvh), 7rem);
+  --section-heading-size: clamp(2.2rem, min(4.8vw, 6.2dvh), 4.75rem);
+  --section-preview-title-size: clamp(1.9rem, min(3.8vw, 5dvh), 3.5rem);
+  --section-display-line-height: 0.92;
+  --section-heading-line-height: 0.94;
+  --section-display-tracking: 0;
+  --section-display-max: 14ch;
+  --section-heading-max: 18ch;
+  --section-preview-max: 20ch;
+}
+
+.section-photography {
+  --font-section-display: var(--font-photography);
+  --section-display-size: clamp(2.85rem, min(7.2vw, 9.2dvh), 7.85rem);
+  --section-project-title-size: clamp(2.65rem, min(6.6vw, 8.4dvh), 7.2rem);
+  --section-heading-size: clamp(2.25rem, min(5.2vw, 6.8dvh), 5.25rem);
+  --section-preview-title-size: clamp(1.9rem, min(3.8vw, 5.2dvh), 3.85rem);
+  --section-display-line-height: 0.98;
+  --section-heading-line-height: 1;
+  --section-display-tracking: 0;
+  --section-display-max: 13ch;
+  --section-heading-max: 18ch;
+  --section-preview-max: 20ch;
+}
+
+.section-cgi {
+  --font-section-display: var(--font-cgi);
+  --section-display-size: clamp(2.1rem, min(5.4vw, 7dvh), 5.85rem);
+  --section-project-title-size: clamp(1.9rem, min(5vw, 6.4dvh), 5.25rem);
+  --section-heading-size: clamp(1.85rem, min(4.4vw, 5.8dvh), 4.35rem);
+  --section-preview-title-size: clamp(1.5rem, min(3.3vw, 4.6dvh), 3.1rem);
+  --section-display-line-height: 1;
+  --section-heading-line-height: 1.04;
+  --section-display-tracking: clamp(0.015em, 0.34vw, 0.07em);
+  --section-display-max: 15ch;
+  --section-heading-max: 18ch;
+  --section-preview-max: 20ch;
+}
+
+.section-design {
+  --font-section-display: var(--font-design);
+  --section-display-size: clamp(3.15rem, min(8.6vw, 10dvh), 8.75rem);
+  --section-project-title-size: clamp(2.85rem, min(7.6vw, 9.2dvh), 7.8rem);
+  --section-heading-size: clamp(2.45rem, min(6vw, 7.4dvh), 6rem);
+  --section-preview-title-size: clamp(2rem, min(4.6vw, 5.8dvh), 4.5rem);
+  --section-display-line-height: 0.88;
+  --section-heading-line-height: 0.92;
+  --section-display-tracking: clamp(0.005em, 0.24vw, 0.045em);
+  --section-display-max: 16ch;
+  --section-heading-max: 20ch;
+  --section-preview-max: 22ch;
+}
+
 .interior-heading {
-  max-width: min(100%, 13ch);
-  overflow-wrap: break-word;
+  font-family: var(--font-section-display), var(--font-ui), sans-serif;
+  max-width: min(100%, var(--section-display-max));
+  white-space: nowrap;
+  overflow-wrap: normal;
   word-break: normal;
-  text-wrap: balance;
-  font-size: var(--type-display-xl);
-  line-height: 0.9;
+  font-size: var(--section-display-size);
+  line-height: var(--section-display-line-height);
+  letter-spacing: var(--section-display-tracking);
 }
 
 .project-title {
-  max-width: min(100%, 12ch);
-  overflow-wrap: break-word;
+  font-family: var(--font-section-display), var(--font-ui), sans-serif;
+  max-width: min(100%, 13ch);
+  white-space: normal;
+  overflow-wrap: normal;
   word-break: normal;
   text-wrap: balance;
-  font-size: var(--type-project-title);
+  font-size: var(--section-project-title-size);
   line-height: 0.92;
 }
 
 .section-heading {
-  max-width: min(100%, 16ch);
-  overflow-wrap: break-word;
+  font-family: var(--font-section-display), var(--font-ui), sans-serif;
+  max-width: min(100%, var(--section-heading-max));
+  white-space: nowrap;
+  overflow-wrap: normal;
   word-break: normal;
-  text-wrap: balance;
-  font-size: var(--type-section-heading);
-  line-height: 0.92;
+  font-size: var(--section-heading-size);
+  line-height: var(--section-heading-line-height);
+  letter-spacing: var(--section-display-tracking);
 }
 
 .preview-title {
-  max-width: min(100%, 18ch);
-  overflow-wrap: break-word;
+  font-family: var(--font-section-display), var(--font-ui), sans-serif;
+  max-width: min(100%, var(--section-preview-max));
+  white-space: normal;
+  overflow-wrap: normal;
   word-break: normal;
   text-wrap: balance;
-  font-size: var(--type-preview-title);
+  font-size: var(--section-preview-title-size);
   line-height: 0.98;
 }
 
 .large-nav-link {
+  font-family: var(--font-section-display), var(--font-ui), sans-serif;
+  width: max-content;
   max-width: 100%;
-  overflow-wrap: break-word;
+  white-space: nowrap;
+  overflow-wrap: normal;
   word-break: normal;
-  text-wrap: balance;
   font-size: var(--type-nav-large);
   line-height: 0.96;
 }
 
 .meta-text {
   max-width: 100%;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
   font-size: var(--type-meta);
 }
 
 .caption-text {
   max-width: 100%;
-  overflow-wrap: anywhere;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
   font-size: var(--type-caption);
-}
-
-.font-panel-photography.interior-heading,
-.font-panel-photography.section-heading {
-  max-width: min(100%, 12ch);
-  font-size: var(--type-display-photography);
-  line-height: 0.98;
-}
-
-.font-panel-cgi.interior-heading,
-.font-panel-cgi.section-heading {
-  max-width: min(100%, 10ch);
-  font-size: var(--type-display-cgi);
-  line-height: 1;
-  letter-spacing: clamp(0.02em, 0.42vw, 0.08em);
-}
-
-.font-panel-design.interior-heading,
-.font-panel-design.section-heading {
-  max-width: min(100%, 14ch);
-  font-size: var(--type-display-design);
-  line-height: 0.88;
-  letter-spacing: clamp(0.01em, 0.35vw, 0.06em);
 }
 
 .rolodex-shell {
@@ -917,19 +998,56 @@ body::-webkit-scrollbar {
     --type-meta: clamp(0.6875rem, 2.6vw, 0.75rem);
   }
 
+  .section-about,
+  .section-contact {
+    --section-display-size: clamp(2.6rem, 15vw, 5.4rem);
+    --section-project-title-size: clamp(2.35rem, 12vw, 4.6rem);
+    --section-heading-size: clamp(2rem, 10vw, 3.8rem);
+  }
+
+  .section-photography {
+    --section-display-size: clamp(2.5rem, 12.2vw, 4.7rem);
+    --section-project-title-size: clamp(2.25rem, 11vw, 4.4rem);
+    --section-heading-size: clamp(2rem, 9.6vw, 3.65rem);
+    --section-preview-title-size: clamp(1.75rem, 8.6vw, 3rem);
+  }
+
+  .section-cgi {
+    --section-display-size: clamp(1.85rem, 8.4vw, 3.25rem);
+    --section-project-title-size: clamp(1.7rem, 7.8vw, 3rem);
+    --section-heading-size: clamp(1.55rem, 7vw, 2.7rem);
+    --section-preview-title-size: clamp(1.35rem, 6.2vw, 2.3rem);
+    --section-display-tracking: clamp(0.005em, 0.9vw, 0.035em);
+  }
+
+  .section-design {
+    --section-display-size: clamp(2.7rem, 13vw, 5rem);
+    --section-project-title-size: clamp(2.4rem, 11.5vw, 4.65rem);
+    --section-heading-size: clamp(2.1rem, 10vw, 3.9rem);
+    --section-preview-title-size: clamp(1.85rem, 8.8vw, 3.25rem);
+    --section-display-tracking: clamp(0em, 0.75vw, 0.03em);
+  }
+
+  .type-controlled-wrap,
+  .interior-heading,
+  .site-display-title,
+  .section-heading,
+  .site-section-title,
+  .large-nav-link {
+    width: auto;
+    white-space: normal;
+    text-wrap: balance;
+  }
+
   .site-technical-label {
     letter-spacing: clamp(0.14em, 1.6vw, 0.24em);
   }
 
-  .font-panel-cgi,
-  .font-panel-cgi.interior-heading,
-  .font-panel-cgi.section-heading {
+  .font-panel-cgi {
     letter-spacing: clamp(0.01em, 1.2vw, 0.045em);
   }
 
-  .font-panel-design,
-  .font-panel-design.interior-heading,
-  .font-panel-design.section-heading {
+  .font-panel-design {
     letter-spacing: clamp(0.005em, 1vw, 0.035em);
   }
 

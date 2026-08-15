@@ -56,7 +56,7 @@ export default async function DesignProjectPage({
   const nextProject = getNextDesignProject(project.slug);
 
   return (
-    <main className="min-h-dvh bg-bg text-text-primary">
+    <main className="section-design min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
       <article>
         <ProjectHero

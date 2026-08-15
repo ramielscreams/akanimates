@@ -129,7 +129,7 @@ export function InteriorMenu() {
                   ref={index === 0 ? firstMenuLinkRef : undefined}
                   href={item.href}
                   tabIndex={isOpen ? 0 : -1}
-                  className="block max-w-[calc(100vw-2.5rem)] py-2 text-center text-[length:var(--type-menu-item)] font-medium lowercase leading-[1.02] tracking-[clamp(0.06em,0.7vw,0.16em)] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] [overflow-wrap:anywhere] [text-wrap:balance] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+                  className="type-nowrap block max-w-[calc(100vw-2.5rem)] py-2 text-center text-[length:var(--type-menu-item)] font-medium lowercase leading-[1.02] tracking-[clamp(0.06em,0.7vw,0.16em)] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.index} / {item.label}

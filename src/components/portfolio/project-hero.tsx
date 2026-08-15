@@ -17,12 +17,17 @@ export function ProjectHero({ discipline, meta, project }: ProjectHeroProps) {
           <p className="site-technical-label text-text-muted">
             {project.index} / {discipline}
           </p>
-          <h1 className="site-display-title project-title mt-8 text-text-primary">
+          <h1 className="site-display-title project-title type-wrap mt-8 text-text-primary">
             {project.title}
           </h1>
           {visibleMeta.length > 0 ? (
-            <p className="site-technical-label meta-text mt-8 max-w-[38rem] text-text-secondary/80">
-              {visibleMeta.join(" / ")}
+            <p className="site-technical-label meta-text mt-8 flex max-w-[38rem] flex-wrap gap-x-3 gap-y-2 text-text-secondary/80">
+              {visibleMeta.map((item, index) => (
+                <span key={item} className="type-nowrap">
+                  {index > 0 ? "/ " : ""}
+                  {item}
+                </span>
+              ))}
             </p>
           ) : null}
           <p className="site-technical-label meta-text mt-3 text-text-primary/85">

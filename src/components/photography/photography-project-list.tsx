@@ -17,7 +17,7 @@ export function PhotographyProjectList({ projects }: PhotographyProjectListProps
         </p>
         <h2
           id="selected-photography-work"
-          className="site-section-title section-heading font-panel-photography mt-6 text-text-primary"
+          className="site-section-title section-heading type-controlled-wrap mt-6 text-text-primary"
         >
           Automotive index
         </h2>

@@ -8,7 +8,7 @@ import { designProjects } from "@/data/design-projects";
 
 export default function DesignPage() {
   return (
-    <main className="min-h-dvh bg-bg text-text-primary">
+    <main className="section-design min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
       <DesignHero />
       <DesignProjectList projects={designProjects} />

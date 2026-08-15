@@ -32,12 +32,17 @@ export function PhotographyProjectPreview({
           <p className="site-technical-label lowercase text-text-muted">
             {project.index} / {project.title.toLowerCase()}
           </p>
-          <h2 className="preview-title font-panel-photography mt-4 font-light uppercase tracking-normal text-text-primary">
+          <h2 className="preview-title type-wrap mt-4 font-light uppercase tracking-normal text-text-primary">
             {project.title}
           </h2>
         </div>
-        <p className="font-technical meta-text font-medium uppercase leading-5 tracking-[clamp(0.14em,0.6vw,0.28em)] text-text-secondary/75 sm:text-right">
-          {project.client} / {project.year} / {project.location}
+        <p className="font-technical meta-text flex flex-wrap gap-x-2 gap-y-1 font-medium uppercase leading-5 tracking-[clamp(0.14em,0.6vw,0.28em)] text-text-secondary/75 sm:justify-end sm:text-right">
+          {[project.client, project.year, project.location].map((item, index) => (
+            <span key={item} className="type-nowrap">
+              {index > 0 ? "/ " : ""}
+              {item}
+            </span>
+          ))}
         </p>
       </header>
 

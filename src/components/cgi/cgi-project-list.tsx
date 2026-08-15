@@ -17,7 +17,7 @@ export function CgiProjectList({ projects }: CgiProjectListProps) {
         </p>
         <h2
           id="selected-cgi-work"
-          className="site-section-title section-heading font-panel-cgi mt-6 text-text-primary"
+          className="site-section-title section-heading type-controlled-wrap mt-6 text-text-primary"
         >
           Constructed index
         </h2>

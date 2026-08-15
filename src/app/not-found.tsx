@@ -18,7 +18,7 @@ export default function NotFound() {
           <p className="site-technical-label text-text-muted">
             Error / 404
           </p>
-          <h1 className="site-display-title interior-heading mt-6 text-text-primary">
+          <h1 className="site-display-title interior-heading type-controlled-wrap mt-6 text-text-primary">
             Off Route.
           </h1>
           <p className="site-prose mt-8 max-w-[28rem] text-text-secondary">

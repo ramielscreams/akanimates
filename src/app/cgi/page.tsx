@@ -8,7 +8,7 @@ import { cgiProjects } from "@/data/cgi-projects";
 
 export default function CgiPage() {
   return (
-    <main className="min-h-dvh bg-bg text-text-primary">
+    <main className="section-cgi min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
       <CgiHero />
       <CgiProjectList projects={cgiProjects} />

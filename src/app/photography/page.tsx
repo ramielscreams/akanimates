@@ -7,7 +7,7 @@ import { photographyProjects } from "@/data/photography-projects";
 
 export default function PhotographyPage() {
   return (
-    <main className="min-h-dvh bg-bg text-text-primary">
+    <main className="section-photography min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
       <PhotographyHero />
       <PhotographyProjectList projects={photographyProjects} />

@@ -61,7 +61,7 @@ export default async function PhotographyProjectPage({
   }
 
   return (
-    <main className="min-h-dvh bg-bg text-text-primary">
+    <main className="section-photography min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
       <article>
         <ProjectHero

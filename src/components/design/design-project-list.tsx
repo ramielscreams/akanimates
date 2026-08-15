@@ -17,7 +17,7 @@ export function DesignProjectList({ projects }: DesignProjectListProps) {
         </p>
         <h2
           id="selected-design-work"
-          className="site-section-title section-heading font-panel-design mt-6 text-text-primary"
+          className="site-section-title section-heading type-controlled-wrap mt-6 text-text-primary"
         >
           Development index
         </h2>

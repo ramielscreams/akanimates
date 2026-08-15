@@ -54,7 +54,7 @@ export default async function CgiProjectPage({ params }: CgiProjectPageProps) {
   const nextProject = getNextCgiProject(project.slug);
 
   return (
-    <main className="min-h-dvh bg-bg text-text-primary">
+    <main className="section-cgi min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
       <article>
         <ProjectHero
