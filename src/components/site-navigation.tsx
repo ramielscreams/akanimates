@@ -24,7 +24,7 @@ export function SiteNavigation() {
           width={48}
           height={48}
           priority
-          className="h-10 w-10"
+          className="h-7 w-7"
         />
       </Link>
       <nav aria-label="Main navigation">

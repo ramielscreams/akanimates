@@ -79,8 +79,8 @@ export function InteriorMenu() {
         aria-label="Home"
         className={`fixed z-[230] opacity-90 transition-[left,opacity,top,transform,width] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive ${
           isOpen
-            ? "left-1/2 top-[clamp(3.5rem,13vh,7.5rem)] w-[clamp(4.75rem,min(8vw,14vh),9rem)] -translate-x-1/2"
-            : "left-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] w-[clamp(2.4rem,4vw,3.75rem)]"
+            ? "left-1/2 top-[clamp(3.5rem,13vh,7.5rem)] w-[clamp(3rem,min(5.1vw,9vh),5.75rem)] -translate-x-1/2"
+            : "left-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] w-[clamp(1.55rem,2.55vw,2.4rem)]"
         }`}
       >
         <Image

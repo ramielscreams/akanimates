@@ -665,7 +665,7 @@ export function Rolodex() {
       <Link
         href="/"
         aria-label="Home"
-        className="fixed left-[clamp(1.25rem,2.5vw,2.75rem)] top-[clamp(1.25rem,4vh,2rem)] z-[140] block w-[clamp(2.5rem,4.2vw,4.5rem)] leading-none opacity-[0.88] transition-opacity duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[0.35rem] focus-visible:outline-brand-interactive"
+        className="fixed left-[clamp(1.25rem,2.5vw,2.75rem)] top-[clamp(1.25rem,4vh,2rem)] z-[140] block w-[clamp(1.6rem,2.7vw,2.9rem)] leading-none opacity-[0.88] transition-opacity duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[0.35rem] focus-visible:outline-brand-interactive"
         onClick={resetHomepage}
       >
         <Image
