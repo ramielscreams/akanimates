@@ -34,7 +34,7 @@ function MediaPlaceholder({
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_26%,rgb(var(--brand-rgb)_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(var(--text-primary-rgb)_/_0.12),transparent_28%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.72))]" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_20%,rgb(var(--border-rgb)_/_0.8)_20%_calc(20%+1px),transparent_calc(20%+1px)),linear-gradient(180deg,transparent_0_64%,rgb(var(--border-rgb)_/_0.7)_64%_calc(64%+1px),transparent_calc(64%+1px))] opacity-65" />
-      <p className="site-technical-label absolute bottom-5 left-5 max-w-[calc(100%-2.5rem)] text-text-muted/60">
+      <p className="site-technical-label caption-text absolute bottom-5 left-5 max-w-[calc(100%-2.5rem)] text-text-muted/60">
         {label}
       </p>
     </div>
@@ -47,7 +47,7 @@ function renderCaption(caption?: string) {
   }
 
   return (
-    <figcaption className="site-technical-label mt-4 text-text-muted/65">
+    <figcaption className="site-technical-label caption-text mt-4 text-text-muted/65">
       {caption}
     </figcaption>
   );

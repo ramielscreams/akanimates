@@ -51,11 +51,11 @@ export function DesignProjectPreview({ project }: DesignProjectPreviewProps) {
           <p className="site-technical-label lowercase text-text-muted">
             {project.index} / {project.title.toLowerCase()}
           </p>
-          <h2 className="mt-4 text-[clamp(2rem,min(5vw,7dvh),4.5rem)] font-light uppercase leading-none tracking-normal text-text-primary">
+          <h2 className="preview-title font-panel-design mt-4 font-light uppercase tracking-normal text-text-primary">
             {project.title}
           </h2>
         </div>
-        <p className="font-technical text-xs font-medium uppercase leading-5 tracking-[0.28em] text-text-secondary/75 sm:text-right">
+        <p className="font-technical meta-text font-medium uppercase leading-5 tracking-[clamp(0.14em,0.6vw,0.28em)] text-text-secondary/75 sm:text-right">
           {project.client} / {project.category} / {project.year}
         </p>
       </header>
@@ -75,7 +75,7 @@ export function DesignProjectPreview({ project }: DesignProjectPreviewProps) {
         </div>
       )}
 
-      <footer className="font-technical mt-5 flex flex-col gap-2 text-xs font-medium uppercase leading-5 tracking-[0.28em] text-text-muted/70 sm:flex-row sm:items-center sm:justify-between">
+      <footer className="font-technical meta-text mt-5 flex flex-col gap-2 font-medium uppercase leading-5 tracking-[clamp(0.14em,0.6vw,0.28em)] text-text-muted/70 sm:flex-row sm:items-center sm:justify-between">
         <p>{project.platform}</p>
         {hasCaseStudy ? (
           <LiquidGlassButton asChild>

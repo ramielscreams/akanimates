@@ -34,6 +34,21 @@
   --motion-editorial: 420ms;
   --ease-ui: cubic-bezier(0.2, 0, 0, 1);
   --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --type-display-xl: clamp(3rem, min(9vw, 11dvh), 8.75rem);
+  --type-display-lg: clamp(2.65rem, min(7vw, 9dvh), 7rem);
+  --type-project-title: clamp(2.55rem, min(7.2vw, 9dvh), 7.5rem);
+  --type-section-heading: clamp(2.15rem, min(5.8vw, 7dvh), 5.75rem);
+  --type-preview-title: clamp(1.85rem, min(4.4vw, 5.8dvh), 4rem);
+  --type-subheading: clamp(1.25rem, 2vw, 2rem);
+  --type-body: clamp(1rem, 1.05vw, 1.125rem);
+  --type-meta: clamp(0.6875rem, 0.78vw, 0.8125rem);
+  --type-caption: clamp(0.625rem, 0.72vw, 0.75rem);
+  --type-menu-item: clamp(1.45rem, min(6.5vw, 4.8dvh), 3.45rem);
+  --type-nav-large: clamp(2.15rem, min(6.5vw, 8dvh), 6.75rem);
+  --type-display-cgi: clamp(2.35rem, min(6.8vw, 8dvh), 6.6rem);
+  --type-display-design: clamp(3.15rem, min(10vw, 11dvh), 9rem);
+  --type-display-photography: clamp(3rem, min(8.2vw, 10dvh), 8.25rem);
 }
 
 @theme inline {
@@ -94,7 +109,9 @@ body::-webkit-scrollbar {
 
 .site-technical-label {
   font-family: var(--font-technical), var(--font-ui), sans-serif;
-  font-size: clamp(0.6875rem, 0.72vw, 0.75rem);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: var(--type-meta);
   font-weight: 500;
   line-height: 1.35;
   letter-spacing: clamp(0.22em, 0.7vw, 0.38em);
@@ -112,8 +129,10 @@ body::-webkit-scrollbar {
 
 .site-prose {
   font-family: var(--font-editorial), Georgia, serif;
+  width: min(100%, 65ch);
   max-width: 42rem;
-  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  overflow-wrap: break-word;
+  font-size: var(--type-body);
   line-height: 1.9;
   font-variation-settings:
     "opsz" 18,
@@ -127,10 +146,13 @@ body::-webkit-scrollbar {
 
 .site-display-title {
   font-family: var(--font-ui), Arial, Helvetica, sans-serif;
-  overflow-wrap: anywhere;
-  font-size: clamp(2.75rem, min(11vw, 12dvh), 10rem);
+  max-width: min(100%, 13ch);
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: balance;
+  font-size: var(--type-display-xl);
   font-weight: 300;
-  line-height: 0.86;
+  line-height: 0.9;
   letter-spacing: 0;
   text-transform: uppercase;
   animation: site-type-enter var(--motion-editorial) var(--ease-editorial) both;
@@ -140,8 +162,11 @@ body::-webkit-scrollbar {
 
 .site-section-title {
   font-family: var(--font-ui), Arial, Helvetica, sans-serif;
-  overflow-wrap: anywhere;
-  font-size: clamp(2.35rem, min(7vw, 9dvh), 7rem);
+  max-width: min(100%, 16ch);
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: balance;
+  font-size: var(--type-section-heading);
   font-weight: 300;
   line-height: 0.9;
   letter-spacing: 0;
@@ -203,6 +228,86 @@ body::-webkit-scrollbar {
   font-variation-settings: normal;
   letter-spacing: clamp(0.02em, 0.55vw, 0.08em);
   text-transform: uppercase;
+}
+
+.interior-heading {
+  max-width: min(100%, 13ch);
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: balance;
+  font-size: var(--type-display-xl);
+  line-height: 0.9;
+}
+
+.project-title {
+  max-width: min(100%, 12ch);
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: balance;
+  font-size: var(--type-project-title);
+  line-height: 0.92;
+}
+
+.section-heading {
+  max-width: min(100%, 16ch);
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: balance;
+  font-size: var(--type-section-heading);
+  line-height: 0.92;
+}
+
+.preview-title {
+  max-width: min(100%, 18ch);
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: balance;
+  font-size: var(--type-preview-title);
+  line-height: 0.98;
+}
+
+.large-nav-link {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: balance;
+  font-size: var(--type-nav-large);
+  line-height: 0.96;
+}
+
+.meta-text {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: var(--type-meta);
+}
+
+.caption-text {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: var(--type-caption);
+}
+
+.font-panel-photography.interior-heading,
+.font-panel-photography.section-heading {
+  max-width: min(100%, 12ch);
+  font-size: var(--type-display-photography);
+  line-height: 0.98;
+}
+
+.font-panel-cgi.interior-heading,
+.font-panel-cgi.section-heading {
+  max-width: min(100%, 10ch);
+  font-size: var(--type-display-cgi);
+  line-height: 1;
+  letter-spacing: clamp(0.02em, 0.42vw, 0.08em);
+}
+
+.font-panel-design.interior-heading,
+.font-panel-design.section-heading {
+  max-width: min(100%, 14ch);
+  font-size: var(--type-display-design);
+  line-height: 0.88;
+  letter-spacing: clamp(0.01em, 0.35vw, 0.06em);
 }
 
 .rolodex-shell {
@@ -798,6 +903,36 @@ body::-webkit-scrollbar {
 }
 
 @media (max-width: 767px) {
+  :root {
+    --type-display-xl: clamp(2.6rem, 15vw, 5.4rem);
+    --type-display-lg: clamp(2.35rem, 12vw, 4.5rem);
+    --type-project-title: clamp(2.25rem, 12vw, 4.85rem);
+    --type-section-heading: clamp(2rem, 10.5vw, 4rem);
+    --type-preview-title: clamp(1.7rem, 9vw, 3.1rem);
+    --type-menu-item: clamp(1.35rem, 8vw, 2.65rem);
+    --type-nav-large: clamp(2rem, 11vw, 4.2rem);
+    --type-display-cgi: clamp(2rem, 9.6vw, 3.35rem);
+    --type-display-design: clamp(2.75rem, 14vw, 5.2rem);
+    --type-display-photography: clamp(2.55rem, 13vw, 4.85rem);
+    --type-meta: clamp(0.6875rem, 2.6vw, 0.75rem);
+  }
+
+  .site-technical-label {
+    letter-spacing: clamp(0.14em, 1.6vw, 0.24em);
+  }
+
+  .font-panel-cgi,
+  .font-panel-cgi.interior-heading,
+  .font-panel-cgi.section-heading {
+    letter-spacing: clamp(0.01em, 1.2vw, 0.045em);
+  }
+
+  .font-panel-design,
+  .font-panel-design.interior-heading,
+  .font-panel-design.section-heading {
+    letter-spacing: clamp(0.005em, 1vw, 0.035em);
+  }
+
   .rolodex-nav {
     left: 1rem;
   }

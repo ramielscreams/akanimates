@@ -18,7 +18,7 @@ export default function NotFound() {
           <p className="site-technical-label text-text-muted">
             Error / 404
           </p>
-          <h1 className="site-display-title mt-6 text-text-primary">
+          <h1 className="site-display-title interior-heading mt-6 text-text-primary">
             Off Route.
           </h1>
           <p className="site-prose mt-8 max-w-[28rem] text-text-secondary">
@@ -38,7 +38,7 @@ export default function NotFound() {
         </div>
 
         <div
-          className="select-none justify-self-start text-[clamp(6rem,min(25vw,28dvh),22rem)] font-light leading-none tracking-normal text-brand/40 opacity-20 lg:justify-self-end"
+          className="select-none justify-self-start text-[clamp(5rem,min(22vw,24dvh),18rem)] font-light leading-none tracking-normal text-brand/40 opacity-20 lg:justify-self-end"
           aria-hidden="true"
         >
           404
