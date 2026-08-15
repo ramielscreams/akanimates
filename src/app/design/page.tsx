@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DesignHero } from "@/components/design/design-hero";
 import { DesignProjectList } from "@/components/design/design-project-list";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
+import { NextDisciplineLink } from "@/components/navigation/next-discipline-link";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 import { designProjects } from "@/data/design-projects";
 
@@ -19,12 +20,7 @@ export default function DesignPage() {
             <p className="site-technical-label text-technical">
               Next discipline
             </p>
-            <Link
-              href="/contact"
-              className="large-nav-link mt-6 inline-flex min-h-11 items-center font-light lowercase tracking-normal text-text-primary transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-brand-soft hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-            >
-              05 / contact
-            </Link>
+            <NextDisciplineLink href="/contact" index="05" label="contact" />
           </div>
           <div className="sm:text-right">
             <LiquidGlassButton asChild>

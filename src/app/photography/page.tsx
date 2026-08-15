@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
+import { NextDisciplineLink } from "@/components/navigation/next-discipline-link";
 import { PhotographyHero } from "@/components/photography/photography-hero";
 import { PhotographyProjectList } from "@/components/photography/photography-project-list";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
@@ -18,12 +19,7 @@ export default function PhotographyPage() {
             <p className="site-technical-label text-text-muted">
               Next discipline
             </p>
-            <Link
-              href="/cgi"
-              className="large-nav-link mt-6 inline-flex min-h-11 items-center font-light lowercase tracking-normal text-text-primary transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-brand-soft hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-            >
-              03 / cgi
-            </Link>
+            <NextDisciplineLink href="/cgi" index="03" label="cgi" />
           </div>
 
           <div className="sm:text-right">

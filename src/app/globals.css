@@ -375,6 +375,55 @@ body::-webkit-scrollbar {
   line-height: 0.96;
 }
 
+.discipline-footer-index {
+  font-family: var(--font-technical), var(--font-ui), sans-serif;
+  font-size: 0.32em;
+  font-weight: 500;
+  letter-spacing: clamp(0.12em, 0.36vw, 0.22em);
+  line-height: 1;
+  transform: translateY(0.06em);
+}
+
+.discipline-footer-name {
+  font-family: var(--font-discipline-footer), var(--font-ui), sans-serif;
+  font-size: 1em;
+  font-weight: var(--discipline-footer-weight, 300);
+  font-stretch: var(--discipline-footer-stretch, normal);
+  letter-spacing: var(--discipline-footer-tracking, 0);
+  line-height: var(--discipline-footer-line-height, 0.96);
+  text-transform: uppercase;
+}
+
+.discipline-footer-about,
+.discipline-footer-contact {
+  --font-discipline-footer: var(--font-about);
+  --discipline-footer-weight: 360;
+  --discipline-footer-tracking: 0;
+  --discipline-footer-line-height: 0.96;
+}
+
+.discipline-footer-photography {
+  --font-discipline-footer: var(--font-photography);
+  --discipline-footer-weight: 400;
+  --discipline-footer-tracking: 0;
+  --discipline-footer-line-height: 1;
+}
+
+.discipline-footer-cgi {
+  --font-discipline-footer: var(--font-cgi);
+  --discipline-footer-weight: 400;
+  --discipline-footer-tracking: clamp(0.015em, 0.34vw, 0.07em);
+  --discipline-footer-line-height: 1;
+}
+
+.discipline-footer-design {
+  --font-discipline-footer: var(--font-design);
+  --discipline-footer-weight: 400;
+  --discipline-footer-stretch: condensed;
+  --discipline-footer-tracking: clamp(0.005em, 0.24vw, 0.045em);
+  --discipline-footer-line-height: 0.92;
+}
+
 .meta-text {
   max-width: 100%;
   white-space: nowrap;

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CgiHero } from "@/components/cgi/cgi-hero";
 import { CgiProjectList } from "@/components/cgi/cgi-project-list";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
+import { NextDisciplineLink } from "@/components/navigation/next-discipline-link";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 import { cgiProjects } from "@/data/cgi-projects";
 
@@ -19,12 +20,7 @@ export default function CgiPage() {
             <p className="site-technical-label text-technical">
               Next discipline
             </p>
-            <Link
-              href="/design"
-              className="large-nav-link mt-6 inline-flex min-h-11 items-center font-light lowercase tracking-normal text-text-primary transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-brand-soft hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-            >
-              04 / design
-            </Link>
+            <NextDisciplineLink href="/design" index="04" label="design" />
           </div>
           <div className="sm:text-right">
             <LiquidGlassButton asChild>
