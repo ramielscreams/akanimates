@@ -34,7 +34,7 @@
   --font-longform: var(--font-roboto-serif);
   --font-about: var(--font-manrope);
   --font-photography: var(--font-bodoni-moda);
-  --font-cgi: var(--font-encode-sans);
+  --font-cgi: var(--font-space-grotesk);
   --font-design: var(--font-archivo);
 
   --motion-ui-fast: 160ms;
@@ -236,6 +236,10 @@ body::-webkit-scrollbar {
   font-family: var(--font-editorial), Georgia, serif;
 }
 
+.font-cgi {
+  font-family: var(--font-cgi), var(--font-ui), sans-serif;
+}
+
 .font-panel-about {
   font-family: var(--font-about), var(--font-ui), sans-serif;
   font-weight: 400;
@@ -266,8 +270,7 @@ body::-webkit-scrollbar {
   text-transform: uppercase;
 }
 
-.section-about,
-.section-contact {
+.section-about {
   --font-section-display: var(--font-about);
   --section-display-size: clamp(2.9rem, min(6.6vw, 8.5dvh), 7.4rem);
   --section-project-title-size: clamp(2.6rem, min(6.4vw, 8.3dvh), 6.75rem);
@@ -402,8 +405,7 @@ body::-webkit-scrollbar {
   text-transform: uppercase;
 }
 
-.discipline-footer-about,
-.discipline-footer-contact {
+.discipline-footer-about {
   --font-discipline-footer: var(--font-about);
   --discipline-footer-weight: 360;
   --discipline-footer-tracking: 0;
@@ -628,7 +630,6 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-track[data-phase="idle"] .rolodex-scene-wrap:not([data-state="active"]),
-.rolodex-track[data-phase="contract"] .rolodex-scene-wrap:not([data-state="exiting"]),
 .rolodex-track[data-phase="expand"] .rolodex-scene-wrap:not([data-state="entering"]) {
   opacity: 0;
   pointer-events: none;
@@ -655,6 +656,13 @@ body::-webkit-scrollbar {
   width: var(--rolodex-panel-width);
   height: var(--rolodex-panel-height);
   aspect-ratio: 3 / 2;
+}
+
+.rolodex-track[data-phase="contract"] .rolodex-scene-wrap {
+  transition:
+    opacity 180ms var(--ease-ui),
+    filter 220ms var(--ease-ui),
+    transform 0ms linear;
 }
 
 .rolodex-track[data-phase="contract"] .rolodex-panel[data-state="exiting"] {
@@ -701,10 +709,29 @@ body::-webkit-scrollbar {
 .rolodex-media-layer {
   z-index: 0;
   overflow: hidden;
+  background: var(--surface);
+}
+
+.rolodex-panel[data-panel="about"] .rolodex-media-layer {
   background:
-    radial-gradient(circle at 72% 22%, var(--rolodex-accent), transparent 34rem),
-    linear-gradient(135deg, rgb(var(--text-primary-rgb) / 0.1), transparent 28%),
-    var(--rolodex-surface);
+    linear-gradient(135deg, var(--surface), var(--brand) 160%),
+    var(--surface);
+}
+
+.rolodex-panel[data-panel="photography"] .rolodex-media-layer {
+  background: var(--surface);
+}
+
+.rolodex-panel[data-panel="cgi"] .rolodex-media-layer {
+  background:
+    linear-gradient(135deg, var(--surface), var(--technical) 180%),
+    var(--surface);
+}
+
+.rolodex-panel[data-panel="design"] .rolodex-media-layer {
+  background:
+    linear-gradient(135deg, var(--surface), var(--brand) 150%, var(--technical) 230%),
+    var(--surface);
 }
 
 .rolodex-media-layer img,
@@ -730,16 +757,31 @@ body::-webkit-scrollbar {
 .rolodex-media-field {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(110deg, transparent 14%, rgb(var(--text-primary-rgb) / 0.13) 42%, transparent 45%),
-    radial-gradient(circle at 62% 58%, rgb(var(--brand-soft-rgb) / 0.12), transparent 18rem),
-    linear-gradient(180deg, rgb(var(--text-primary-rgb) / 0.08), rgb(var(--bg-rgb) / 0.6));
-  opacity: 0.72;
+  background: var(--surface);
+  opacity: 1;
   transform:
     scale(1.04)
     translateY(0);
   transition: transform var(--rolodex-transition-duration) var(--rolodex-transition-easing);
   will-change: transform;
+}
+
+.rolodex-panel[data-panel="about"] .rolodex-media-field {
+  background:
+    linear-gradient(135deg, var(--surface), var(--brand) 170%),
+    var(--surface);
+}
+
+.rolodex-panel[data-panel="cgi"] .rolodex-media-field {
+  background:
+    linear-gradient(135deg, var(--surface), var(--technical) 190%),
+    var(--surface);
+}
+
+.rolodex-panel[data-panel="design"] .rolodex-media-field {
+  background:
+    linear-gradient(135deg, var(--surface), var(--brand) 170%, var(--technical) 250%),
+    var(--surface);
 }
 
 .rolodex-panel[data-state="active"] .rolodex-media-field,
@@ -756,11 +798,11 @@ body::-webkit-scrollbar {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, transparent 0 11%, rgb(var(--border-rgb) / 0.95) 11% calc(11% + 1px), transparent calc(11% + 1px)),
-    linear-gradient(90deg, transparent 0 69%, rgb(var(--border-rgb) / 0.78) 69% calc(69% + 1px), transparent calc(69% + 1px)),
-    linear-gradient(180deg, transparent 0 24%, rgb(var(--border-rgb) / 0.95) 24% calc(24% + 1px), transparent calc(24% + 1px)),
-    linear-gradient(180deg, transparent 0 72%, rgb(var(--border-rgb) / 0.82) 72% calc(72% + 1px), transparent calc(72% + 1px));
-  opacity: 0.55;
+    linear-gradient(90deg, transparent 0 11%, var(--border) 11% calc(11% + 1px), transparent calc(11% + 1px)),
+    linear-gradient(90deg, transparent 0 69%, var(--border) 69% calc(69% + 1px), transparent calc(69% + 1px)),
+    linear-gradient(180deg, transparent 0 24%, var(--border) 24% calc(24% + 1px), transparent calc(24% + 1px)),
+    linear-gradient(180deg, transparent 0 72%, var(--border) 72% calc(72% + 1px), transparent calc(72% + 1px));
+  opacity: 0.38;
 }
 
 .rolodex-media-label,
@@ -788,19 +830,18 @@ body::-webkit-scrollbar {
 
 .rolodex-overlay-layer {
   z-index: 1;
-  background:
-    linear-gradient(90deg, rgb(var(--bg-rgb) / 0.88), rgb(var(--bg-rgb) / 0.48) 42%, rgb(var(--bg-rgb) / 0.1) 70%),
-    linear-gradient(180deg, rgb(var(--bg-rgb) / 0.3), transparent 34%, rgb(var(--bg-rgb) / 0.72));
+  background: transparent;
 }
 
 .rolodex-content-layer {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   gap: clamp(1rem, 4cqw, 2.5rem);
   padding: clamp(1.25rem, 6cqw, 4.5rem) clamp(1.25rem, 5.4cqw, 4rem) clamp(1rem, 4.4cqw, 3rem);
+  text-align: center;
   transition:
     gap var(--rolodex-focus-duration) var(--rolodex-focus-easing),
     padding var(--rolodex-focus-duration) var(--rolodex-focus-easing);
@@ -809,28 +850,22 @@ body::-webkit-scrollbar {
 
 .rolodex-panel[data-state="active"] .rolodex-content-layer,
 .rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-content-layer {
-  gap: clamp(1.5rem, 5vw, 4rem);
-  padding: clamp(4.5rem, 9vh, 7rem) clamp(1.5rem, 6vw, 5rem) clamp(2rem, 6vh, 5rem);
+  gap: clamp(1.25rem, 4vw, 3rem);
+  padding: clamp(4.5rem, 9vh, 7rem) clamp(1.5rem, 6vw, 5rem);
 }
 
 .rolodex-content-layer a {
   pointer-events: auto;
 }
 
-.rolodex-panel-index {
-  display: inline-block;
-  font-family: var(--font-meta), var(--font-ui), monospace;
-  opacity: var(--type-index-opacity, 1);
-  transform:
-    scaleX(var(--type-index-scale-x, 1))
-    translateY(var(--type-index-y, 0));
-  transform-origin: left center;
-  letter-spacing: var(--type-index-tracking, 0.38em);
-  transition:
-    opacity var(--rolodex-focus-duration) var(--rolodex-focus-easing),
-    transform var(--rolodex-focus-duration) var(--rolodex-focus-easing),
-    letter-spacing var(--rolodex-focus-duration) var(--rolodex-focus-easing);
-  will-change: transform, opacity, letter-spacing;
+.rolodex-title-stack {
+  display: flex;
+  width: min(var(--rolodex-stack-width, 44rem), calc(100vw - 2.5rem));
+  min-width: 0;
+  max-width: min(44rem, calc(100vw - 2.5rem));
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .rolodex-content-layer h1,
@@ -861,6 +896,12 @@ body::-webkit-scrollbar {
     font-weight var(--rolodex-focus-duration) var(--rolodex-focus-easing),
     font-variation-settings var(--rolodex-focus-duration) var(--rolodex-focus-easing);
   will-change: transform, opacity, letter-spacing, font-variation-settings;
+}
+
+.rolodex-title-stack .rolodex-heading {
+  margin-inline: auto;
+  text-align: center;
+  transform-origin: center center;
 }
 
 .rolodex-panel[data-panel="about"] .rolodex-content-layer h1,
@@ -929,7 +970,7 @@ body::-webkit-scrollbar {
 
 .rolodex-content-layer p {
   font-family: var(--font-ui), Arial, Helvetica, sans-serif;
-  max-width: min(28rem, 68cqw);
+  max-width: min(100%, var(--rolodex-copy-width, 24rem));
   font-size: clamp(0.875rem, 1.55cqw, 1.125rem);
   line-height: clamp(1.55rem, 2.6cqw, 2rem);
   opacity: var(--type-copy-opacity, 1);
@@ -942,18 +983,35 @@ body::-webkit-scrollbar {
     transform var(--rolodex-focus-duration) var(--rolodex-focus-easing);
 }
 
-.rolodex-content-layer .rolodex-panel-index {
-  font-family: var(--font-meta), var(--font-ui), monospace;
-  opacity: var(--type-index-opacity, 1);
-  transform:
-    scaleX(var(--type-index-scale-x, 1))
-    translateY(var(--type-index-y, 0));
-  letter-spacing: var(--type-index-tracking, 0.38em);
+.rolodex-copy {
+  width: min(100%, var(--rolodex-copy-width, 24rem));
+  text-align: center;
+  text-wrap: balance;
+}
+
+.rolodex-panel[data-panel="about"] {
+  --rolodex-copy-width: clamp(13rem, 22vw, 19rem);
+  --rolodex-stack-width: clamp(13rem, 22vw, 24rem);
+}
+
+.rolodex-panel[data-panel="photography"] {
+  --rolodex-copy-width: clamp(17rem, 30vw, 27rem);
+  --rolodex-stack-width: 44rem;
+}
+
+.rolodex-panel[data-panel="cgi"] {
+  --rolodex-copy-width: clamp(13rem, 20vw, 18rem);
+  --rolodex-stack-width: clamp(13rem, 20vw, 20rem);
+}
+
+.rolodex-panel[data-panel="design"] {
+  --rolodex-copy-width: clamp(15rem, 24vw, 21rem);
+  --rolodex-stack-width: clamp(15rem, 24vw, 24rem);
 }
 
 .rolodex-panel[data-state="active"] .rolodex-content-layer p,
 .rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-content-layer p {
-  max-width: min(28rem, 48vw);
+  max-width: min(100%, var(--rolodex-copy-width, 24rem));
   font-size: clamp(1rem, 1.25vw, 1.125rem);
   line-height: 2;
 }
@@ -972,11 +1030,17 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-liquid-cta {
+  margin-top: clamp(1.25rem, 3cqw, 2rem);
   opacity: 0;
   pointer-events: none;
 }
 
-.rolodex-panel[data-state="active"] .rolodex-liquid-cta {
+.rolodex-panel:not([data-state="active"]) .rolodex-copy {
+  opacity: 0;
+}
+
+.rolodex-panel[data-state="active"] .rolodex-liquid-cta,
+.rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-liquid-cta {
   opacity: 1;
   pointer-events: auto;
 }
@@ -1028,8 +1092,7 @@ body::-webkit-scrollbar {
     --type-meta: clamp(0.6875rem, 2.6vw, 0.75rem);
   }
 
-  .section-about,
-  .section-contact {
+  .section-about {
     --section-display-size: clamp(2.55rem, 14.2vw, 5.15rem);
     --section-project-title-size: clamp(2.3rem, 11.5vw, 4.45rem);
     --section-heading-size: clamp(1.95rem, 9.6vw, 3.65rem);
@@ -1151,7 +1214,6 @@ body::-webkit-scrollbar {
   }
 
   .rolodex-heading,
-  .rolodex-panel-index,
   .rolodex-copy,
   .rolodex-media-label,
   .rolodex-media-note {

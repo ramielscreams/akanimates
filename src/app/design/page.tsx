@@ -20,7 +20,7 @@ export default function DesignPage() {
             <p className="site-technical-label text-technical">
               Next discipline
             </p>
-            <NextDisciplineLink href="/contact" index="05" label="contact" />
+            <NextDisciplineLink href="/about" index="01" label="about" />
           </div>
           <div className="sm:text-right">
             <LiquidGlassButton asChild>

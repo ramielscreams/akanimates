@@ -7,7 +7,6 @@ const navigationItems = [
   { label: "CGI", href: "/cgi" },
   { label: "Design", href: "/design" },
   { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
 ];
 
 export function SiteNavigation() {

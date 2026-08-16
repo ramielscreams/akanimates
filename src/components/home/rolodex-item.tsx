@@ -84,31 +84,28 @@ export function RolodexItem({
         <div className="rolodex-overlay-layer" aria-hidden="true" />
 
         <div className="rolodex-content-layer">
-          <div>
-            <p className="rolodex-panel-index font-meta text-xs uppercase tracking-[0.38em] text-text-muted">
-              {entry.index}
-            </p>
+          <div className="rolodex-title-stack">
             <TitleTag
-              className={`${titleFontClass} rolodex-heading mt-6 text-6xl font-light uppercase leading-[0.86] tracking-normal text-text-primary sm:text-8xl lg:text-9xl`}
+              className={`${titleFontClass} rolodex-heading text-6xl font-light uppercase leading-[0.86] tracking-normal text-text-primary sm:text-8xl lg:text-9xl`}
             >
               {entry.title}
             </TitleTag>
-            <p className="rolodex-copy mt-8 max-w-[28rem] text-base leading-8 text-text-secondary sm:text-lg">
+            <p className="rolodex-copy mt-6 text-base leading-8 text-text-secondary sm:text-lg">
               {entry.description}
             </p>
-          </div>
 
-          <LiquidGlassButton asChild className="rolodex-liquid-cta">
-            <Link href={entry.href} tabIndex={isActive ? 0 : -1}>
-              {entry.cta}
-              <span
-                className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
-                aria-hidden="true"
-              >
-                -&gt;
-              </span>
-            </Link>
-          </LiquidGlassButton>
+            <LiquidGlassButton asChild className="rolodex-liquid-cta">
+              <Link href={entry.href} tabIndex={isActive ? 0 : -1}>
+                {entry.cta}
+                <span
+                  className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                  aria-hidden="true"
+                >
+                  -&gt;
+                </span>
+              </Link>
+            </LiquidGlassButton>
+          </div>
         </div>
       </div>
     </article>

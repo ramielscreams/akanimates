@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type DisciplineKey = "about" | "photography" | "cgi" | "design" | "contact";
+type DisciplineKey = "about" | "photography" | "cgi" | "design";
 
 type NextDisciplineLinkProps = {
   href: string;
@@ -11,7 +11,6 @@ type NextDisciplineLinkProps = {
 const disciplineFooterClasses: Record<DisciplineKey, string> = {
   about: "discipline-footer-about",
   cgi: "discipline-footer-cgi",
-  contact: "discipline-footer-contact",
   design: "discipline-footer-design",
   photography: "discipline-footer-photography",
 };

@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import {
   Archivo,
   Bodoni_Moda,
-  Encode_Sans,
   Geist,
   Geist_Mono,
   Manrope,
   Roboto_Serif,
+  Space_Grotesk,
 } from "next/font/google";
 import "./globals.css";
 
@@ -38,10 +38,10 @@ const bodoniModa = Bodoni_Moda({
   weight: ["400", "500"],
 });
 
-const encodeSans = Encode_Sans({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-encode-sans",
-  weight: ["300", "400", "500"],
+  variable: "--font-space-grotesk",
+  weight: ["400", "500"],
 });
 
 const archivo = Archivo({
@@ -63,7 +63,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${geistMono.variable} ${robotoSerif.variable} ${manrope.variable} ${bodoniModa.variable} ${encodeSans.variable} ${archivo.variable} h-full antialiased`}
+      className={`${geist.variable} ${geistMono.variable} ${robotoSerif.variable} ${manrope.variable} ${bodoniModa.variable} ${spaceGrotesk.variable} ${archivo.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-text-primary">
         {children}

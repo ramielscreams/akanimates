@@ -1,11 +1,5 @@
-import { SectionPlaceholderPage } from "@/components/section-placeholder-page";
+import { redirect } from "next/navigation";
 
 export default function ContactPage() {
-  return (
-    <SectionPlaceholderPage
-      section="contact"
-      title="Contact"
-      description="Placeholder route for future contact details and inquiry links."
-    />
-  );
+  redirect("/about#contact");
 }

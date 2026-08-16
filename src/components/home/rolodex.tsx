@@ -60,18 +60,6 @@ const rolodexEntries: RolodexEntry[] = [
     accent: "rgb(var(--technical-rgb) / 0.14)",
     surface: "var(--surface)",
   },
-  {
-    index: "05",
-    title: "Contact",
-    description:
-      "Available for automotive visual production, design development and focused collaborations.",
-    href: "/contact",
-    cta: "Get in touch",
-    mediaLabel: "Contact media placeholder",
-    mediaNote: "Future media: restrained atmospheric image or closing showreel frame.",
-    accent: "rgb(var(--brand-interactive-rgb) / 0.42)",
-    surface: "var(--bg)",
-  },
 ];
 
 const CONTRACT_DURATION_MS = 220;
@@ -81,12 +69,13 @@ const REDUCED_CONTRACT_DURATION_MS = 140;
 const REDUCED_ROTATION_DURATION_MS = 140;
 const REDUCED_EXPAND_DURATION_MS = 220;
 const INPUT_DEBOUNCE_MS = 110;
-const WHEEL_TRIGGER_THRESHOLD = 9;
+const WHEEL_TRIGGER_THRESHOLD = 5;
 const WHEEL_NOISE_FLOOR = 1.25;
-const WHEEL_GESTURE_QUIET_MS = 180;
+const WHEEL_GESTURE_QUIET_MS = 140;
 const TOUCH_TRIGGER_THRESHOLD = 34;
 const DISTANCE_TIMING_MULTIPLIERS = [0, 1, 1.35, 1.65, 1.9];
-const ROTATION_EXPAND_OVERLAP_MS = 90;
+const ROTATION_EXPAND_OVERLAP_MS = 130;
+const ROTATION_RELEASE_LEAD_RATIO = 0.35;
 
 function positiveModulo(value: number, modulo: number) {
   return ((value % modulo) + modulo) % modulo;
@@ -127,8 +116,10 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
-function easeOutSine(value: number) {
-  return Math.sin((value * Math.PI) / 2);
+function easeInOutCubic(value: number) {
+  return value < 0.5
+    ? 4 * value * value * value
+    : 1 - Math.pow(-2 * value + 2, 3) / 2;
 }
 
 function getDistanceRotationDuration(distance: number, isReducedMotion: boolean) {
@@ -141,6 +132,14 @@ function getDistanceRotationDuration(distance: number, isReducedMotion: boolean)
     DISTANCE_TIMING_MULTIPLIERS[DISTANCE_TIMING_MULTIPLIERS.length - 1];
 
   return Math.round(ROTATION_DURATION_MS * multiplier);
+}
+
+function getDirectNavigationDuration(distance: number, isReducedMotion: boolean) {
+  if (isReducedMotion || distance <= 1) {
+    return getDistanceRotationDuration(distance, isReducedMotion);
+  }
+
+  return Math.round(ROTATION_DURATION_MS * (1 + (distance - 1) * 0.28));
 }
 
 function getSlotStyle(slot: number) {
@@ -232,10 +231,6 @@ function getSlotStyle(slot: number) {
     "--type-weight": interpolate(360, 460, typeProgress),
     "--type-about-weight": interpolate(340, 430, typeProgress),
     "--type-design-weight": interpolate(330, 440, typeProgress),
-    "--type-index-opacity": interpolate(0.62, 1, typeProgress),
-    "--type-index-scale-x": interpolate(0.92, 1, typeProgress),
-    "--type-index-tracking": `${interpolate(0.32, 0.38, typeProgress)}em`,
-    "--type-index-y": `${interpolate(0.2, 0, typeProgress)}rem`,
     "--type-copy-opacity": interpolate(0.68, 1, typeProgress),
     "--type-copy-y": `${interpolate(0.35, 0, typeProgress)}rem`,
     "--type-photo-scale-x": interpolate(0.92, 1.01, typeProgress),
@@ -395,10 +390,16 @@ export function Rolodex() {
       const contractDuration = reducedMotionRef.current
         ? REDUCED_CONTRACT_DURATION_MS
         : CONTRACT_DURATION_MS;
-      const rotationDuration = getDistanceRotationDuration(
-        normalizedDistance,
-        reducedMotionRef.current,
-      );
+      const rotationDuration =
+        targetIndex === undefined
+          ? getDistanceRotationDuration(
+              normalizedDistance,
+              reducedMotionRef.current,
+            )
+          : getDirectNavigationDuration(
+              normalizedDistance,
+              reducedMotionRef.current,
+            );
       const expandDuration = reducedMotionRef.current
         ? REDUCED_EXPAND_DURATION_MS
         : EXPAND_DURATION_MS;
@@ -408,9 +409,12 @@ export function Rolodex() {
             ROTATION_EXPAND_OVERLAP_MS,
             Math.round(rotationDuration * 0.18),
           );
-      const focusDuration = expandDuration + expandOverlap;
-      const expandStart = contractDuration + rotationDuration - expandOverlap;
+      const rotationStart = reducedMotionRef.current
+        ? contractDuration
+        : Math.round(contractDuration * ROTATION_RELEASE_LEAD_RATIO);
+      const expandStart = rotationStart + rotationDuration - expandOverlap;
       const duration = contractDuration + rotationDuration + expandDuration;
+      const focusDuration = duration - expandStart;
 
       lockRef.current = true;
       gestureDeltaRef.current = 0;
@@ -479,12 +483,12 @@ export function Rolodex() {
         }
 
         const rotationElapsed = clamp(
-          elapsed - contractDuration,
+          elapsed - rotationStart,
           0,
           rotationDuration,
         );
         const rotationProgress = rotationElapsed / rotationDuration;
-        const easedProgress = signedDistance * easeOutSine(rotationProgress);
+        const easedProgress = signedDistance * easeInOutCubic(rotationProgress);
 
         rotationProgressRef.current = easedProgress;
         applySlotStyles(from, easedProgress);

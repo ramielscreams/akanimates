@@ -10,7 +10,6 @@ const navigationItems = [
   { index: "02", label: "photography", href: "/photography" },
   { index: "03", label: "cgi", href: "/cgi" },
   { index: "04", label: "design", href: "/design" },
-  { index: "05", label: "contact", href: "/contact" },
 ];
 
 export function InteriorMenu() {
