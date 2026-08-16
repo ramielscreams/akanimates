@@ -29,7 +29,7 @@ export function SectionPlaceholderPage({
           <p className="site-technical-label mb-4 text-text-muted">
             AK
           </p>
-          <h1 className="interior-heading font-semibold tracking-normal text-text-primary">
+          <h1 className="interior-heading font-normal tracking-normal text-text-primary">
             {title}
           </h1>
           <p className="site-prose mt-6 text-text-secondary">

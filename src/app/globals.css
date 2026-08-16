@@ -27,7 +27,15 @@
   --text-primary-rgb: 242 239 243;
   --text-highlight-rgb: 255 255 255;
 
-  --font-about: var(--font-ui);
+  --font-ui: var(--font-geist);
+  --font-meta: var(--font-geist-mono);
+  --font-technical: var(--font-geist-mono);
+  --font-editorial: var(--font-roboto-serif);
+  --font-longform: var(--font-roboto-serif);
+  --font-about: var(--font-manrope);
+  --font-photography: var(--font-bodoni-moda);
+  --font-cgi: var(--font-encode-sans);
+  --font-design: var(--font-archivo);
 
   --motion-ui-fast: 160ms;
   --motion-ui-medium: 240ms;
@@ -47,8 +55,8 @@
   --type-menu-item: clamp(1.45rem, min(6.5vw, 4.8dvh), 3.45rem);
   --type-nav-large: clamp(2.15rem, min(6.5vw, 8dvh), 6.75rem);
   --type-display-cgi: clamp(2.35rem, min(6.8vw, 8dvh), 6.6rem);
-  --type-display-design: clamp(3.15rem, min(10vw, 11dvh), 9rem);
-  --type-display-photography: clamp(3rem, min(8.2vw, 10dvh), 8.25rem);
+  --type-display-design: clamp(2.9rem, min(8vw, 9.2dvh), 8rem);
+  --type-display-photography: clamp(2.75rem, min(7vw, 8.8dvh), 7.5rem);
 
   --font-section-display: var(--font-ui);
   --section-display-size: var(--type-display-xl);
@@ -120,7 +128,7 @@ body::-webkit-scrollbar {
 }
 
 .site-technical-label {
-  font-family: var(--font-technical), var(--font-ui), sans-serif;
+  font-family: var(--font-meta), var(--font-ui), sans-serif;
   max-width: 100%;
   white-space: nowrap;
   overflow-wrap: normal;
@@ -130,15 +138,10 @@ body::-webkit-scrollbar {
   line-height: 1.35;
   letter-spacing: clamp(0.22em, 0.7vw, 0.38em);
   text-transform: uppercase;
-  font-variation-settings:
-    "MONO" 0.92,
-    "CASL" 0.28,
-    "CRSV" 0.5,
-    "slnt" 0;
   transition:
     color var(--motion-ui-fast) var(--ease-ui),
     opacity var(--motion-ui-fast) var(--ease-ui),
-    font-variation-settings var(--motion-ui-medium) var(--ease-ui);
+    letter-spacing var(--motion-ui-medium) var(--ease-ui);
 }
 
 .site-prose {
@@ -225,8 +228,8 @@ body::-webkit-scrollbar {
   font-family: var(--font-ui), Arial, Helvetica, sans-serif;
 }
 
-.font-technical {
-  font-family: var(--font-technical), var(--font-ui), sans-serif;
+.font-meta {
+  font-family: var(--font-meta), var(--font-ui), monospace;
 }
 
 .font-editorial {
@@ -235,11 +238,12 @@ body::-webkit-scrollbar {
 
 .font-panel-about {
   font-family: var(--font-about), var(--font-ui), sans-serif;
-  font-variation-settings: "wght" 420;
+  font-weight: 400;
+  font-variation-settings: "wght" 400;
 }
 
 .font-panel-photography {
-  font-family: var(--font-photography), Georgia, serif;
+  font-family: var(--font-photography), var(--font-editorial), Georgia, serif;
   font-weight: 400;
   font-variation-settings: normal;
   letter-spacing: 0;
@@ -250,28 +254,27 @@ body::-webkit-scrollbar {
   font-family: var(--font-cgi), var(--font-ui), sans-serif;
   font-weight: 400;
   font-variation-settings: normal;
-  letter-spacing: clamp(0.04em, 0.8vw, 0.12em);
+  letter-spacing: clamp(0.01em, 0.28vw, 0.045em);
   text-transform: uppercase;
 }
 
 .font-panel-design {
   font-family: var(--font-design), var(--font-ui), sans-serif;
-  font-stretch: condensed;
   font-weight: 400;
   font-variation-settings: normal;
-  letter-spacing: clamp(0.02em, 0.55vw, 0.08em);
+  letter-spacing: clamp(0.005em, 0.28vw, 0.045em);
   text-transform: uppercase;
 }
 
 .section-about,
 .section-contact {
   --font-section-display: var(--font-about);
-  --section-display-size: clamp(3rem, min(7vw, 9dvh), 8rem);
-  --section-project-title-size: clamp(2.7rem, min(6.8vw, 8.8dvh), 7rem);
-  --section-heading-size: clamp(2.2rem, min(4.8vw, 6.2dvh), 4.75rem);
+  --section-display-size: clamp(2.9rem, min(6.6vw, 8.5dvh), 7.4rem);
+  --section-project-title-size: clamp(2.6rem, min(6.4vw, 8.3dvh), 6.75rem);
+  --section-heading-size: clamp(2.15rem, min(4.7vw, 6dvh), 4.6rem);
   --section-preview-title-size: clamp(1.9rem, min(3.8vw, 5dvh), 3.5rem);
-  --section-display-line-height: 0.92;
-  --section-heading-line-height: 0.94;
+  --section-display-line-height: 0.94;
+  --section-heading-line-height: 0.96;
   --section-display-tracking: 0;
   --section-display-max: 14ch;
   --section-heading-max: 18ch;
@@ -280,41 +283,41 @@ body::-webkit-scrollbar {
 
 .section-photography {
   --font-section-display: var(--font-photography);
-  --section-display-size: clamp(2.85rem, min(7.2vw, 9.2dvh), 7.85rem);
-  --section-project-title-size: clamp(2.65rem, min(6.6vw, 8.4dvh), 7.2rem);
-  --section-heading-size: clamp(2.25rem, min(5.2vw, 6.8dvh), 5.25rem);
-  --section-preview-title-size: clamp(1.9rem, min(3.8vw, 5.2dvh), 3.85rem);
-  --section-display-line-height: 0.98;
-  --section-heading-line-height: 1;
-  --section-display-tracking: 0;
-  --section-display-max: 13ch;
+  --section-display-size: clamp(2.7rem, min(6.5vw, 8.4dvh), 7.1rem);
+  --section-project-title-size: clamp(2.45rem, min(6vw, 7.8dvh), 6.55rem);
+  --section-heading-size: clamp(2.05rem, min(4.7vw, 6.2dvh), 4.75rem);
+  --section-preview-title-size: clamp(1.8rem, min(3.5vw, 4.8dvh), 3.55rem);
+  --section-display-line-height: 0.94;
+  --section-heading-line-height: 0.96;
+  --section-display-tracking: -0.015em;
+  --section-display-max: 14ch;
   --section-heading-max: 18ch;
   --section-preview-max: 20ch;
 }
 
 .section-cgi {
   --font-section-display: var(--font-cgi);
-  --section-display-size: clamp(2.1rem, min(5.4vw, 7dvh), 5.85rem);
-  --section-project-title-size: clamp(1.9rem, min(5vw, 6.4dvh), 5.25rem);
-  --section-heading-size: clamp(1.85rem, min(4.4vw, 5.8dvh), 4.35rem);
-  --section-preview-title-size: clamp(1.5rem, min(3.3vw, 4.6dvh), 3.1rem);
-  --section-display-line-height: 1;
-  --section-heading-line-height: 1.04;
-  --section-display-tracking: clamp(0.015em, 0.34vw, 0.07em);
-  --section-display-max: 15ch;
+  --section-display-size: clamp(2.55rem, min(6.6vw, 8.2dvh), 6.9rem);
+  --section-project-title-size: clamp(2.25rem, min(6vw, 7.4dvh), 6.2rem);
+  --section-heading-size: clamp(2rem, min(4.8vw, 6dvh), 4.8rem);
+  --section-preview-title-size: clamp(1.7rem, min(3.7vw, 4.8dvh), 3.45rem);
+  --section-display-line-height: 0.94;
+  --section-heading-line-height: 0.98;
+  --section-display-tracking: clamp(0em, 0.12vw, 0.02em);
+  --section-display-max: 14ch;
   --section-heading-max: 18ch;
   --section-preview-max: 20ch;
 }
 
 .section-design {
   --font-section-display: var(--font-design);
-  --section-display-size: clamp(3.15rem, min(8.6vw, 10dvh), 8.75rem);
-  --section-project-title-size: clamp(2.85rem, min(7.6vw, 9.2dvh), 7.8rem);
-  --section-heading-size: clamp(2.45rem, min(6vw, 7.4dvh), 6rem);
-  --section-preview-title-size: clamp(2rem, min(4.6vw, 5.8dvh), 4.5rem);
-  --section-display-line-height: 0.88;
-  --section-heading-line-height: 0.92;
-  --section-display-tracking: clamp(0.005em, 0.24vw, 0.045em);
+  --section-display-size: clamp(2.8rem, min(7vw, 8.6dvh), 7.4rem);
+  --section-project-title-size: clamp(2.5rem, min(6.3vw, 7.9dvh), 6.65rem);
+  --section-heading-size: clamp(2.15rem, min(5.1vw, 6.4dvh), 5.1rem);
+  --section-preview-title-size: clamp(1.85rem, min(3.8vw, 5dvh), 3.75rem);
+  --section-display-line-height: 0.92;
+  --section-heading-line-height: 0.94;
+  --section-display-tracking: clamp(-0.01em, 0.08vw, 0.015em);
   --section-display-max: 16ch;
   --section-heading-max: 20ch;
   --section-preview-max: 22ch;
@@ -364,6 +367,11 @@ body::-webkit-scrollbar {
   line-height: 0.98;
 }
 
+.section-cgi .preview-title {
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+}
+
 .large-nav-link {
   font-family: var(--font-section-display), var(--font-ui), sans-serif;
   width: max-content;
@@ -376,7 +384,7 @@ body::-webkit-scrollbar {
 }
 
 .discipline-footer-index {
-  font-family: var(--font-technical), var(--font-ui), sans-serif;
+  font-family: var(--font-meta), var(--font-ui), monospace;
   font-size: 0.32em;
   font-weight: 500;
   letter-spacing: clamp(0.12em, 0.36vw, 0.22em);
@@ -412,16 +420,15 @@ body::-webkit-scrollbar {
 .discipline-footer-cgi {
   --font-discipline-footer: var(--font-cgi);
   --discipline-footer-weight: 400;
-  --discipline-footer-tracking: clamp(0.015em, 0.34vw, 0.07em);
-  --discipline-footer-line-height: 1;
+  --discipline-footer-tracking: clamp(0em, 0.12vw, 0.02em);
+  --discipline-footer-line-height: 0.96;
 }
 
 .discipline-footer-design {
   --font-discipline-footer: var(--font-design);
   --discipline-footer-weight: 400;
-  --discipline-footer-stretch: condensed;
-  --discipline-footer-tracking: clamp(0.005em, 0.24vw, 0.045em);
-  --discipline-footer-line-height: 0.92;
+  --discipline-footer-tracking: clamp(0em, 0.18vw, 0.025em);
+  --discipline-footer-line-height: 0.96;
 }
 
 .meta-text {
@@ -493,28 +500,19 @@ body::-webkit-scrollbar {
   cursor: pointer;
   opacity: 0.4;
   text-align: left;
-  font-family: var(--font-technical), var(--font-ui), sans-serif;
+  font-family: var(--font-meta), var(--font-ui), monospace;
   font-size: 0.75rem;
   font-weight: 500;
-  font-variation-settings:
-    "MONO" 0.9,
-    "CASL" 0.16,
-    "CRSV" 0.5,
-    "slnt" 0;
   line-height: 1rem;
   letter-spacing: 0.38em;
   transition:
     opacity var(--motion-ui-fast) var(--ease-ui),
     color var(--motion-ui-fast) var(--ease-ui),
-    font-variation-settings var(--motion-ui-medium) var(--ease-ui);
+    letter-spacing var(--motion-ui-medium) var(--ease-ui);
 }
 
 .rolodex-nav-item:hover {
-  font-variation-settings:
-    "MONO" 1,
-    "CASL" 0.36,
-    "CRSV" 0.5,
-    "slnt" 0;
+  letter-spacing: 0.42em;
   opacity: 0.82;
 }
 
@@ -538,11 +536,7 @@ body::-webkit-scrollbar {
 
 .rolodex-nav-item[data-active="true"] {
   color: var(--text-highlight);
-  font-variation-settings:
-    "MONO" 1,
-    "CASL" 0.52,
-    "CRSV" 0.5,
-    "slnt" 0;
+  letter-spacing: 0.42em;
   opacity: 1;
 }
 
@@ -775,12 +769,7 @@ body::-webkit-scrollbar {
   right: clamp(1rem, 6cqw, 4.5rem);
   max-width: 20rem;
   color: rgb(var(--text-secondary-rgb) / 0.5);
-  font-family: var(--font-technical), var(--font-ui), sans-serif;
-  font-variation-settings:
-    "MONO" var(--type-recursive-mono, 0.8),
-    "CASL" var(--type-recursive-casl, 0.18),
-    "CRSV" var(--type-recursive-crsv, 0.4),
-    "slnt" var(--type-recursive-slnt, 0);
+  font-family: var(--font-meta), var(--font-ui), monospace;
   text-transform: uppercase;
 }
 
@@ -830,22 +819,18 @@ body::-webkit-scrollbar {
 
 .rolodex-panel-index {
   display: inline-block;
-  font-family: var(--font-technical), var(--font-ui), sans-serif;
+  font-family: var(--font-meta), var(--font-ui), monospace;
   opacity: var(--type-index-opacity, 1);
   transform:
     scaleX(var(--type-index-scale-x, 1))
     translateY(var(--type-index-y, 0));
   transform-origin: left center;
-  font-variation-settings:
-    "MONO" var(--type-recursive-mono, 1),
-    "CASL" var(--type-recursive-casl, 0.4),
-    "CRSV" var(--type-recursive-crsv, 0.5),
-    "slnt" var(--type-recursive-slnt, 0);
+  letter-spacing: var(--type-index-tracking, 0.38em);
   transition:
     opacity var(--rolodex-focus-duration) var(--rolodex-focus-easing),
     transform var(--rolodex-focus-duration) var(--rolodex-focus-easing),
-    font-variation-settings var(--rolodex-focus-duration) var(--rolodex-focus-easing);
-  will-change: transform, opacity, font-variation-settings;
+    letter-spacing var(--rolodex-focus-duration) var(--rolodex-focus-easing);
+  will-change: transform, opacity, letter-spacing;
 }
 
 .rolodex-content-layer h1,
@@ -886,7 +871,7 @@ body::-webkit-scrollbar {
 
 .rolodex-panel[data-panel="photography"] .rolodex-content-layer h1,
 .rolodex-panel[data-panel="photography"] .rolodex-content-layer h2 {
-  font-family: var(--font-photography), Georgia, serif;
+  font-family: var(--font-photography), var(--font-editorial), Georgia, serif;
   font-weight: 400;
   font-variation-settings: normal;
   letter-spacing: var(--type-photo-tracking, 0);
@@ -900,7 +885,7 @@ body::-webkit-scrollbar {
   font-family: var(--font-cgi), var(--font-ui), sans-serif;
   font-weight: 400;
   font-variation-settings: normal;
-  letter-spacing: var(--type-cgi-tracking, 0.055em);
+  letter-spacing: var(--type-cgi-tracking, 0.01em);
   transform:
     scaleX(var(--type-cgi-scale-x, 1))
     scaleY(var(--type-cgi-scale-y, 1));
@@ -909,9 +894,9 @@ body::-webkit-scrollbar {
 .rolodex-panel[data-panel="design"] .rolodex-content-layer h1,
 .rolodex-panel[data-panel="design"] .rolodex-content-layer h2 {
   font-family: var(--font-design), var(--font-ui), sans-serif;
-  font-weight: var(--type-design-weight, 400);
+  font-weight: var(--type-design-weight, 430);
   font-variation-settings: normal;
-  letter-spacing: var(--type-design-tracking, 0.02em);
+  letter-spacing: var(--type-design-tracking, 0.01em);
   transform:
     scaleX(var(--type-design-scale-x, 1))
     scaleY(var(--type-design-scale-y, 1));
@@ -928,7 +913,7 @@ body::-webkit-scrollbar {
 .rolodex-panel[data-state="active"] .rolodex-content-layer h2,
 .rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-content-layer h1,
 .rolodex-track[data-phase="expand"] .rolodex-panel[data-state="entering"] .rolodex-content-layer h2 {
-  font-size: clamp(4rem, 9vw, 9rem);
+  font-size: clamp(4rem, 8.4vw, 8.5rem);
 }
 
 .rolodex-panel[data-panel="cgi"][data-state="active"] .rolodex-content-layer h1,
@@ -939,7 +924,7 @@ body::-webkit-scrollbar {
 .rolodex-track[data-phase="expand"] .rolodex-panel[data-panel="cgi"][data-state="entering"] .rolodex-content-layer h2,
 .rolodex-track[data-phase="expand"] .rolodex-panel[data-panel="design"][data-state="entering"] .rolodex-content-layer h1,
 .rolodex-track[data-phase="expand"] .rolodex-panel[data-panel="design"][data-state="entering"] .rolodex-content-layer h2 {
-  font-size: clamp(3.1rem, 7.2vw, 7.25rem);
+  font-size: clamp(3.1rem, 6.8vw, 6.9rem);
 }
 
 .rolodex-content-layer p {
@@ -958,16 +943,12 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-content-layer .rolodex-panel-index {
-  font-family: var(--font-technical), var(--font-ui), sans-serif;
+  font-family: var(--font-meta), var(--font-ui), monospace;
   opacity: var(--type-index-opacity, 1);
   transform:
     scaleX(var(--type-index-scale-x, 1))
     translateY(var(--type-index-y, 0));
-  font-variation-settings:
-    "MONO" var(--type-recursive-mono, 1),
-    "CASL" var(--type-recursive-casl, 0.4),
-    "CRSV" var(--type-recursive-crsv, 0.5),
-    "slnt" var(--type-recursive-slnt, 0);
+  letter-spacing: var(--type-index-tracking, 0.38em);
 }
 
 .rolodex-panel[data-state="active"] .rolodex-content-layer p,
@@ -1049,32 +1030,32 @@ body::-webkit-scrollbar {
 
   .section-about,
   .section-contact {
-    --section-display-size: clamp(2.6rem, 15vw, 5.4rem);
-    --section-project-title-size: clamp(2.35rem, 12vw, 4.6rem);
-    --section-heading-size: clamp(2rem, 10vw, 3.8rem);
+    --section-display-size: clamp(2.55rem, 14.2vw, 5.15rem);
+    --section-project-title-size: clamp(2.3rem, 11.5vw, 4.45rem);
+    --section-heading-size: clamp(1.95rem, 9.6vw, 3.65rem);
   }
 
   .section-photography {
-    --section-display-size: clamp(2.5rem, 12.2vw, 4.7rem);
-    --section-project-title-size: clamp(2.25rem, 11vw, 4.4rem);
-    --section-heading-size: clamp(2rem, 9.6vw, 3.65rem);
-    --section-preview-title-size: clamp(1.75rem, 8.6vw, 3rem);
+    --section-display-size: clamp(2.2rem, 10.6vw, 4.45rem);
+    --section-project-title-size: clamp(2.15rem, 10.4vw, 4.2rem);
+    --section-heading-size: clamp(1.9rem, 9vw, 3.45rem);
+    --section-preview-title-size: clamp(1.65rem, 8.1vw, 2.85rem);
   }
 
   .section-cgi {
-    --section-display-size: clamp(1.85rem, 8.4vw, 3.25rem);
-    --section-project-title-size: clamp(1.7rem, 7.8vw, 3rem);
-    --section-heading-size: clamp(1.55rem, 7vw, 2.7rem);
-    --section-preview-title-size: clamp(1.35rem, 6.2vw, 2.3rem);
-    --section-display-tracking: clamp(0.005em, 0.9vw, 0.035em);
+    --section-display-size: clamp(2.3rem, 11.2vw, 4.35rem);
+    --section-project-title-size: clamp(2.05rem, 10vw, 4rem);
+    --section-heading-size: clamp(1.85rem, 8.8vw, 3.4rem);
+    --section-preview-title-size: clamp(1.6rem, 7.7vw, 2.85rem);
+    --section-display-tracking: clamp(0em, 0.4vw, 0.015em);
   }
 
   .section-design {
-    --section-display-size: clamp(2.7rem, 13vw, 5rem);
-    --section-project-title-size: clamp(2.4rem, 11.5vw, 4.65rem);
-    --section-heading-size: clamp(2.1rem, 10vw, 3.9rem);
-    --section-preview-title-size: clamp(1.85rem, 8.8vw, 3.25rem);
-    --section-display-tracking: clamp(0em, 0.75vw, 0.03em);
+    --section-display-size: clamp(2.45rem, 12vw, 4.65rem);
+    --section-project-title-size: clamp(2.2rem, 10.8vw, 4.25rem);
+    --section-heading-size: clamp(1.95rem, 9.4vw, 3.6rem);
+    --section-preview-title-size: clamp(1.7rem, 8.2vw, 3rem);
+    --section-display-tracking: clamp(-0.01em, 0.35vw, 0.015em);
   }
 
   .type-controlled-wrap,
@@ -1093,7 +1074,7 @@ body::-webkit-scrollbar {
   }
 
   .font-panel-cgi {
-    letter-spacing: clamp(0.01em, 1.2vw, 0.045em);
+    letter-spacing: clamp(0em, 0.45vw, 0.02em);
   }
 
   .font-panel-design {

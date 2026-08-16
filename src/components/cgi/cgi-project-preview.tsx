@@ -38,7 +38,7 @@ export function CgiProjectPreview({ project }: CgiProjectPreviewProps) {
             {project.title}
           </h2>
         </div>
-        <p className="font-technical meta-text flex flex-wrap gap-x-2 gap-y-1 font-medium uppercase leading-5 tracking-[clamp(0.14em,0.6vw,0.28em)] text-text-secondary/75 sm:justify-end sm:text-right">
+        <p className="font-meta meta-text flex flex-wrap gap-x-2 gap-y-1 font-medium uppercase leading-5 tracking-[clamp(0.14em,0.6vw,0.28em)] text-text-secondary/75 sm:justify-end sm:text-right">
           {[project.client, project.category, project.year].map((item, index) => (
             <span key={item} className="type-nowrap">
               {index > 0 ? "/ " : ""}
@@ -61,7 +61,7 @@ export function CgiProjectPreview({ project }: CgiProjectPreviewProps) {
         </p>
       </div>
 
-      <footer className="font-technical meta-text mt-5 flex flex-col gap-2 font-medium uppercase leading-5 tracking-[clamp(0.14em,0.6vw,0.28em)] text-text-muted/70 sm:flex-row sm:items-center sm:justify-between">
+      <footer className="font-meta meta-text mt-5 flex flex-col gap-2 font-medium uppercase leading-5 tracking-[clamp(0.14em,0.6vw,0.28em)] text-text-muted/70 sm:flex-row sm:items-center sm:justify-between">
         <p>{project.category}</p>
         {hasCaseStudy ? (
           <LiquidGlassButton asChild>

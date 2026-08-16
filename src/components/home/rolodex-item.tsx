@@ -85,7 +85,7 @@ export function RolodexItem({
 
         <div className="rolodex-content-layer">
           <div>
-            <p className="rolodex-panel-index font-technical text-xs uppercase tracking-[0.38em] text-text-muted">
+            <p className="rolodex-panel-index font-meta text-xs uppercase tracking-[0.38em] text-text-muted">
               {entry.index}
             </p>
             <TitleTag

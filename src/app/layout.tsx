@@ -1,46 +1,52 @@
 import type { Metadata } from "next";
 import {
+  Archivo,
+  Bodoni_Moda,
+  Encode_Sans,
   Geist,
-  Instrument_Serif,
-  Michroma,
-  Recursive,
+  Geist_Mono,
+  Manrope,
   Roboto_Serif,
-  Saira_Condensed,
 } from "next/font/google";
 import "./globals.css";
 
 const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-ui",
+  variable: "--font-geist",
 });
 
-const recursive = Recursive({
-  axes: ["CASL", "CRSV", "MONO", "slnt"],
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  variable: "--font-technical",
+  variable: "--font-geist-mono",
 });
 
 const robotoSerif = Roboto_Serif({
   axes: ["GRAD", "opsz", "wdth"],
   subsets: ["latin"],
-  variable: "--font-editorial",
+  variable: "--font-roboto-serif",
 });
 
-const instrumentSerif = Instrument_Serif({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-photography",
-  weight: "400",
+  variable: "--font-manrope",
+  weight: ["300", "400", "500"],
 });
 
-const michroma = Michroma({
+const bodoniModa = Bodoni_Moda({
   subsets: ["latin"],
-  variable: "--font-cgi",
-  weight: "400",
+  variable: "--font-bodoni-moda",
+  weight: ["400", "500"],
 });
 
-const sairaCondensed = Saira_Condensed({
+const encodeSans = Encode_Sans({
   subsets: ["latin"],
-  variable: "--font-design",
+  variable: "--font-encode-sans",
+  weight: ["300", "400", "500"],
+});
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  variable: "--font-archivo",
   weight: ["300", "400", "500"],
 });
 
@@ -57,7 +63,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${recursive.variable} ${robotoSerif.variable} ${instrumentSerif.variable} ${michroma.variable} ${sairaCondensed.variable} h-full antialiased`}
+      className={`${geist.variable} ${geistMono.variable} ${robotoSerif.variable} ${manrope.variable} ${bodoniModa.variable} ${encodeSans.variable} ${archivo.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-text-primary">
         {children}

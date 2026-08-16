@@ -27,7 +27,7 @@ export function RolodexNav({
               <button
                 type="button"
                 aria-current={isActive ? "page" : undefined}
-                className="rolodex-nav-item font-technical"
+                className="rolodex-nav-item font-meta"
                 data-active={isActive ? "true" : "false"}
                 data-navigating={isNavigating ? "true" : "false"}
                 data-pending={isPending ? "true" : "false"}
