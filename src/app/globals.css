@@ -996,7 +996,7 @@ body::-webkit-scrollbar {
 
 .rolodex-panel[data-panel="photography"] {
   --rolodex-copy-width: clamp(17rem, 30vw, 27rem);
-  --rolodex-stack-width: 44rem;
+  --rolodex-stack-width: clamp(17rem, 30vw, 27rem);
 }
 
 .rolodex-panel[data-panel="cgi"] {

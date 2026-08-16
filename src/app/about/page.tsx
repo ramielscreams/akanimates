@@ -5,7 +5,7 @@ import { NextDisciplineLink } from "@/components/navigation/next-discipline-link
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 
 const disciplines = [
-  "Automotive photography",
+  "Automotive stills",
   "CGI and visualization",
   "Automotive design development",
 ];
@@ -13,7 +13,7 @@ const disciplines = [
 const credentials = [
   "Selected automotive visual work",
   "Design experimentation and development",
-  "Focused collaborations across photography, CGI and design",
+  "Focused collaborations across stills, CGI and design",
 ];
 
 const contactMethods = [
@@ -40,7 +40,7 @@ export default function AboutPage() {
           <div className="site-prose mt-8 space-y-6 text-text-secondary">
             <p>
               AK is an automotive visual practitioner working across
-              photography, CGI and design. The portfolio is built around
+              stills, CGI and design. The portfolio is built around
               image-led projects, technical restraint and a focused interest in
               vehicle form.
             </p>
@@ -124,7 +124,7 @@ export default function AboutPage() {
               Have a project in mind?
             </h2>
             <p className="site-prose mt-8 text-text-secondary">
-              Reach out for automotive photography, CGI visualization, design
+              Reach out for automotive stills, CGI visualization, design
               development or a focused collaboration that needs a restrained
               visual system.
             </p>
@@ -158,7 +158,7 @@ export default function AboutPage() {
             <NextDisciplineLink
               href="/photography"
               index="02"
-              label="photography"
+              label="stills"
             />
           </div>
 

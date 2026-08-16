@@ -9,14 +9,14 @@ export function PhotographyProjectList({ projects }: PhotographyProjectListProps
   return (
     <section
       className="site-safe-x site-section-y space-y-[clamp(6rem,16vw,16rem)]"
-      aria-labelledby="selected-photography-work"
+      aria-labelledby="selected-stills-work"
     >
       <div className="max-w-2xl">
         <p className="site-technical-label text-text-muted">
           Selected work
         </p>
         <h2
-          id="selected-photography-work"
+          id="selected-stills-work"
           className="site-section-title section-heading type-controlled-wrap mt-6 text-text-primary"
         >
           Automotive index

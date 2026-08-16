@@ -7,7 +7,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 const navigationItems = [
   { index: "01", label: "about", href: "/about" },
-  { index: "02", label: "photography", href: "/photography" },
+  { index: "02", label: "stills", href: "/photography" },
   { index: "03", label: "cgi", href: "/cgi" },
   { index: "04", label: "design", href: "/design" },
 ];

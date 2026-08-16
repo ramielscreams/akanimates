@@ -39,8 +39,8 @@ export async function generateMetadata({
   return {
     description:
       project.intro[0] ??
-      `${project.title} automotive photography case study by AK.`,
-    title: `${project.title} | Photography | AK`,
+      `${project.title} automotive stills case study by AK.`,
+    title: `${project.title} | Stills | AK`,
   };
 }
 
@@ -65,7 +65,7 @@ export default async function PhotographyProjectPage({
       <InteriorMenu />
       <article>
         <ProjectHero
-          discipline="photography"
+          discipline="stills"
           meta={[
             project.manufacturer ?? project.client,
             project.location,
@@ -103,8 +103,9 @@ export default async function PhotographyProjectPage({
         />
         <NextProject
           backHref="/photography"
-          backLabel="Back / Photography"
-          discipline="Photography"
+          backLabel="Back / Stills"
+          discipline="Stills"
+          hrefBase="/photography"
           project={nextProject}
         />
       </article>

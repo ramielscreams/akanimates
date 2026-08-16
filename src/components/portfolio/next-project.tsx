@@ -7,6 +7,7 @@ type NextProjectProps = {
   backHref: string;
   backLabel: string;
   discipline: string;
+  hrefBase?: string;
   project?: BasePortfolioProject;
 };
 
@@ -14,8 +15,11 @@ export function NextProject({
   backHref,
   backLabel,
   discipline,
+  hrefBase,
   project,
 }: NextProjectProps) {
+  const projectHrefBase = hrefBase ?? `/${discipline.toLowerCase()}`;
+
   return (
     <nav
       className="site-safe-x pb-[clamp(5rem,12vh,9rem)] pt-[clamp(2rem,8vh,6rem)]"
@@ -28,7 +32,7 @@ export function NextProject({
               Next / {project.index}
             </p>
             <Link
-              href={`/${discipline.toLowerCase()}/${project.slug}`}
+              href={`${projectHrefBase}/${project.slug}`}
               className="large-nav-link mt-6 inline-flex min-h-11 items-center font-light uppercase tracking-normal text-text-primary transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-brand-soft hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
             >
               {project.title}

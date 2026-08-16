@@ -3,10 +3,10 @@ export function PhotographyHero() {
     <section className="site-safe-x site-hero-y grid min-h-[min(100dvh,56rem)] grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)] lg:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
       <div className="relative z-10 max-w-2xl pb-2">
         <p className="site-technical-label text-text-muted">
-          02 / photography
+          02 / stills
         </p>
         <h1 className="site-display-title interior-heading type-controlled-wrap mt-8 text-text-primary">
-          Photography
+          Stills
         </h1>
         <p className="site-prose mt-8 max-w-[28rem] text-text-secondary">
           Automotive, motorsport and editorial imagery.

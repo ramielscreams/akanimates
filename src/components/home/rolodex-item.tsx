@@ -8,6 +8,7 @@ export type RolodexEntry = {
   description: string;
   href: string;
   cta: string;
+  panelKey?: string;
   mediaLabel: string;
   mediaNote: string;
   focusedMediaFit?: "cover" | "contain";
@@ -51,7 +52,7 @@ export function RolodexItem({
   } as CSSProperties;
   const TitleTag = primaryHeading ? "h1" : "h2";
   const isActive = state === "active";
-  const panelKey = entry.title.toLowerCase();
+  const panelKey = entry.panelKey ?? entry.title.toLowerCase();
   const titleFontClass = panelTitleFontClasses[panelKey] ?? "font-ui";
 
   return (

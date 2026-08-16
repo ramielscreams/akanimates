@@ -8,7 +8,7 @@ export function HomeHero() {
         Visual portfolio in progress
       </h1>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-text-secondary">
-        A clean placeholder homepage for photography, CGI, design, and future
+        A clean placeholder homepage for stills, CGI, design, and future
         project notes while the site structure is being tested.
       </p>
     </section>
