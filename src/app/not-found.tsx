@@ -39,7 +39,7 @@ export default function NotFound() {
         </div>
 
         <div
-          className="select-none justify-self-start text-[clamp(5rem,min(22vw,24dvh),18rem)] font-light leading-none tracking-normal text-brand/40 opacity-20 lg:justify-self-end"
+          className="type-display select-none justify-self-start text-[clamp(5rem,min(22vw,24dvh),18rem)] font-normal leading-none tracking-normal text-brand/40 opacity-20 lg:justify-self-end"
           aria-hidden="true"
         >
           404

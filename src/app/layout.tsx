@@ -1,23 +1,16 @@
 import type { Metadata } from "next";
 import {
-  Archivo,
-  Bodoni_Moda,
-  Geist,
-  Geist_Mono,
+  IBM_Plex_Mono,
+  Instrument_Serif,
   Manrope,
   Roboto_Serif,
-  Space_Grotesk,
 } from "next/font/google";
 import "./globals.css";
 
-const geist = Geist({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-geist",
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
+  variable: "--font-instrument-serif",
+  weight: "400",
 });
 
 const robotoSerif = Roboto_Serif({
@@ -26,28 +19,16 @@ const robotoSerif = Roboto_Serif({
   variable: "--font-roboto-serif",
 });
 
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  variable: "--font-ibm-plex-mono",
+  weight: ["400", "500"],
+});
+
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
-  weight: ["300", "400", "500"],
-});
-
-const bodoniModa = Bodoni_Moda({
-  subsets: ["latin"],
-  variable: "--font-bodoni-moda",
-  weight: ["400", "500"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  weight: ["400", "500"],
-});
-
-const archivo = Archivo({
-  subsets: ["latin"],
-  variable: "--font-archivo",
-  weight: ["300", "400", "500"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -63,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${geistMono.variable} ${robotoSerif.variable} ${manrope.variable} ${bodoniModa.variable} ${spaceGrotesk.variable} ${archivo.variable} h-full antialiased`}
+      className={`${instrumentSerif.variable} ${manrope.variable} ${robotoSerif.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-text-primary">
         {children}

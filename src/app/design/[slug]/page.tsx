@@ -91,7 +91,7 @@ export default async function DesignProjectPage({
           project={project}
         />
         <NextProject
-          backHref="/design"
+          backHref="/cgi#design"
           backLabel="Back / Design"
           discipline="Design"
           project={nextProject}

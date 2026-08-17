@@ -9,8 +9,20 @@ const navigationItems = [
   { index: "01", label: "about", href: "/about" },
   { index: "02", label: "stills", href: "/photography" },
   { index: "03", label: "cgi", href: "/cgi" },
-  { index: "04", label: "design", href: "/design" },
 ];
+
+function getCurrentTopLevelHref(pathname: string) {
+  const normalizedPathname = pathname.replace(/\/$/, "") || "/";
+
+  if (
+    normalizedPathname === "/design" ||
+    normalizedPathname.startsWith("/design/")
+  ) {
+    return "/cgi";
+  }
+
+  return normalizedPathname;
+}
 
 export function InteriorMenu() {
   const pathname = usePathname();
@@ -22,11 +34,11 @@ export function InteriorMenu() {
   const visibleItems = useMemo(
     () =>
       navigationItems.filter((item) => {
-        const normalizedPathname = pathname.replace(/\/$/, "") || "/";
+        const currentTopLevelHref = getCurrentTopLevelHref(pathname);
 
         return (
-          normalizedPathname !== item.href &&
-          !normalizedPathname.startsWith(`${item.href}/`)
+          currentTopLevelHref !== item.href &&
+          !currentTopLevelHref.startsWith(`${item.href}/`)
         );
       }),
     [pathname],
@@ -128,10 +140,15 @@ export function InteriorMenu() {
                   ref={index === 0 ? firstMenuLinkRef : undefined}
                   href={item.href}
                   tabIndex={isOpen ? 0 : -1}
-                  className="type-nowrap block max-w-[calc(100vw-2.5rem)] py-2 text-center text-[length:var(--type-menu-item)] font-medium lowercase leading-[1.02] tracking-[clamp(0.06em,0.7vw,0.16em)] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+                  className="type-nowrap group flex max-w-[calc(100vw-2.5rem)] items-baseline justify-center gap-[0.26em] py-2 text-center text-[length:var(--type-menu-item)] lowercase leading-[1.02] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
                   onClick={() => setIsOpen(false)}
                 >
-                  {item.index} / {item.label}
+                  <span className="font-meta text-[0.32em] font-medium tracking-[clamp(0.12em,0.36vw,0.22em)]">
+                    {item.index} /
+                  </span>
+                  <span className="type-display font-normal tracking-normal">
+                    {item.label}
+                  </span>
                 </Link>
               </li>
             ))}

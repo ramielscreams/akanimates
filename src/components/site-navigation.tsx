@@ -5,7 +5,6 @@ const navigationItems = [
   { label: "Home", href: "/" },
   { label: "Stills", href: "/photography" },
   { label: "CGI", href: "/cgi" },
-  { label: "Design", href: "/design" },
   { label: "About", href: "/about" },
 ];
 

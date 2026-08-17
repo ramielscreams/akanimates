@@ -1,11 +1,14 @@
 export function DesignHero() {
   return (
-    <section className="site-safe-x site-hero-y grid min-h-[min(100dvh,58rem)] grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)]">
+    <section
+      id="design"
+      className="site-safe-x site-hero-y grid min-h-[min(100dvh,58rem)] scroll-mt-8 grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)]"
+    >
       <div className="mx-auto w-full max-w-[88rem]">
         <div className="grid gap-10 lg:grid-cols-[minmax(18rem,0.58fr)_minmax(0,1.42fr)] lg:items-end">
           <div className="relative z-10 max-w-3xl pb-2">
             <p className="site-technical-label text-text-muted">
-              04 / design
+              03 / design
             </p>
             <h1 className="site-display-title interior-heading type-controlled-wrap mt-8 text-text-primary">
               Design
