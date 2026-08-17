@@ -42,7 +42,7 @@ export function ProjectHero({ discipline, meta, project }: ProjectHeroProps) {
               : "min-h-[clamp(22rem,58dvh,44rem)] lg:min-h-[clamp(30rem,76dvh,54rem)]"
           }`}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_26%,rgb(var(--brand-rgb)_/_0.18),transparent_30rem),linear-gradient(110deg,rgb(var(--text-primary-rgb)_/_0.12),transparent_28%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.72))]" />
+          <div className="absolute inset-0 bg-surface" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_16%,rgb(var(--border-rgb)_/_0.8)_16%_calc(16%+1px),transparent_calc(16%+1px)),linear-gradient(180deg,transparent_0_70%,rgb(var(--border-rgb)_/_0.7)_70%_calc(70%+1px),transparent_calc(70%+1px))] opacity-65" />
           <figcaption className="site-technical-label caption-text absolute bottom-6 left-6 max-w-[calc(100%-3rem)] text-text-muted/65">
             Hero {project.hero.type} placeholder / {discipline}

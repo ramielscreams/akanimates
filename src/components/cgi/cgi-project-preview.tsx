@@ -52,10 +52,16 @@ export function CgiProjectPreview({ project }: CgiProjectPreviewProps) {
         className={`relative w-full overflow-hidden bg-surface min-h-[18rem] ${frameClasses[project.layout]}`}
       >
         <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-bg" />
-        <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-[radial-gradient(circle_at_52%_38%,rgb(var(--text-primary-rgb)_/_0.14),transparent_18rem),linear-gradient(120deg,rgb(var(--technical-rgb)_/_0.14),transparent_26%),linear-gradient(180deg,rgb(var(--text-primary-rgb)_/_0.04),rgb(var(--bg-rgb)_/_0.74))] transition-transform duration-[var(--motion-editorial)] ease-[var(--ease-editorial)] group-hover:scale-[1.01] motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
+        <div className="absolute inset-[clamp(0.75rem,2vw,1.75rem)] bg-surface transition-transform duration-[var(--motion-editorial)] ease-[var(--ease-editorial)] group-hover:scale-[1.01] motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
         <div className="absolute left-[14%] right-[14%] top-1/2 h-px bg-technical/30" />
         <div className="absolute bottom-[18%] left-1/2 h-[42%] w-px bg-technical/30" />
         <div className="absolute left-1/2 top-1/2 h-[42%] w-[58%] -translate-x-1/2 -translate-y-1/2 border border-border bg-bg/20" />
+        {hasCaseStudy ? (
+          <div
+            className="signal-marker absolute right-5 top-5"
+            aria-hidden="true"
+          />
+        ) : null}
         <p className="site-technical-label absolute bottom-5 left-5 max-w-[calc(100%-2.5rem)] text-text-muted/60">
           {project.mediaType} placeholder
         </p>

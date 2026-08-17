@@ -144,6 +144,25 @@ body::-webkit-scrollbar {
     letter-spacing var(--motion-ui-medium) var(--ease-ui);
 }
 
+.signal-marker {
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--signal);
+  box-shadow: 0 0 0.9rem rgb(var(--signal-rgb) / 0.34);
+}
+
+.signal-line {
+  display: inline-block;
+  width: clamp(1.75rem, 4vw, 3rem);
+  height: 1px;
+  flex: 0 0 auto;
+  background: var(--signal);
+  box-shadow: 0 0 0.9rem rgb(var(--signal-rgb) / 0.28);
+}
+
 .site-prose {
   font-family: var(--font-editorial), Georgia, serif;
   width: min(100%, 65ch);
@@ -455,10 +474,7 @@ body::-webkit-scrollbar {
   height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 78% 12%, rgb(var(--brand-interactive-rgb) / 0.24), transparent 32rem),
-    radial-gradient(circle at 6% 48%, rgb(var(--brand-rgb) / 0.28), transparent 34rem),
-    var(--bg);
+  background: var(--bg);
 }
 
 .rolodex-atmosphere {
@@ -540,6 +556,19 @@ body::-webkit-scrollbar {
   color: var(--text-highlight);
   letter-spacing: 0.42em;
   opacity: 1;
+}
+
+.rolodex-nav-item[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: -0.9rem;
+  top: 50%;
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 999px;
+  background: var(--signal);
+  box-shadow: 0 0 0.75rem rgb(var(--signal-rgb) / 0.42);
+  transform: translateY(-50%);
 }
 
 .rolodex-track {
@@ -713,9 +742,7 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-panel[data-panel="about"] .rolodex-media-layer {
-  background:
-    linear-gradient(135deg, var(--surface), var(--brand) 160%),
-    var(--surface);
+  background: var(--surface);
 }
 
 .rolodex-panel[data-panel="photography"] .rolodex-media-layer {
@@ -723,15 +750,11 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-panel[data-panel="cgi"] .rolodex-media-layer {
-  background:
-    linear-gradient(135deg, var(--surface), var(--technical) 180%),
-    var(--surface);
+  background: var(--surface);
 }
 
 .rolodex-panel[data-panel="design"] .rolodex-media-layer {
-  background:
-    linear-gradient(135deg, var(--surface), var(--brand) 150%, var(--technical) 230%),
-    var(--surface);
+  background: var(--surface);
 }
 
 .rolodex-media-layer img,
@@ -767,21 +790,15 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-panel[data-panel="about"] .rolodex-media-field {
-  background:
-    linear-gradient(135deg, var(--surface), var(--brand) 170%),
-    var(--surface);
+  background: var(--surface);
 }
 
 .rolodex-panel[data-panel="cgi"] .rolodex-media-field {
-  background:
-    linear-gradient(135deg, var(--surface), var(--technical) 190%),
-    var(--surface);
+  background: var(--surface);
 }
 
 .rolodex-panel[data-panel="design"] .rolodex-media-field {
-  background:
-    linear-gradient(135deg, var(--surface), var(--brand) 170%, var(--technical) 250%),
-    var(--surface);
+  background: var(--surface);
 }
 
 .rolodex-panel[data-state="active"] .rolodex-media-field,

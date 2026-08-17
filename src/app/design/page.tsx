@@ -17,7 +17,7 @@ export default function DesignPage() {
       <section className="site-safe-x pb-[clamp(5rem,12vh,9rem)] pt-[clamp(2rem,8vh,6rem)]">
         <div className="grid gap-8 border-t border-border pt-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div className="min-w-0">
-            <p className="site-technical-label text-technical">
+            <p className="site-technical-label text-text-muted">
               Next discipline
             </p>
             <NextDisciplineLink href="/about" index="01" label="about" />

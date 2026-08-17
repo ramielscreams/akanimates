@@ -93,12 +93,15 @@ export default function AboutPage() {
           </section>
 
           <section aria-labelledby="about-availability">
-            <p
-              id="about-availability"
-              className="site-technical-label text-text-muted"
-            >
-              location / availability
-            </p>
+            <div className="flex items-center gap-3">
+              <span className="signal-marker" aria-hidden="true" />
+              <p
+                id="about-availability"
+                className="site-technical-label text-text-muted"
+              >
+                location / availability
+              </p>
+            </div>
             <p className="mt-5 max-w-sm text-sm leading-7 text-text-secondary sm:text-base">
               Available for automotive visual production, design development and
               focused collaborations.
@@ -114,8 +117,9 @@ export default function AboutPage() {
       >
         <div className="grid gap-[clamp(3rem,8vw,6rem)] border-t border-border pt-[clamp(3rem,8vw,5rem)] lg:grid-cols-[minmax(0,0.8fr)_minmax(18rem,0.72fr)]">
           <div className="min-w-0">
-            <p className="site-technical-label text-text-muted">
-              contact
+            <p className="site-technical-label flex items-center gap-3 text-text-muted">
+              <span className="signal-line" aria-hidden="true" />
+              <span>contact</span>
             </p>
             <h2
               id="contact-heading"

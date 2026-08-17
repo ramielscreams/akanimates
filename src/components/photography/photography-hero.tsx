@@ -14,7 +14,7 @@ export function PhotographyHero() {
       </div>
 
       <div className="relative min-h-[clamp(20rem,52dvh,46rem)] w-full overflow-hidden border border-border bg-surface lg:min-h-[clamp(28rem,74dvh,52rem)]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_28%,rgb(var(--brand-soft-rgb)_/_0.16),transparent_28rem),linear-gradient(120deg,rgb(var(--text-primary-rgb)_/_0.13),transparent_24%),linear-gradient(180deg,rgb(var(--border-rgb)_/_0.62),rgb(var(--bg-rgb)_/_0.72))]" />
+        <div className="absolute inset-0 bg-surface" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_12%,rgb(var(--border-rgb)_/_0.9)_12%_calc(12%+1px),transparent_calc(12%+1px)),linear-gradient(180deg,transparent_0_72%,rgb(var(--border-rgb)_/_0.8)_72%_calc(72%+1px),transparent_calc(72%+1px))] opacity-70" />
         <p className="site-technical-label absolute bottom-6 left-6 max-w-[calc(100%-3rem)] text-text-muted/70">
           Featured media placeholder

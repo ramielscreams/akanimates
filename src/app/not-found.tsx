@@ -15,8 +15,9 @@ export default function NotFound() {
 
       <section className="site-safe-x site-page-y grid min-h-dvh grid-cols-1 items-center gap-[clamp(2rem,6vw,4rem)] lg:grid-cols-[minmax(0,0.92fr)_minmax(16rem,1.08fr)]">
         <div className="max-w-2xl">
-          <p className="site-technical-label text-text-muted">
-            Error / 404
+          <p className="site-technical-label flex items-center gap-3 text-text-muted">
+            <span className="signal-marker" aria-hidden="true" />
+            <span>Error / 404</span>
           </p>
           <h1 className="site-display-title interior-heading type-controlled-wrap mt-6 text-text-primary">
             Off Route.

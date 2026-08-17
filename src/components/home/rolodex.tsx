@@ -24,7 +24,7 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore profile",
     mediaLabel: "About media placeholder",
     mediaNote: "Future media: portrait, studio scene, showreel frame, or abstract detail.",
-    accent: "rgb(var(--brand-rgb) / 0.58)",
+    accent: "rgb(var(--brand-rgb) / 0.22)",
     surface: "var(--bg)",
   },
   {
@@ -36,8 +36,8 @@ const rolodexEntries: RolodexEntry[] = [
     panelKey: "photography",
     mediaLabel: "Stills media placeholder",
     mediaNote: "Future media: full-screen automotive still.",
-    accent: "rgb(var(--brand-rgb) / 0.38)",
-    surface: "var(--surface)",
+    accent: "rgb(var(--brand-rgb) / 0.22)",
+    surface: "var(--bg)",
   },
   {
     index: "03",
@@ -47,8 +47,8 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore CGI",
     mediaLabel: "CGI media placeholder",
     mediaNote: "Future media: full-screen render, animation still, or material study.",
-    accent: "rgb(var(--technical-rgb) / 0.18)",
-    surface: "var(--surface)",
+    accent: "rgb(var(--brand-rgb) / 0.22)",
+    surface: "var(--bg)",
   },
   {
     index: "04",
@@ -58,8 +58,8 @@ const rolodexEntries: RolodexEntry[] = [
     cta: "Explore design",
     mediaLabel: "Design media placeholder",
     mediaNote: "Future media: sketch, CAD viewport, blueprint, or aero study.",
-    accent: "rgb(var(--technical-rgb) / 0.14)",
-    surface: "var(--surface)",
+    accent: "rgb(var(--brand-rgb) / 0.22)",
+    surface: "var(--bg)",
   },
 ];
 
