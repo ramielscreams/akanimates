@@ -58,7 +58,7 @@ export default async function CgiProjectPage({ params }: CgiProjectPageProps) {
       <InteriorMenu />
       <article>
         <ProjectHero
-          discipline="cgi"
+          discipline="visualization / cgi"
           meta={[project.client, project.category, project.year]}
           project={project}
         />
@@ -89,8 +89,8 @@ export default async function CgiProjectPage({ params }: CgiProjectPageProps) {
           project={project}
         />
         <NextProject
-          backHref="/cgi"
-          backLabel="Back / CGI"
+          backHref="/visualization?mode=cgi"
+          backLabel="Back to CGI"
           discipline="CGI"
           project={nextProject}
         />

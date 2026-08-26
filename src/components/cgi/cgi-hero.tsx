@@ -1,10 +1,13 @@
 export function CgiHero() {
   return (
-    <section className="site-safe-x site-hero-y grid min-h-[min(100dvh,58rem)] grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)]">
+    <section
+      id="cgi"
+      className="site-safe-x site-hero-y grid min-h-[min(100dvh,58rem)] scroll-mt-[clamp(5rem,12vh,8rem)] grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)]"
+    >
       <div className="relative z-10 mx-auto w-full max-w-[88rem]">
         <div className="max-w-3xl">
           <p className="site-technical-label text-text-muted">
-            03 / cgi
+            03 / visualization / cgi
           </p>
           <h1 className="interior-heading type-controlled-wrap mt-8 uppercase text-text-primary">
             CGI

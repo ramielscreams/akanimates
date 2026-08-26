@@ -34,7 +34,7 @@ export function CgiProjectPreview({ project }: CgiProjectPreviewProps) {
           <p className="site-technical-label lowercase text-text-muted">
             {project.index} / {project.title.toLowerCase()}
           </p>
-          <h2 className="preview-title type-wrap mt-4 font-light uppercase tracking-normal text-text-primary">
+          <h2 className="preview-title type-wrap mt-4 uppercase tracking-[0.02em] text-text-primary">
             {project.title}
           </h2>
         </div>
@@ -72,7 +72,7 @@ export function CgiProjectPreview({ project }: CgiProjectPreviewProps) {
         {hasCaseStudy ? (
           <LiquidGlassButton asChild>
             <Link href={`/cgi/${project.slug}`}>
-              View
+              View CGI Project
               <span
                 className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                 aria-hidden="true"

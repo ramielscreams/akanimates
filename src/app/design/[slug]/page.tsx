@@ -60,7 +60,7 @@ export default async function DesignProjectPage({
       <InteriorMenu />
       <article>
         <ProjectHero
-          discipline="design"
+          discipline="visualization / design"
           meta={[project.client, project.category, project.year]}
           project={project}
         />
@@ -91,8 +91,8 @@ export default async function DesignProjectPage({
           project={project}
         />
         <NextProject
-          backHref="/cgi#design"
-          backLabel="Back / Design"
+          backHref="/visualization?mode=design"
+          backLabel="Back to Design"
           discipline="Design"
           project={nextProject}
         />

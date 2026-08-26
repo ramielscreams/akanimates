@@ -79,26 +79,26 @@ export function RolodexItem({
         <div className="rolodex-content-layer">
           <div className="rolodex-title-stack">
             <TitleTag
-              className="rolodex-heading text-6xl font-light uppercase leading-[0.86] tracking-normal text-text-primary sm:text-8xl lg:text-9xl"
+              className="rolodex-heading uppercase text-text-primary"
             >
               {entry.title}
             </TitleTag>
-            <p className="rolodex-copy mt-6 text-base leading-8 text-text-secondary sm:text-lg">
+            <p className="rolodex-copy text-base leading-8 text-text-secondary sm:text-lg">
               {entry.description}
             </p>
-
-            <LiquidGlassButton asChild className="rolodex-liquid-cta">
-              <Link href={entry.href} tabIndex={isActive ? 0 : -1}>
-                {entry.cta}
-                <span
-                  className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
-                  aria-hidden="true"
-                >
-                  -&gt;
-                </span>
-              </Link>
-            </LiquidGlassButton>
           </div>
+
+          <LiquidGlassButton asChild className="rolodex-liquid-cta">
+            <Link href={entry.href} tabIndex={isActive ? 0 : -1}>
+              {entry.cta}
+              <span
+                className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                aria-hidden="true"
+              >
+                -&gt;
+              </span>
+            </Link>
+          </LiquidGlassButton>
         </div>
       </div>
     </article>

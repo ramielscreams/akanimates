@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import {
-  IBM_Plex_Mono,
-  Instrument_Serif,
-  Manrope,
+  Barlow_Condensed,
+  Inter,
   Roboto_Serif,
+  Tenor_Sans,
 } from "next/font/google";
 import "./globals.css";
 
-const instrumentSerif = Instrument_Serif({
+const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
-  variable: "--font-instrument-serif",
-  weight: "400",
+  variable: "--font-barlow-condensed",
+  weight: ["900"],
+  style: ["normal"],
 });
 
 const robotoSerif = Roboto_Serif({
@@ -19,16 +20,15 @@ const robotoSerif = Roboto_Serif({
   variable: "--font-roboto-serif",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
+const tenorSans = Tenor_Sans({
   subsets: ["latin"],
-  variable: "--font-ibm-plex-mono",
-  weight: ["400", "500"],
+  variable: "--font-tenor-sans",
+  weight: "400",
 });
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-manrope",
-  weight: ["400", "500", "600"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -44,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${instrumentSerif.variable} ${manrope.variable} ${robotoSerif.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      className={`${barlowCondensed.variable} ${tenorSans.variable} ${robotoSerif.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-text-primary">
         {children}

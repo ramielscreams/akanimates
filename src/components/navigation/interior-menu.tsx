@@ -7,18 +7,20 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 const navigationItems = [
   { index: "01", label: "about", href: "/about" },
-  { index: "02", label: "stills", href: "/photography" },
-  { index: "03", label: "cgi", href: "/cgi" },
+  { index: "02", label: "photography", href: "/photography" },
+  { index: "03", label: "visualization", href: "/visualization" },
 ];
 
 function getCurrentTopLevelHref(pathname: string) {
   const normalizedPathname = pathname.replace(/\/$/, "") || "/";
 
   if (
+    normalizedPathname === "/cgi" ||
+    normalizedPathname.startsWith("/cgi/") ||
     normalizedPathname === "/design" ||
     normalizedPathname.startsWith("/design/")
   ) {
-    return "/cgi";
+    return "/visualization";
   }
 
   return normalizedPathname;
@@ -29,6 +31,7 @@ export function InteriorMenu() {
   const menuId = useId();
   const firstMenuLinkRef = useRef<HTMLAnchorElement | null>(null);
   const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const menuPanelRef = useRef<HTMLDivElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const visibleItems = useMemo(
@@ -60,6 +63,36 @@ export function InteriorMenu() {
         window.setTimeout(() => {
           menuTriggerRef.current?.focus();
         }, 0);
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        menuPanelRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      ).filter((element) => !element.hasAttribute("aria-hidden"));
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+        return;
+      }
+
+      if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
       }
     };
 
@@ -109,15 +142,19 @@ export function InteriorMenu() {
         aria-controls={menuId}
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-        className="site-technical-label fixed right-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] z-[230] min-h-11 cursor-pointer border-0 bg-transparent p-0 text-text-primary opacity-80 transition-opacity duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+        className="site-technical-label ui-floating-control fixed right-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] z-[230] min-h-11 cursor-pointer text-text-primary opacity-90 transition-[background-color,border-color,opacity,transform] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:scale-[0.98] active:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
         onClick={() => setIsOpen((current) => !current)}
       >
         {isOpen ? "close" : "menu"}
       </button>
 
       <div
+        ref={menuPanelRef}
         id={menuId}
-        className="fixed inset-0 z-[220] bg-bg text-text-primary transition-opacity duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] data-[open=false]:pointer-events-none data-[open=false]:opacity-0 data-[open=true]:opacity-100 motion-reduce:duration-[1ms]"
+        role="dialog"
+        aria-modal={isOpen ? "true" : undefined}
+        aria-label="Site navigation"
+        className="fixed inset-0 z-[220] origin-top-right bg-bg text-text-primary transition-[opacity,transform] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] data-[open=false]:pointer-events-none data-[open=false]:scale-[0.985] data-[open=false]:opacity-0 data-[open=true]:scale-100 data-[open=true]:opacity-100 motion-reduce:scale-100 motion-reduce:duration-[1ms]"
         data-open={isOpen ? "true" : "false"}
         aria-hidden={isOpen ? undefined : "true"}
       >
@@ -146,7 +183,7 @@ export function InteriorMenu() {
                   <span className="font-meta text-[0.32em] font-medium tracking-[clamp(0.12em,0.36vw,0.22em)]">
                     {item.index} /
                   </span>
-                  <span className="type-display font-normal tracking-normal">
+                  <span className="type-display tracking-[0.02em]">
                     {item.label}
                   </span>
                 </Link>

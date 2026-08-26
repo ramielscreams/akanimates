@@ -5,15 +5,15 @@ import { NextDisciplineLink } from "@/components/navigation/next-discipline-link
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 
 const disciplines = [
-  "Automotive stills",
-  "CGI and visualization",
+  "Automotive photography",
+  "CGI and design visualization",
   "Automotive design development",
 ];
 
 const credentials = [
   "Selected automotive visual work",
   "Design experimentation and development",
-  "Focused collaborations across stills, CGI and design",
+  "Focused collaborations across photography, CGI and design",
 ];
 
 const contactMethods = [
@@ -40,7 +40,7 @@ export default function AboutPage() {
           <div className="site-prose mt-8 space-y-6 text-text-secondary">
             <p>
               AK is an automotive visual practitioner working across
-              stills, CGI and design. The portfolio is built around
+              photography, CGI and design. The portfolio is built around
               image-led projects, technical restraint and a focused interest in
               vehicle form.
             </p>
@@ -52,7 +52,7 @@ export default function AboutPage() {
           </div>
           <LiquidGlassButton asChild className="mt-10">
             <Link href="#contact">
-              Contact
+              Get in Touch
               <span
                 className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                 aria-hidden="true"
@@ -128,7 +128,7 @@ export default function AboutPage() {
               Have a project in mind?
             </h2>
             <p className="site-prose mt-8 text-text-secondary">
-              Reach out for automotive stills, CGI visualization, design
+              Reach out for automotive photography, CGI visualization, design
               development or a focused collaboration that needs a restrained
               visual system.
             </p>
@@ -162,14 +162,14 @@ export default function AboutPage() {
             <NextDisciplineLink
               href="/photography"
               index="02"
-              label="stills"
+              label="photography"
             />
           </div>
 
           <div className="sm:text-right">
             <LiquidGlassButton asChild>
               <Link href="/">
-                Back / Home
+                Return Home
                 <span
                   className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                   aria-hidden="true"

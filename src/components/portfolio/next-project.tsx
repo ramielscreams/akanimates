@@ -29,11 +29,11 @@ export function NextProject({
         {project ? (
           <div className="min-w-0">
             <p className="site-technical-label text-text-muted">
-              Next / {project.index}
+              Next Project / {project.index}
             </p>
             <Link
               href={`${projectHrefBase}/${project.slug}`}
-              className="large-nav-link mt-6 inline-flex min-h-11 items-center font-light uppercase tracking-normal text-text-primary transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-brand-soft hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+              className="large-nav-link mt-6 inline-flex min-h-11 items-center uppercase tracking-[0.02em] text-text-primary transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-brand-soft hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
             >
               {project.title}
             </Link>

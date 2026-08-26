@@ -8,8 +8,8 @@ import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 import { photographyProjects } from "@/data/photography-projects";
 
 export const metadata: Metadata = {
-  description: "Automotive, motorsport and editorial stills by AK.",
-  title: "Stills | AK",
+  description: "Automotive, motorsport and editorial photography by AK.",
+  title: "Photography | AK",
 };
 
 export default function PhotographyPage() {
@@ -25,13 +25,17 @@ export default function PhotographyPage() {
             <p className="site-technical-label text-text-muted">
               Next discipline
             </p>
-            <NextDisciplineLink href="/cgi" index="03" label="cgi" />
+            <NextDisciplineLink
+              href="/visualization"
+              index="03"
+              label="visualization"
+            />
           </div>
 
           <div className="sm:text-right">
             <LiquidGlassButton asChild>
               <Link href="/">
-                Back / Home
+                Return Home
                 <span
                   className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                   aria-hidden="true"
