@@ -32,6 +32,7 @@ export function InteriorMenu() {
   const firstMenuLinkRef = useRef<HTMLAnchorElement | null>(null);
   const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
   const menuPanelRef = useRef<HTMLDivElement | null>(null);
+  const shouldReturnFocusRef = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const visibleItems = useMemo(
@@ -59,10 +60,8 @@ export function InteriorMenu() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
+        shouldReturnFocusRef.current = true;
         setIsOpen(false);
-        window.setTimeout(() => {
-          menuTriggerRef.current?.focus();
-        }, 0);
         return;
       }
 
@@ -107,6 +106,21 @@ export function InteriorMenu() {
   }, [isOpen]);
 
   useEffect(() => {
+    if (isOpen || !shouldReturnFocusRef.current) {
+      return;
+    }
+
+    shouldReturnFocusRef.current = false;
+    const focusTimer = window.setTimeout(() => {
+      menuTriggerRef.current?.focus();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
     const closeTimer = window.setTimeout(() => {
       setIsOpen(false);
     }, 0);
@@ -143,7 +157,10 @@ export function InteriorMenu() {
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
         className="site-technical-label ui-floating-control fixed right-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] z-[230] min-h-11 cursor-pointer text-text-primary opacity-90 transition-[background-color,border-color,opacity,transform] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:scale-[0.98] active:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => {
+          shouldReturnFocusRef.current = false;
+          setIsOpen((current) => !current);
+        }}
       >
         {isOpen ? "close" : "menu"}
       </button>
@@ -178,7 +195,10 @@ export function InteriorMenu() {
                   href={item.href}
                   tabIndex={isOpen ? 0 : -1}
                   className="type-nowrap group flex max-w-[calc(100vw-2.5rem)] items-baseline justify-center gap-[0.26em] py-2 text-center text-[length:var(--type-menu-item)] lowercase leading-[1.02] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    shouldReturnFocusRef.current = false;
+                    setIsOpen(false);
+                  }}
                 >
                   <span className="font-meta text-[0.32em] font-medium tracking-[clamp(0.12em,0.36vw,0.22em)]">
                     {item.index} /

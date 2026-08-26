@@ -354,7 +354,7 @@ export function Rolodex() {
         track,
       );
       const reserve = resolveCssLength(
-        computedStyle.getPropertyValue("--rolodex-content-left"),
+        computedStyle.getPropertyValue("--rolodex-ui-reserve"),
         0,
         track,
       );
@@ -452,7 +452,7 @@ export function Rolodex() {
           window.innerWidth <= 640
             ? clamp(window.innerWidth * 0.25, 92, 132)
             : clamp(window.innerWidth * 0.14, 112, 240);
-        const headingSize = interpolate(
+        const rawHeadingSize = interpolate(
           mechanicalHeadingSize,
           focusedHeadingSize,
           focusProgress,
@@ -461,6 +461,21 @@ export function Rolodex() {
           0,
           panelMetricsRef.current.reserve,
           focusProgress,
+        );
+        const titleLength = rolodexEntries[index].title.replace(/\s+/g, "").length;
+        const focusedFieldWidth = Math.min(
+          window.innerWidth - panelMetricsRef.current.reserve - 48,
+          clamp(window.innerWidth * 0.72, 448, 1216),
+        );
+        const headingAvailableWidth = interpolate(
+          mechanicalPanelWidth - 32,
+          focusedFieldWidth,
+          focusProgress,
+        );
+        const fittedHeadingSize = headingAvailableWidth / (titleLength * 0.53);
+        const headingSize = Math.min(
+          rawHeadingSize,
+          Math.max(44, fittedHeadingSize),
         );
 
         scene.dataset.slot = String(Math.round(slot * 1000) / 1000);

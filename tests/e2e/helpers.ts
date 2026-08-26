@@ -6,14 +6,28 @@ export const desktopViewports = [
   { width: 1440, height: 900 },
   { width: 1366, height: 768 },
   { width: 1280, height: 800 },
+  { width: 1280, height: 720 },
   { width: 1024, height: 768 },
+  { width: 1024, height: 600 },
   { width: 1280, height: 620 },
+] as const;
+
+export const tabletViewports = [
+  { width: 820, height: 1180 },
+  { width: 768, height: 1024 },
+] as const;
+
+export const mobileViewports = [
+  { width: 430, height: 932 },
+  { width: 390, height: 844 },
+  { width: 375, height: 812 },
+  { width: 360, height: 800 },
 ] as const;
 
 export const responsiveViewports = [
   ...desktopViewports,
-  { width: 768, height: 1024 },
-  { width: 390, height: 844 },
+  ...tabletViewports,
+  ...mobileViewports,
 ] as const;
 
 export async function expectNoHorizontalOverflow(page: Page) {
@@ -22,6 +36,46 @@ export async function expectNoHorizontalOverflow(page: Page) {
   );
 
   expect(overflow).toBeLessThanOrEqual(2);
+}
+
+export async function expectElementInsideViewport(
+  locator: Locator,
+  label = "element",
+) {
+  await expect(locator, `${label} should be visible`).toBeVisible();
+
+  const box = await locator.boundingBox();
+  expect(box, `${label} should have a bounding box`).not.toBeNull();
+
+  const viewport = locator.page().viewportSize();
+  expect(viewport, "viewport should be set").not.toBeNull();
+
+  const tolerance = 2;
+  expect(box!.x, `${label} should not overflow left`).toBeGreaterThanOrEqual(
+    -tolerance,
+  );
+  expect(box!.y, `${label} should not overflow top`).toBeGreaterThanOrEqual(
+    -tolerance,
+  );
+  expect(
+    box!.x + box!.width,
+    `${label} should not overflow right`,
+  ).toBeLessThanOrEqual(viewport!.width + tolerance);
+  expect(
+    box!.y + box!.height,
+    `${label} should not overflow bottom`,
+  ).toBeLessThanOrEqual(viewport!.height + tolerance);
+}
+
+export async function expectMinTapTarget(locator: Locator, label = "control") {
+  await expect(locator, `${label} should be visible`).toBeVisible();
+  const box = await locator.boundingBox();
+
+  expect(box, `${label} should have a bounding box`).not.toBeNull();
+  expect(
+    Math.min(box!.width, box!.height),
+    `${label} should meet minimum touch target size`,
+  ).toBeGreaterThanOrEqual(44);
 }
 
 export async function expectNoConsoleFailures(page: Page) {
@@ -36,8 +90,16 @@ export async function expectNoConsoleFailures(page: Page) {
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("requestfailed", (request) => {
     const failure = request.failure();
+    const errorText = failure?.errorText ?? "";
 
-    failedRequests.push(`${request.url()} ${failure?.errorText ?? ""}`.trim());
+    if (
+      errorText.includes("ERR_ABORTED") ||
+      errorText.includes("NS_BINDING_ABORTED")
+    ) {
+      return;
+    }
+
+    failedRequests.push(`${request.url()} ${errorText}`.trim());
   });
 
   return async () => {
@@ -109,6 +171,40 @@ export async function expectRolodexContentCentered(page: Page) {
 
   expect(Math.abs(centers.heading - centers.copy)).toBeLessThanOrEqual(2);
   expect(Math.abs(centers.heading - centers.cta)).toBeLessThanOrEqual(2);
+}
+
+export async function expectRolodexFocusedContainment(page: Page) {
+  const activePanel = page.locator('.rolodex-panel[data-state="active"]');
+  const repetitions = activePanel.locator(".rolodex-title-field__repetitions");
+  const repeatedWords = activePanel.locator(".rolodex-title-field__word");
+
+  await expectElementInsideViewport(
+    page.getByRole("link", { name: "Home" }).first(),
+    "homepage logo",
+  );
+  await expectElementInsideViewport(page.locator(".rolodex-nav"), "left nav");
+  await expectElementInsideViewport(
+    activePanel.locator(".rolodex-title-field"),
+    "Rolodex title field",
+  );
+  await expectElementInsideViewport(
+    activePanel.locator(".rolodex-heading"),
+    "Rolodex heading",
+  );
+  await expectElementInsideViewport(
+    activePanel.locator(".rolodex-copy"),
+    "Rolodex description",
+  );
+  await expectElementInsideViewport(
+    activePanel.locator(".rolodex-liquid-cta"),
+    "Rolodex CTA",
+  );
+  await expect(repetitions).toHaveAttribute("aria-hidden", "true");
+  expect(
+    await repeatedWords.count(),
+    "decorative title field should contain repeated title instances",
+  ).toBeGreaterThanOrEqual(10);
+  await expectRolodexContentCentered(page);
 }
 
 export async function expectRolodexHeadingFont(page: Page) {

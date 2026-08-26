@@ -171,6 +171,37 @@ body::-webkit-scrollbar {
   box-shadow: 0 0 0.9rem rgb(var(--signal-rgb) / 0.28);
 }
 
+.liquid-glass-button__field {
+  position: absolute;
+  inset: 0;
+  z-index: -20;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 13.5rem at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgb(var(--brand-interactive-rgb) / 0.76),
+    rgb(var(--brand-rgb) / 0.52) 44%,
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity var(--motion-ui-medium) var(--ease-ui);
+}
+
+.liquid-glass-button:focus-visible .liquid-glass-button__field {
+  opacity: 0.7;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .liquid-glass-button:hover .liquid-glass-button__field {
+    opacity: 1;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .liquid-glass-button__field {
+    opacity: 0 !important;
+  }
+}
+
 .site-prose {
   font-family: var(--font-editorial), Georgia, serif;
   width: min(100%, 65ch);
@@ -299,7 +330,8 @@ body::-webkit-scrollbar {
   --section-preview-max: 20ch;
 }
 
-.section-cgi {
+.section-cgi,
+.section-visualization {
   --font-section-display: var(--font-display);
   --section-display-size: var(--type-display-xl);
   --section-project-title-size: var(--type-project-title);
@@ -410,17 +442,6 @@ body::-webkit-scrollbar {
 .visualization-mode-control-shell {
   z-index: 205;
   pointer-events: auto;
-}
-
-.visualization-mode-control-shell--desktop {
-  position: fixed;
-  right: clamp(1.25rem, 3.2vw, 3.5rem);
-  top: 46%;
-  display: none;
-  transform: translateY(-50%);
-}
-
-.visualization-mode-control-shell--mobile {
   position: sticky;
   top: clamp(5rem, 12dvh, 6.5rem);
   display: flex;
@@ -900,12 +921,12 @@ body::-webkit-scrollbar {
   left: 50%;
   top: 50%;
   display: flex;
-  width: min(var(--rolodex-stack-width, 44rem), calc(100% - 2.5rem));
+  width: min(var(--rolodex-stack-width, clamp(28rem, 72cqw, 76rem)), calc(100% - 2.5rem));
   min-width: 0;
-  max-width: min(44rem, calc(100% - 2.5rem));
+  max-width: min(var(--rolodex-stack-width, 76rem), calc(100% - 2.5rem));
   flex-direction: column;
   align-items: center;
-  gap: clamp(1.125rem, 2.5dvh, 1.875rem);
+  gap: clamp(1rem, 2.3dvh, 1.75rem);
   text-align: center;
   transform: translate(-50%, -50%);
 }
@@ -915,7 +936,53 @@ body::-webkit-scrollbar {
   font-size: var(--rolodex-heading-size, clamp(2.35rem, 10cqw, 7rem));
 }
 
+.rolodex-title-field {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: clamp(8rem, min(23cqw, 40dvh), 22rem);
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.rolodex-title-field__repetitions {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.08em, 0.85cqw, 0.36em) clamp(0.2em, 1.25cqw, 0.62em);
+  flex-wrap: wrap;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-family: var(--font-rolodex-display), var(--font-ui), Arial, Helvetica, sans-serif;
+  font-size: clamp(2.15rem, calc(var(--rolodex-heading-size, 7rem) * 0.42), 6.75rem);
+  font-style: var(--rolodex-heading-style);
+  font-weight: 900;
+  letter-spacing: clamp(0.018em, 0.35cqw, 0.052em);
+  line-height: 0.84;
+  opacity: calc(0.055 + (0.075 * var(--panel-progress, 1)));
+  text-transform: uppercase;
+  transform:
+    scaleX(var(--type-scale-x, 1))
+    scaleY(var(--type-scale-y, 1));
+  transform-origin: center center;
+  transition: opacity var(--motion-ui-fast) var(--ease-ui);
+  user-select: none;
+}
+
+.rolodex-title-field__word {
+  display: inline-block;
+  flex: 0 1 auto;
+  white-space: nowrap;
+}
+
 .rolodex-heading {
+  position: relative;
+  z-index: 1;
   display: inline-block;
   font-family: var(--font-rolodex-display), var(--font-ui), Arial, Helvetica, sans-serif;
   font-size: var(--rolodex-heading-size, clamp(2.35rem, 10cqw, 7rem));
@@ -972,19 +1039,16 @@ body::-webkit-scrollbar {
 }
 
 .rolodex-panel[data-panel="about"] {
-  --rolodex-copy-width: clamp(13rem, 22vw, 19rem);
-  --rolodex-stack-width: clamp(13rem, 22vw, 24rem);
+  --rolodex-copy-width: clamp(17rem, 30vw, 28rem);
 }
 
 .rolodex-panel[data-panel="photography"] {
   --rolodex-copy-width: clamp(17rem, 30vw, 27rem);
-  --rolodex-stack-width: clamp(17rem, 30vw, 27rem);
 }
 
 .rolodex-panel[data-panel="cgi"],
 .rolodex-panel[data-panel="visualization"] {
   --rolodex-copy-width: clamp(13rem, 20vw, 18rem);
-  --rolodex-stack-width: clamp(13rem, 20vw, 20rem);
 }
 
 .rolodex-panel[data-state="active"] .rolodex-content-layer p {
@@ -1034,7 +1098,7 @@ body::-webkit-scrollbar {
   .rolodex-panel[data-state="active"] .rolodex-heading,
   .rolodex-track[data-phase="motion"] .rolodex-panel[data-state="entering"] .rolodex-heading {
     max-width: calc(100% - 3rem);
-    white-space: normal;
+    white-space: nowrap;
   }
 
   .rolodex-content-layer p {
@@ -1072,6 +1136,7 @@ body::-webkit-scrollbar {
   .section-about,
   .section-photography,
   .section-cgi,
+  .section-visualization,
   .section-design {
     --section-display-size: clamp(2.55rem, 14.2vw, 5.15rem);
     --section-project-title-size: clamp(2.3rem, 11.5vw, 4.45rem);
@@ -1115,7 +1180,24 @@ body::-webkit-scrollbar {
     max-width: calc(100% - 3rem);
   }
 
-  .visualization-mode-control-shell--mobile {
+  .rolodex-title-stack {
+    width: min(var(--rolodex-stack-width, 100%), calc(100% - 1.75rem));
+    max-width: calc(100% - 1.75rem);
+    gap: clamp(0.875rem, 2dvh, 1.25rem);
+  }
+
+  .rolodex-title-field {
+    min-height: clamp(7.25rem, 30cqw, 10rem);
+  }
+
+  .rolodex-title-field__repetitions {
+    gap: 0.05em 0.2em;
+    font-size: clamp(1.8rem, calc(var(--rolodex-heading-size, 7rem) * 0.34), 3.25rem);
+    letter-spacing: clamp(0.022em, 0.9vw, 0.065em);
+    opacity: calc(0.045 + (0.06 * var(--panel-progress, 1)));
+  }
+
+  .visualization-mode-control-shell {
     margin-bottom: clamp(1rem, 4dvh, 2rem);
   }
 
@@ -1131,12 +1213,13 @@ body::-webkit-scrollbar {
 }
 
 @media (min-width: 768px) {
-  .visualization-mode-control-shell--desktop {
+  .visualization-mode-control-shell {
+    position: fixed;
+    right: clamp(1.25rem, 3.2vw, 3.5rem);
+    top: 46%;
     display: block;
-  }
-
-  .visualization-mode-control-shell--mobile {
-    display: none;
+    padding: 0;
+    transform: translateY(-50%);
   }
 }
 
@@ -1183,6 +1266,7 @@ body::-webkit-scrollbar {
   }
 
   .rolodex-heading,
+  .rolodex-title-field__repetitions,
   .rolodex-copy,
   .rolodex-media-label,
   .rolodex-media-note {

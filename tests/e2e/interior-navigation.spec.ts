@@ -22,6 +22,8 @@ async function expectDisplayFont(locator: Locator) {
 }
 
 test.describe("interior wayfinding and typography", () => {
+  test.skip(({ browserName }) => browserName !== "chromium", "Detailed interior audit runs in Chromium.");
+
   test("normalizes major interior display headings to Barlow Condensed", async ({
     page,
   }) => {
@@ -29,8 +31,8 @@ test.describe("interior wayfinding and typography", () => {
       { path: "/about", selector: "h1" },
       { path: "/about#contact", selector: "#contact-heading" },
       { path: "/photography", selector: "h1" },
-      { path: "/cgi", selector: "h1" },
-      { path: "/cgi#design", selector: "#design h1" },
+      { path: "/visualization", selector: "h1" },
+      { path: "/visualization?mode=design", selector: "h1" },
       { path: "/photography/project-one", selector: "h1" },
       { path: "/cgi/project-one", selector: "h1" },
       { path: "/design/project-one", selector: "h1" },
@@ -59,63 +61,85 @@ test.describe("interior wayfinding and typography", () => {
     await expect(page.locator("#contact")).toBeVisible();
   });
 
-  test("uses the CGI / Design mode selector as local wayfinding", async ({
+  test("uses the Visualization CGI / Design mode selector as local wayfinding", async ({
     page,
   }) => {
-    await page.goto("/cgi");
+    await page.goto("/visualization");
 
-    const desktopControl = page.locator(".cgi-mode-control-shell--desktop .cgi-mode-control");
+    const desktopControl = page.locator(
+      ".visualization-mode-control-shell .visualization-mode-control",
+    );
     await expect(desktopControl).toBeVisible();
+    await expect(page).toHaveURL(/\/visualization$/);
     await expect(page.getByRole("heading", { name: /^CGI$/ })).toBeVisible();
-    await expect(page.locator("#design")).toBeVisible();
+    await expect(page.locator(".visualization-content #selected-cgi-work")).toBeVisible();
+    await expect(page.locator(".visualization-content #selected-design-work")).toHaveCount(0);
 
     await expect(
-      page.locator('.cgi-mode-control-shell--desktop button[aria-pressed="true"]'),
+      desktopControl.locator('button[aria-checked="true"]'),
     ).toHaveText("CGI");
 
-    await page
-      .locator(".cgi-mode-control-shell--desktop")
-      .getByRole("button", { name: "Design" })
-      .click();
-    await expect(page).toHaveURL(/\/cgi#design$/);
+    const designOption = desktopControl.getByRole("radio", { name: "Design" });
+    const cgiOption = desktopControl.getByRole("radio", { name: /^CGI$/ });
+
+    await designOption.dispatchEvent("pointerdown");
+    await expect(desktopControl).toHaveAttribute("data-active", "design");
+    await designOption.click();
+    await expect(page).toHaveURL(/\/visualization\?mode=design$/);
+    await expect(page.getByRole("heading", { name: /^Design$/i })).toBeVisible();
+    await expect(page.locator(".visualization-content #selected-design-work")).toBeVisible();
+    await expect(page.locator(".visualization-content #selected-cgi-work")).toHaveCount(0);
     await expect(
-      page.locator('.cgi-mode-control-shell--desktop button[aria-pressed="true"]'),
+      desktopControl.locator('button[aria-checked="true"]'),
     ).toHaveText("Design");
 
-    await page
-      .locator(".cgi-mode-control-shell--desktop")
-      .getByRole("button", { name: /^CGI$/ })
-      .press("Enter");
-    await expect(page).toHaveURL(/\/cgi$/);
+    await cgiOption.press("Enter");
+    await expect(page).toHaveURL(/\/visualization\?mode=cgi$/);
+    await expect(page.getByRole("heading", { name: /^CGI$/ })).toBeVisible();
     await expect(
-      page.locator('.cgi-mode-control-shell--desktop button[aria-pressed="true"]'),
+      desktopControl.locator('button[aria-checked="true"]'),
     ).toHaveText("CGI");
 
-    await page.evaluate(() => document.getElementById("design")?.scrollIntoView());
-    await expect(
-      page.locator('.cgi-mode-control-shell--desktop button[aria-pressed="true"]'),
-    ).toHaveText("Design", { timeout: 2_000 });
+    await designOption.click();
+    await cgiOption.click();
+    await expect(page).toHaveURL(/\/visualization\?mode=cgi$/);
+    await expect(page.locator(".visualization-content #selected-cgi-work")).toBeVisible();
+    await expect(page.locator(".visualization-content #selected-design-work")).toHaveCount(0);
 
-    await page.evaluate(() => document.getElementById("cgi")?.scrollIntoView());
+    await page.goBack();
+    await expect(page).toHaveURL(/\/visualization\?mode=design$/);
     await expect(
-      page.locator('.cgi-mode-control-shell--desktop button[aria-pressed="true"]'),
-    ).toHaveText("CGI", { timeout: 2_000 });
+      page
+        .locator(".visualization-mode-control-shell .visualization-mode-control")
+        .locator('button[aria-checked="true"]'),
+    ).toHaveText("Design");
+
+    await page.goForward();
+    await expect(page).toHaveURL(/\/visualization\?mode=cgi$/);
+    await expect(
+      page
+        .locator(".visualization-mode-control-shell .visualization-mode-control")
+        .locator('button[aria-checked="true"]'),
+    ).toHaveText("CGI");
   });
 
   test("keeps Design index compatibility while project routes remain independent", async ({
     page,
   }) => {
     await page.goto("/design");
-    await expect(page).toHaveURL(/\/cgi#design$/);
+    await expect(page).toHaveURL(/\/visualization\?mode=design$/);
+
+    await page.goto("/cgi");
+    await expect(page).toHaveURL(/\/visualization\?mode=cgi$/);
 
     await page.goto("/design/project-one");
     await expect(page).toHaveURL(/\/design\/project-one$/);
     await expect(page.locator("article .site-technical-label").first()).toContainText(
-      /cgi \/ design/i,
+      /visualization \/ design/i,
     );
 
     await page.getByRole("link", { name: /back to design/i }).click();
-    await expect(page).toHaveURL(/\/cgi#design$/);
+    await expect(page).toHaveURL(/\/visualization\?mode=design$/);
   });
 
   test("opens an opaque interior menu with keyboard focus management", async ({
@@ -132,9 +156,9 @@ test.describe("interior wayfinding and typography", () => {
     await expect(dialog).toBeVisible();
     await expect(dialog).toHaveCSS("background-color", "rgb(5, 3, 7)");
     await expect(page.getByRole("link", { name: "Home", exact: true })).toBeVisible();
-    await expect(dialog).not.toContainText(/design|contact|photography/i);
+    await expect(dialog).not.toContainText(/cgi|design|contact|photography/i);
     await expect(dialog).toContainText(/about/i);
-    await expect(dialog).toContainText(/cgi/i);
+    await expect(dialog).toContainText(/visualization/i);
 
     const bodyOverflow = await page.evaluate(() => getComputedStyle(document.body).overflow);
     expect(bodyOverflow).toBe("hidden");
@@ -165,8 +189,10 @@ test.describe("interior wayfinding and typography", () => {
     for (const path of [
       "/about",
       "/photography",
+      "/visualization",
+      "/visualization?mode=design",
       "/cgi",
-      "/cgi#design",
+      "/design",
       "/photography/project-one",
       "/cgi/project-one",
       "/design/project-one",

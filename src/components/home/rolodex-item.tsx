@@ -27,6 +27,20 @@ type RolodexItemProps = {
   state: "active" | "entering" | "exiting" | "stack";
 };
 
+function getTitleFieldRepeatCount(title: string) {
+  const compactLength = title.replace(/\s+/g, "").length;
+
+  if (compactLength <= 5) {
+    return 24;
+  }
+
+  if (compactLength <= 10) {
+    return 14;
+  }
+
+  return 12;
+}
+
 export function RolodexItem({
   entry,
   depth,
@@ -46,6 +60,10 @@ export function RolodexItem({
   const TitleTag = primaryHeading ? "h1" : "h2";
   const isActive = state === "active";
   const panelKey = entry.panelKey ?? entry.title.toLowerCase();
+  const titleFieldWords = Array.from(
+    { length: getTitleFieldRepeatCount(entry.title) },
+    (_, index) => index,
+  );
 
   return (
     <article
@@ -78,11 +96,21 @@ export function RolodexItem({
 
         <div className="rolodex-content-layer">
           <div className="rolodex-title-stack">
-            <TitleTag
-              className="rolodex-heading uppercase text-text-primary"
+            <div
+              className="rolodex-title-field"
+              aria-hidden={isActive ? undefined : "true"}
             >
-              {entry.title}
-            </TitleTag>
+              <div className="rolodex-title-field__repetitions" aria-hidden="true">
+                {titleFieldWords.map((index) => (
+                  <span className="rolodex-title-field__word" key={index}>
+                    {entry.title}
+                  </span>
+                ))}
+              </div>
+              <TitleTag className="rolodex-heading uppercase text-text-primary">
+                {entry.title}
+              </TitleTag>
+            </div>
             <p className="rolodex-copy text-base leading-8 text-text-secondary sm:text-lg">
               {entry.description}
             </p>

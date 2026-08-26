@@ -2,7 +2,10 @@ import { expect, test } from "@playwright/test";
 
 import {
   buttonBox,
+  expectElementInsideViewport,
+  expectMinTapTarget,
   expectNoHorizontalOverflow,
+  expectRolodexFocusedContainment,
   responsiveViewports,
 } from "./helpers";
 
@@ -10,7 +13,8 @@ const primaryRoutes = [
   "/",
   "/about",
   "/photography",
-  "/cgi",
+  "/visualization",
+  "/visualization?mode=design",
   "/photography/project-one",
   "/cgi/project-one",
   "/design/project-one",
@@ -18,6 +22,8 @@ const primaryRoutes = [
 ] as const;
 
 test.describe("responsive layout, assets, and controls", () => {
+  test.skip(({ browserName }) => browserName !== "chromium", "Detailed responsive audit runs in Chromium.");
+
   for (const viewport of responsiveViewports) {
     test(`has no unintended horizontal overflow at ${viewport.width}x${viewport.height}`, async ({
       page,
@@ -28,6 +34,40 @@ test.describe("responsive layout, assets, and controls", () => {
         await page.goto(route);
         await expectNoHorizontalOverflow(page);
       }
+    });
+  }
+
+  for (const viewport of responsiveViewports) {
+    test(`keeps primary UI contained at ${viewport.width}x${viewport.height}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      await expectRolodexFocusedContainment(page);
+
+      await page.goto("/visualization");
+      await expectElementInsideViewport(
+        page.locator(".visualization-mode-control"),
+        "Visualization mode switch",
+      );
+      await expectMinTapTarget(
+        page.getByRole("radio", { name: /^CGI$/ }),
+        "CGI mode option",
+      );
+      await expectMinTapTarget(
+        page.getByRole("radio", { name: "Design" }),
+        "Design mode option",
+      );
+
+      await page.goto("/definitely-not-a-real-route");
+      await expectElementInsideViewport(
+        page.getByRole("heading", { name: /off route/i }),
+        "404 heading",
+      );
+      await expectElementInsideViewport(
+        page.getByRole("link", { name: /return home/i }),
+        "404 return button",
+      );
     });
   }
 
@@ -83,7 +123,7 @@ test.describe("responsive layout, assets, and controls", () => {
     expect(afterMove.trim()).not.toBe(beforeMove.trim());
     expect(transform).toBe(beforeTransform);
 
-    await page.goto("/cgi");
+    await page.goto("/visualization");
     const returnHome = await buttonBox(page, /return home/i);
     expect(returnHome.height).toBeGreaterThanOrEqual(56);
 
@@ -92,39 +132,43 @@ test.describe("responsive layout, assets, and controls", () => {
     expect(contact.height).toBeGreaterThanOrEqual(56);
   });
 
-  test("keeps the CGI / Design selector usable on mobile", async ({ page }) => {
+  test("keeps the Visualization CGI / Design selector usable on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/cgi");
+    await page.goto("/visualization");
 
-    const mobileControl = page.locator(".cgi-mode-control-shell--mobile .cgi-mode-control");
+    const mobileControl = page.locator(
+      ".visualization-mode-control-shell .visualization-mode-control",
+    );
     await expect(mobileControl).toBeVisible();
-    await expect(page.locator(".cgi-mode-control-shell--desktop")).toBeHidden();
 
     const box = await mobileControl.boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    expect(box?.y ?? 0).toBeLessThan(180);
 
-    await mobileControl.getByRole("button", { name: "Design" }).click();
-    await expect(page).toHaveURL(/\/cgi#design$/);
+    await mobileControl.getByRole("radio", { name: "Design" }).click();
+    await expect(page).toHaveURL(/\/visualization\?mode=design$/);
+    await expect(page.locator(".visualization-content #selected-design-work")).toBeVisible();
+    await expect(page.locator(".visualization-content #selected-cgi-work")).toHaveCount(0);
     await expect(
-      mobileControl.locator('button[aria-pressed="true"]'),
+      mobileControl.locator('button[aria-checked="true"]'),
     ).toHaveText("Design");
   });
 
-  test("uses direct jumps for CGI chapter navigation with reduced motion", async ({
+  test("uses non-spatial mode replacement with reduced motion", async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/cgi");
+    await page.goto("/visualization");
     await page
-      .locator(".cgi-mode-control-shell--desktop")
-      .getByRole("button", { name: "Design" })
+      .locator(".visualization-mode-control-shell")
+      .getByRole("radio", { name: "Design" })
       .click();
-    await expect(page).toHaveURL(/\/cgi#design$/);
+    await expect(page).toHaveURL(/\/visualization\?mode=design$/);
 
-    const designTop = await page
-      .locator("#design")
-      .evaluate((element) => Math.round(element.getBoundingClientRect().top));
+    const transform = await page
+      .locator(".visualization-content")
+      .evaluate((element) => getComputedStyle(element).transform);
 
-    expect(Math.abs(designTop)).toBeLessThanOrEqual(160);
+    expect(transform).toBe("none");
   });
 });

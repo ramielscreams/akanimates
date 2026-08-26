@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const liquidGlassButtonVariants = cva(
   [
-    "group/liquid relative isolate inline-flex w-fit max-w-full shrink-0 items-center justify-center overflow-hidden text-center",
+    "liquid-glass-button group/liquid relative isolate inline-flex w-fit max-w-full shrink-0 items-center justify-center overflow-hidden text-center",
     "rounded-[var(--radius-button)] border border-border bg-surface text-text-primary",
     "transition-[background-color,border-color,color,opacity,transform] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)]",
     "hover:border-brand-interactive/70 hover:text-text-highlight",
@@ -69,6 +69,10 @@ export const LiquidGlassButton = forwardRef<
     const Comp = asChild ? Slot : "button";
 
     const updatePointerPosition = (event: PointerEvent<HTMLButtonElement>) => {
+      if (event.pointerType !== "mouse" && event.pointerType !== "pen") {
+        return;
+      }
+
       const target = event.currentTarget;
       const rect = target.getBoundingClientRect();
 
@@ -101,7 +105,7 @@ export const LiquidGlassButton = forwardRef<
         {...props}
       >
         <span
-          className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_13.5rem_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgb(var(--brand-interactive-rgb)_/_0.76),rgb(var(--brand-rgb)_/_0.52)_44%,transparent_80%)] opacity-0 transition-opacity duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:opacity-100 group-focus-visible/liquid:opacity-70 motion-reduce:transition-none"
+          className="liquid-glass-button__field"
           aria-hidden="true"
         />
         <span

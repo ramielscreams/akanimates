@@ -37,7 +37,7 @@ export default async function VisualizationPage({
 
   return (
     <main
-      className="section-cgi min-h-dvh bg-bg text-text-primary"
+      className="section-visualization min-h-dvh bg-bg text-text-primary"
       data-visualization-mode={mode}
     >
       <InteriorMenu />
