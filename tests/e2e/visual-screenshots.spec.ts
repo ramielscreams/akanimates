@@ -49,10 +49,19 @@ test("captures the deliberate visual audit set", async ({ page }, testInfo) => {
 
   await page.goto("/about");
   await attachScreenshot(testInfo, "about-page", page);
+  await page.getByRole("button", { name: /get in touch/i }).first().click();
+  await attachScreenshot(testInfo, "about-contact-desktop", page);
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/about");
+  await page.getByRole("button", { name: /get in touch/i }).first().click();
+  await attachScreenshot(testInfo, "about-contact-tablet", page);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/about");
   await attachScreenshot(testInfo, "about-mobile", page);
+  await page.getByRole("button", { name: /get in touch/i }).first().click();
+  await attachScreenshot(testInfo, "about-contact-mobile", page);
 
   await page.goto("/photography");
   await attachScreenshot(testInfo, "photography-mobile", page);

@@ -32,8 +32,11 @@ export function InteriorMenu() {
   const firstMenuLinkRef = useRef<HTMLAnchorElement | null>(null);
   const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
   const menuPanelRef = useRef<HTMLDivElement | null>(null);
-  const shouldReturnFocusRef = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    menuTriggerRef.current?.setAttribute("data-ready", "true");
+  }, []);
 
   const visibleItems = useMemo(
     () =>
@@ -60,7 +63,7 @@ export function InteriorMenu() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        shouldReturnFocusRef.current = true;
+        menuTriggerRef.current?.focus({ preventScroll: true });
         setIsOpen(false);
         return;
       }
@@ -106,21 +109,6 @@ export function InteriorMenu() {
   }, [isOpen]);
 
   useEffect(() => {
-    if (isOpen || !shouldReturnFocusRef.current) {
-      return;
-    }
-
-    shouldReturnFocusRef.current = false;
-    const focusTimer = window.setTimeout(() => {
-      menuTriggerRef.current?.focus();
-    }, 0);
-
-    return () => {
-      window.clearTimeout(focusTimer);
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
     const closeTimer = window.setTimeout(() => {
       setIsOpen(false);
     }, 0);
@@ -135,10 +123,10 @@ export function InteriorMenu() {
       <Link
         href="/"
         aria-label="Home"
-        className={`fixed z-[230] opacity-90 transition-[left,opacity,top,transform,width] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive ${
+        className={`ak-home-link fixed z-[230] opacity-90 transition-[left,opacity,top,transform,width] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive ${
           isOpen
-            ? "left-1/2 top-[clamp(3.5rem,13vh,7.5rem)] w-[clamp(3rem,min(5.1vw,9vh),5.75rem)] -translate-x-1/2"
-            : "left-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] w-[clamp(1.55rem,2.55vw,2.4rem)]"
+            ? "ak-home-link--expanded left-1/2 top-[clamp(3.5rem,13vh,7.5rem)] -translate-x-1/2"
+            : "left-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)]"
         }`}
       >
         <Image
@@ -158,7 +146,14 @@ export function InteriorMenu() {
         aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
         className="site-technical-label ui-floating-control fixed right-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] z-[230] min-h-11 cursor-pointer text-text-primary opacity-90 transition-[background-color,border-color,opacity,transform] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:scale-[0.98] active:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
         onClick={() => {
-          shouldReturnFocusRef.current = false;
+          setIsOpen((current) => !current);
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== "Enter" && event.key !== " ") {
+            return;
+          }
+
+          event.preventDefault();
           setIsOpen((current) => !current);
         }}
       >
@@ -196,7 +191,6 @@ export function InteriorMenu() {
                   tabIndex={isOpen ? 0 : -1}
                   className="type-nowrap group flex max-w-[calc(100vw-2.5rem)] items-baseline justify-center gap-[0.26em] py-2 text-center text-[length:var(--type-menu-item)] lowercase leading-[1.02] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
                   onClick={() => {
-                    shouldReturnFocusRef.current = false;
                     setIsOpen(false);
                   }}
                 >

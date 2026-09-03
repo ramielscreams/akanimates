@@ -2,7 +2,7 @@ export function DesignHero() {
   return (
     <section
       id="design"
-      className="site-safe-x site-hero-y grid min-h-[min(100dvh,58rem)] scroll-mt-[clamp(5rem,12vh,8rem)] grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)]"
+      className="visualization-active-hero visualization-active-hero--design site-safe-x grid scroll-mt-[clamp(5rem,12vh,8rem)] grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)]"
     >
       <div className="mx-auto w-full max-w-[88rem]">
         <div className="grid gap-10 lg:grid-cols-[minmax(18rem,0.58fr)_minmax(0,1.42fr)] lg:items-end">
@@ -18,7 +18,7 @@ export function DesignHero() {
             </p>
           </div>
 
-          <div className="relative min-h-[clamp(20rem,42dvh,38rem)] overflow-hidden bg-surface lg:min-h-[clamp(28rem,64dvh,48rem)]">
+          <div className="visualization-mode-frame visualization-mode-frame--design relative min-h-[clamp(20rem,42dvh,38rem)] overflow-hidden bg-surface lg:min-h-[clamp(28rem,64dvh,48rem)]">
             <div className="absolute inset-[clamp(1rem,3vw,2.5rem)] bg-bg" />
             <div className="absolute inset-[clamp(1rem,3vw,2.5rem)] bg-[linear-gradient(90deg,rgb(var(--border-rgb)_/_0.8)_1px,transparent_1px),linear-gradient(180deg,rgb(var(--border-rgb)_/_0.7)_1px,transparent_1px)] bg-[size:4rem_4rem,4rem_4rem]" />
             <div className="absolute left-[9%] right-[9%] top-1/2 h-px bg-technical/35" />

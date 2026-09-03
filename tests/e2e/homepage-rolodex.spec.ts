@@ -21,6 +21,10 @@ test.describe("homepage Rolodex", () => {
     await page.goto("/");
     await expect(page.getByRole("link", { name: "Home" })).toBeVisible();
     await expect(page.locator('img[src="/logo.svg"]')).toBeVisible();
+    const logoBox = await page.getByRole("link", { name: "Home" }).boundingBox();
+
+    expect(logoBox, "homepage logo hit area should be measurable").not.toBeNull();
+    expect(logoBox!.height).toBeGreaterThanOrEqual(44);
 
     const nav = page.locator(".rolodex-nav-item");
     await expect(nav).toHaveCount(3);
@@ -50,8 +54,80 @@ test.describe("homepage Rolodex", () => {
     expect(Number.parseFloat(activeMarker.width)).toBeGreaterThan(0);
     expect(Number.parseFloat(activeMarker.height)).toBeGreaterThan(0);
 
+    const navBox = await page.locator(".rolodex-nav").boundingBox();
+    expect(navBox, "homepage nav should be measurable").not.toBeNull();
+    expect(logoBox!.y + logoBox!.height).toBeLessThan(navBox!.y);
+
     await expectNoHorizontalOverflow(page);
     await assertNoFailures();
+  });
+
+  test("routes the About panel CTA and navigation to the canonical About page", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await waitForRolodexIdle(page, "About");
+
+    const aboutCta = page.locator(
+      '.rolodex-panel[data-state="active"] .rolodex-liquid-cta',
+    );
+    await expect(aboutCta).toHaveAttribute("href", "/about");
+    await aboutCta.click();
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(page.getByRole("heading", { name: /^About$/i })).toBeVisible();
+    await expect(page.getByText(/error \/ 404/i)).toHaveCount(0);
+
+    await page.goto("/about");
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(page.getByRole("heading", { name: /^About$/i })).toBeVisible();
+    await expect(page.getByText(/error \/ 404/i)).toHaveCount(0);
+
+    await page.goto("/");
+    await clickRolodexNav(page, "photography");
+    await waitForRolodexIdle(page, "Photography");
+    await clickRolodexNav(page, "about");
+    await waitForRolodexIdle(page, "About");
+
+    await page.goto("/photography");
+    await page.getByRole("button", { name: /open navigation menu/i }).click();
+    const dialog = page.getByRole("dialog", { name: /site navigation/i });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("link", { name: /01 \/ about/i }).click();
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(page.getByRole("heading", { name: /^About$/i })).toBeVisible();
+    await expect(page.getByText(/error \/ 404/i)).toHaveCount(0);
+  });
+
+  test("keeps the enlarged homepage logo clear across target viewports", async ({
+    page,
+  }) => {
+    const viewports = [
+      { width: 1920, height: 1080 },
+      { width: 1440, height: 900 },
+      { width: 1366, height: 768 },
+      { width: 1024, height: 768 },
+      { width: 430, height: 932 },
+      { width: 390, height: 844 },
+    ];
+
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      await waitForRolodexIdle(page, "About");
+
+      const logoBox = await page.getByRole("link", { name: "Home" }).boundingBox();
+      const navBox = await page.locator(".rolodex-nav").boundingBox();
+
+      expect(logoBox, "homepage logo should be measurable").not.toBeNull();
+      expect(navBox, "homepage nav should be measurable").not.toBeNull();
+      expect(logoBox!.height).toBeGreaterThanOrEqual(
+        viewport.width >= 1280 ? 44 : 36,
+      );
+      expect(logoBox!.x).toBeGreaterThanOrEqual(16);
+      expect(logoBox!.y).toBeGreaterThanOrEqual(16);
+      expect(logoBox!.y + logoBox!.height).toBeLessThan(navBox!.y);
+      await expectNoHorizontalOverflow(page);
+    }
   });
 
   for (const viewport of desktopViewports) {

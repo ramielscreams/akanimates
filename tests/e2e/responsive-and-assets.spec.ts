@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 import {
   buttonBox,
@@ -20,6 +20,20 @@ const primaryRoutes = [
   "/design/project-one",
   "/definitely-not-a-real-route",
 ] as const;
+
+async function expectPersistentHomeLogo(page: Page) {
+  const home = page.getByRole("link", { name: "Home" }).first();
+
+  await expectElementInsideViewport(home, "persistent AK home logo");
+  await expectMinTapTarget(home, "persistent AK home logo");
+
+  const box = await home.boundingBox();
+  expect(box, "persistent AK home logo should have a bounding box").not.toBeNull();
+  expect(box!.height).toBeGreaterThanOrEqual(40);
+
+  await home.focus();
+  await expect(home).toBeFocused();
+}
 
 test.describe("responsive layout, assets, and controls", () => {
   test.skip(({ browserName }) => browserName !== "chromium", "Detailed responsive audit runs in Chromium.");
@@ -68,6 +82,22 @@ test.describe("responsive layout, assets, and controls", () => {
         page.getByRole("link", { name: /return home/i }),
         "404 return button",
       );
+
+      await page.goto("/about");
+      await page.getByRole("button", { name: /get in touch/i }).first().click();
+      const contactDialog = page.getByRole("dialog", { name: /get in touch/i });
+      await expectElementInsideViewport(contactDialog, "About contact layer");
+      await expectElementInsideViewport(
+        contactDialog.getByRole("button", { name: /close contact panel/i }),
+        "Contact close button",
+      );
+
+      for (const method of ["WhatsApp", "Phone", "Instagram", "Email"]) {
+        await expectMinTapTarget(
+          contactDialog.locator("[data-contact-action]").filter({ hasText: method }),
+          `${method} contact action`,
+        );
+      }
     });
   }
 
@@ -94,6 +124,45 @@ test.describe("responsive layout, assets, and controls", () => {
     expect(svg).toContain("<svg");
     expect(svg).toContain("viewBox");
     expect(svg).not.toMatch(/<rect[^>]+(width=["']100%|fill=["']#050307|fill=["']black)/i);
+  });
+
+  test("keeps the AK Home logo larger and accessible across representative routes", async ({
+    page,
+  }) => {
+    const logoRoutes = [
+      "/",
+      "/about",
+      "/photography",
+      "/visualization",
+      "/photography/project-one",
+      "/cgi/project-one",
+      "/design/project-one",
+    ] as const;
+    const viewports = [
+      { width: 1920, height: 1080 },
+      { width: 1440, height: 900 },
+      { width: 1366, height: 768 },
+      { width: 1024, height: 768 },
+      { width: 430, height: 932 },
+      { width: 390, height: 844 },
+    ] as const;
+
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+
+      for (const route of logoRoutes) {
+        await page.goto(route);
+        await expectPersistentHomeLogo(page);
+        await expectNoHorizontalOverflow(page);
+      }
+    }
+
+    await page.goto("/photography/project-one");
+    await page.getByRole("link", { name: "Home" }).first().click();
+    await expect(page).toHaveURL("/");
+
+    await page.goto("/definitely-not-a-real-route");
+    await expect(page.getByRole("link", { name: /return home/i })).toBeVisible();
   });
 
   test("keeps major CTA buttons substantial and pointer-reactive", async ({
@@ -124,8 +193,8 @@ test.describe("responsive layout, assets, and controls", () => {
     expect(transform).toBe(beforeTransform);
 
     await page.goto("/visualization");
-    const returnHome = await buttonBox(page, /return home/i);
-    expect(returnHome.height).toBeGreaterThanOrEqual(56);
+    const nextAbout = await buttonBox(page, /explore about/i);
+    expect(nextAbout.height).toBeGreaterThanOrEqual(56);
 
     await page.goto("/about");
     const contact = await buttonBox(page, /get in touch/i);
@@ -142,7 +211,8 @@ test.describe("responsive layout, assets, and controls", () => {
     await expect(mobileControl).toBeVisible();
 
     const box = await mobileControl.boundingBox();
-    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(64);
+    expect(box?.width ?? 0).toBeGreaterThanOrEqual(320);
     expect(box?.y ?? 0).toBeLessThan(180);
 
     await mobileControl.getByRole("radio", { name: "Design" }).click();
@@ -158,6 +228,25 @@ test.describe("responsive layout, assets, and controls", () => {
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+
+    const rowMotion = await page
+      .locator('.rolodex-panel[data-state="active"] .rolodex-title-row__track')
+      .first()
+      .evaluate((element) => {
+        const computed = getComputedStyle(element);
+
+        return {
+          animationName: computed.animationName,
+          transform: computed.transform,
+        };
+      });
+
+    expect(rowMotion.animationName).toBe("none");
+    expect(["none", "matrix(1, 0, 0, 1, 0, 0)"]).toContain(
+      rowMotion.transform,
+    );
+
     await page.goto("/visualization");
     await page
       .locator(".visualization-mode-control-shell")

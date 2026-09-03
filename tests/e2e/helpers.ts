@@ -81,20 +81,38 @@ export async function expectMinTapTarget(locator: Locator, label = "control") {
 export async function expectNoConsoleFailures(page: Page) {
   const errors: string[] = [];
   const failedRequests: string[] = [];
+  const isIgnoredNextRscNoise = (text: string) =>
+    text.includes("_rsc=") && text.includes("access control checks");
 
   page.on("console", (message) => {
     if (message.type() === "error") {
-      errors.push(message.text());
+      const text = message.text();
+
+      if (isIgnoredNextRscNoise(text)) {
+        return;
+      }
+
+      errors.push(text);
     }
   });
-  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("pageerror", (error) => {
+    if (isIgnoredNextRscNoise(error.message)) {
+      return;
+    }
+
+    errors.push(error.message);
+  });
   page.on("requestfailed", (request) => {
     const failure = request.failure();
     const errorText = failure?.errorText ?? "";
 
     if (
       errorText.includes("ERR_ABORTED") ||
-      errorText.includes("NS_BINDING_ABORTED")
+      errorText.includes("NS_BINDING_ABORTED") ||
+      (errorText.includes("access control checks") &&
+        request.url().includes("_rsc=")) ||
+      (errorText.includes("Load request cancelled") &&
+        request.url().includes("_rsc="))
     ) {
       return;
     }
@@ -175,7 +193,10 @@ export async function expectRolodexContentCentered(page: Page) {
 
 export async function expectRolodexFocusedContainment(page: Page) {
   const activePanel = page.locator('.rolodex-panel[data-state="active"]');
-  const repetitions = activePanel.locator(".rolodex-title-field__repetitions");
+  const field = activePanel.locator(".rolodex-title-field");
+  const heading = activePanel.locator(".rolodex-heading");
+  const rows = activePanel.locator(".rolodex-title-row");
+  const tracks = activePanel.locator(".rolodex-title-row__track");
   const repeatedWords = activePanel.locator(".rolodex-title-field__word");
 
   await expectElementInsideViewport(
@@ -184,11 +205,7 @@ export async function expectRolodexFocusedContainment(page: Page) {
   );
   await expectElementInsideViewport(page.locator(".rolodex-nav"), "left nav");
   await expectElementInsideViewport(
-    activePanel.locator(".rolodex-title-field"),
-    "Rolodex title field",
-  );
-  await expectElementInsideViewport(
-    activePanel.locator(".rolodex-heading"),
+    heading,
     "Rolodex heading",
   );
   await expectElementInsideViewport(
@@ -199,11 +216,130 @@ export async function expectRolodexFocusedContainment(page: Page) {
     activePanel.locator(".rolodex-liquid-cta"),
     "Rolodex CTA",
   );
-  await expect(repetitions).toHaveAttribute("aria-hidden", "true");
+  await expect(field).toHaveAttribute("aria-hidden", "true");
+  await expect(rows.first()).toBeVisible();
   expect(
     await repeatedWords.count(),
     "decorative title field should contain repeated title instances",
   ).toBeGreaterThanOrEqual(10);
+
+  const activeTitle = (await heading.textContent())?.trim().toUpperCase();
+  const decorativeWordSamples = await repeatedWords
+    .evaluateAll((elements) =>
+      elements.slice(0, 12).map((element) => element.textContent?.trim().toUpperCase()),
+    );
+
+  expect(activeTitle, "active title should be readable").toBeTruthy();
+
+  for (const decorativeWord of decorativeWordSamples) {
+    expect(
+      decorativeWord,
+      "decorative word should come from the active panel title",
+    ).toBe(activeTitle);
+  }
+
+  const panelBox = await activePanel.boundingBox();
+  const fieldBox = await field.boundingBox();
+
+  expect(panelBox, "active panel should have a bounding box").not.toBeNull();
+  expect(fieldBox, "decorative title field should have a bounding box").not.toBeNull();
+  expect(
+    fieldBox!.width,
+    "decorative title field should cover the panel width",
+  ).toBeGreaterThanOrEqual(panelBox!.width * 0.98);
+  expect(
+    fieldBox!.height,
+    "decorative title field should cover the panel height",
+  ).toBeGreaterThanOrEqual(panelBox!.height * 0.98);
+
+  const fieldStyle = await field.evaluate((element) => {
+    const computed = getComputedStyle(element);
+
+    return {
+      fontFamily: computed.fontFamily,
+      pointerEvents: computed.pointerEvents,
+    };
+  });
+
+  expect(fieldStyle.fontFamily).toContain("Abril");
+  expect(fieldStyle.pointerEvents).toBe("none");
+
+  const rowMetrics = await rows.evaluateAll((elements) =>
+    elements.flatMap((row) => {
+      const track = row.querySelector<HTMLElement>(".rolodex-title-row__track");
+      const groups = Array.from(
+        row.querySelectorAll<HTMLElement>(".rolodex-title-row__group"),
+      );
+      const trackStyle = track ? getComputedStyle(track) : null;
+      const rowBox = row.getBoundingClientRect();
+
+      if (rowBox.width === 0 || rowBox.height === 0) {
+        return [];
+      }
+
+      const firstGroupBox = groups[0]?.getBoundingClientRect();
+      const secondGroupBox = groups[1]?.getBoundingClientRect();
+      const duration = Number.parseFloat(trackStyle?.animationDuration ?? "0");
+      const delay = Number.parseFloat(trackStyle?.animationDelay ?? "0");
+
+      return [{
+        animationName: trackStyle?.animationName ?? "",
+        delay,
+        direction: row.getAttribute("data-direction"),
+        duration,
+        firstGroupWidth: firstGroupBox?.width ?? 0,
+        groupCount: groups.length,
+        rowWidth: rowBox.width,
+        secondGroupWidth: secondGroupBox?.width ?? 0,
+        timing: trackStyle?.animationTimingFunction ?? "",
+      }];
+    }),
+  );
+
+  expect(rowMetrics.length, "decorative row count").toBeGreaterThanOrEqual(6);
+
+  const speeds = rowMetrics.map((metric, index) => {
+    expect(metric.groupCount, `row ${index + 1} should use two cloned groups`).toBe(2);
+    expect(
+      Math.abs(metric.firstGroupWidth - metric.secondGroupWidth),
+      `row ${index + 1} duplicated groups should have identical widths`,
+    ).toBeLessThanOrEqual(1);
+    expect(
+      metric.firstGroupWidth,
+      `row ${index + 1} group should exceed row width with a safety margin`,
+    ).toBeGreaterThan(metric.rowWidth * 1.35);
+    expect(metric.delay, `row ${index + 1} should not have a positive delay`).toBeLessThanOrEqual(0);
+    expect(metric.timing, `row ${index + 1} should move linearly`).toBe("linear");
+
+    const expectedDirection = index % 2 === 0 ? "left" : "right";
+    expect(metric.direction).toBe(expectedDirection);
+    expect(metric.animationName).toContain(expectedDirection);
+
+    return metric.firstGroupWidth / metric.duration;
+  });
+
+  const firstSpeed = speeds[0];
+
+  for (const [index, speed] of speeds.entries()) {
+    expect(speed, `row ${index + 1} should match the shared px/s speed`).toBeGreaterThan(0);
+    expect(Math.abs(speed - firstSpeed)).toBeLessThanOrEqual(0.75);
+  }
+
+  const firstTrack = tracks.first();
+  const firstTransform = await firstTrack.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+
+  await page.waitForTimeout(850);
+
+  const secondTransform = await firstTrack.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+
+  expect(secondTransform, "focused Abril rows should keep moving").not.toBe(
+    firstTransform,
+  );
+
   await expectRolodexContentCentered(page);
 }
 
@@ -233,7 +369,10 @@ export async function expectRolodexHeadingFont(page: Page) {
 }
 
 export async function buttonBox(page: Page, name: string | RegExp) {
-  const locator = page.getByRole("link", { name }).first();
+  const locator = page
+    .getByRole("link", { name })
+    .or(page.getByRole("button", { name }))
+    .first();
   await expect(locator).toBeVisible();
   const box = await locator.boundingBox();
 

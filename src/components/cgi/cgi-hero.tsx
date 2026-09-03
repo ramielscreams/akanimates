@@ -2,7 +2,7 @@ export function CgiHero() {
   return (
     <section
       id="cgi"
-      className="site-safe-x site-hero-y grid min-h-[min(100dvh,58rem)] scroll-mt-[clamp(5rem,12vh,8rem)] grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)]"
+      className="visualization-active-hero visualization-active-hero--cgi site-safe-x grid scroll-mt-[clamp(5rem,12vh,8rem)] grid-cols-1 items-end gap-[clamp(2.5rem,7vw,4.5rem)]"
     >
       <div className="relative z-10 mx-auto w-full max-w-[88rem]">
         <div className="max-w-3xl">
@@ -17,7 +17,7 @@ export function CgiHero() {
           </p>
         </div>
 
-        <div className="relative mt-[clamp(3rem,8vh,6rem)] min-h-[clamp(20rem,54dvh,42rem)] w-full overflow-hidden bg-surface lg:min-h-[clamp(28rem,62dvh,48rem)]">
+        <div className="visualization-mode-frame visualization-mode-frame--cgi relative mt-[clamp(3rem,8vh,6rem)] min-h-[clamp(20rem,54dvh,42rem)] w-full overflow-hidden bg-surface lg:min-h-[clamp(28rem,62dvh,48rem)]">
           <div className="absolute inset-[clamp(1rem,4vw,3rem)] bg-bg" />
           <div className="absolute inset-[clamp(1rem,4vw,3rem)] bg-surface" />
           <div className="absolute left-1/2 top-1/2 h-[38%] w-[74%] -translate-x-1/2 -translate-y-1/2 border border-border bg-bg/30" />

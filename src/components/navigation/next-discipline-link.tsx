@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-type DisciplineKey = "about" | "photography" | "visualization";
+import type { TopLevelDisciplineKey } from "@/data/top-level-disciplines";
 
 type NextDisciplineLinkProps = {
   href: string;
   index: string;
-  label: DisciplineKey;
+  label: TopLevelDisciplineKey;
 };
 
 export function NextDisciplineLink({

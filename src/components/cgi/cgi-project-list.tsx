@@ -8,7 +8,7 @@ type CgiProjectListProps = {
 export function CgiProjectList({ projects }: CgiProjectListProps) {
   return (
     <section
-      className="site-safe-x site-section-y space-y-[clamp(6rem,17vw,18rem)]"
+      className="visualization-project-section visualization-project-section--cgi site-safe-x site-section-y space-y-[clamp(6rem,17vw,18rem)]"
       aria-labelledby="selected-cgi-work"
     >
       <div className="mx-auto max-w-[88rem]">

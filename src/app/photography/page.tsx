@@ -6,6 +6,7 @@ import { PhotographyHero } from "@/components/photography/photography-hero";
 import { PhotographyProjectList } from "@/components/photography/photography-project-list";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 import { photographyProjects } from "@/data/photography-projects";
+import { getNextDiscipline } from "@/data/top-level-disciplines";
 
 export const metadata: Metadata = {
   description: "Automotive, motorsport and editorial photography by AK.",
@@ -13,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default function PhotographyPage() {
+  const nextDiscipline = getNextDiscipline("photography");
+
   return (
     <main className="section-photography min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
@@ -26,16 +29,16 @@ export default function PhotographyPage() {
               Next discipline
             </p>
             <NextDisciplineLink
-              href="/visualization"
-              index="03"
-              label="visualization"
+              href={nextDiscipline.href}
+              index={nextDiscipline.index}
+              label={nextDiscipline.label}
             />
           </div>
 
           <div className="sm:text-right">
             <LiquidGlassButton asChild>
-              <Link href="/">
-                Return Home
+              <Link href={nextDiscipline.href}>
+                {nextDiscipline.ctaLabel}
                 <span
                   className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                   aria-hidden="true"

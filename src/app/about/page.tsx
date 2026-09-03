@@ -1,8 +1,10 @@
 import Link from "next/link";
 
+import { ContactLayer } from "@/components/about/contact-layer";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
 import { NextDisciplineLink } from "@/components/navigation/next-discipline-link";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
+import { getNextDiscipline } from "@/data/top-level-disciplines";
 
 const disciplines = [
   "Automotive photography",
@@ -16,96 +18,83 @@ const credentials = [
   "Focused collaborations across photography, CGI and design",
 ];
 
-const contactMethods = [
-  {
-    href: "mailto:",
-    label: "Email",
-    value: "Email details pending",
-  },
-];
-
 export default function AboutPage() {
+  const nextDiscipline = getNextDiscipline("about");
+
   return (
     <main className="section-about min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
 
-      <section className="site-safe-x site-hero-y grid min-h-[min(100dvh,58rem)] grid-cols-1 items-end gap-[clamp(3rem,8vw,6rem)] lg:grid-cols-[minmax(0,0.9fr)_minmax(18rem,0.7fr)]">
-        <div className="min-w-0">
-          <p className="site-technical-label text-text-muted">
-            01 / about
-          </p>
-          <h1 className="site-display-title interior-heading type-controlled-wrap mt-8 text-text-primary">
-            About
-          </h1>
-          <div className="site-prose mt-8 space-y-6 text-text-secondary">
-            <p>
-              AK is an automotive visual practitioner working across
-              photography, CGI and design. The portfolio is built around
-              image-led projects, technical restraint and a focused interest in
-              vehicle form.
-            </p>
-            <p>
-              The work moves between real-world automotive imagery, digital
-              visualization and concept development, keeping each discipline
-              connected through one visual language.
-            </p>
+      <section className="about-frame about-hero">
+        <p className="site-technical-label text-text-muted">
+          01 / about
+        </p>
+
+        <div className="about-bio-experience">
+          <div className="about-title-column min-w-0">
+            <h1 className="site-display-title interior-heading type-controlled-wrap text-text-primary">
+              About
+            </h1>
+
+            <div className="about-intro min-w-0">
+              <div className="site-prose space-y-6 text-text-secondary">
+                <p>
+                  AK is an automotive visual practitioner working across
+                  photography, CGI and design. The portfolio is built around
+                  image-led projects, technical restraint and a focused interest in
+                  vehicle form.
+                </p>
+                <p>
+                  The work moves between real-world automotive imagery, digital
+                  visualization and concept development, keeping each discipline
+                  connected through one visual language.
+                </p>
+              </div>
+            </div>
           </div>
-          <LiquidGlassButton asChild className="mt-10">
-            <Link href="#contact">
-              Get in Touch
-              <span
-                className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
-                aria-hidden="true"
-              >
-                -&gt;
-              </span>
-            </Link>
-          </LiquidGlassButton>
-        </div>
 
-        <div className="grid gap-10 border-t border-border pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
-          <section aria-labelledby="about-disciplines">
+          <section className="about-experience" aria-labelledby="about-experience">
             <p
-              id="about-disciplines"
+              id="about-experience"
               className="site-technical-label text-text-muted"
             >
-              role / disciplines
+              experience
             </p>
-            <ul className="mt-5 space-y-3 text-sm text-text-secondary sm:text-base">
-              {disciplines.map((discipline) => (
-                <li key={discipline}>{discipline}</li>
-              ))}
-            </ul>
-          </section>
-
-          <section aria-labelledby="about-credentials">
-            <p
-              id="about-credentials"
-              className="site-technical-label text-text-muted"
-            >
-              collaborations / experience
-            </p>
-            <ul className="mt-5 space-y-3 text-sm text-text-secondary sm:text-base">
+            <ul className="about-detail-list text-text-secondary">
               {credentials.map((credential) => (
                 <li key={credential}>{credential}</li>
               ))}
             </ul>
-          </section>
 
-          <section aria-labelledby="about-availability">
-            <div className="flex items-center gap-3">
-              <span className="signal-marker" aria-hidden="true" />
+            <section className="about-info-block" aria-labelledby="about-disciplines">
               <p
-                id="about-availability"
+                id="about-disciplines"
                 className="site-technical-label text-text-muted"
               >
-                location / availability
+                role / disciplines
               </p>
-            </div>
-            <p className="mt-5 max-w-sm text-sm leading-7 text-text-secondary sm:text-base">
-              Available for automotive visual production, design development and
-              focused collaborations.
-            </p>
+              <ul className="about-detail-list text-text-secondary">
+                {disciplines.map((discipline) => (
+                  <li key={discipline}>{discipline}</li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="about-info-block" aria-labelledby="about-availability">
+              <div className="flex items-center gap-3">
+                <p
+                  id="about-availability"
+                  className="site-technical-label text-text-muted"
+                >
+                  location / availability
+                </p>
+                <span className="signal-marker" aria-hidden="true" />
+              </div>
+              <p className="about-detail-copy text-text-secondary">
+                Available for automotive visual production, design development and
+                focused collaborations.
+              </p>
+            </section>
           </section>
         </div>
       </section>
@@ -113,63 +102,36 @@ export default function AboutPage() {
       <section
         id="contact"
         aria-labelledby="contact-heading"
-        className="site-safe-x site-section-y"
+        className="about-frame about-contact-section"
       >
-        <div className="grid gap-[clamp(3rem,8vw,6rem)] border-t border-border pt-[clamp(3rem,8vw,5rem)] lg:grid-cols-[minmax(0,0.8fr)_minmax(18rem,0.72fr)]">
-          <div className="min-w-0">
-            <p className="site-technical-label flex items-center gap-3 text-text-muted">
-              <span className="signal-line" aria-hidden="true" />
-              <span>contact</span>
-            </p>
-            <h2
-              id="contact-heading"
-              className="section-heading mt-8 text-text-primary"
-            >
-              Have a project in mind?
-            </h2>
-            <p className="site-prose mt-8 text-text-secondary">
-              Reach out for automotive photography, CGI visualization, design
-              development or a focused collaboration that needs a restrained
-              visual system.
-            </p>
-          </div>
-
-          <div className="min-w-0 space-y-5 self-end">
-            {contactMethods.map((method) => (
-              <a
-                key={method.label}
-                href={method.href}
-                className="group flex min-h-11 items-center justify-between gap-6 border-b border-border py-4 text-text-primary transition-[border-color,color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:border-brand-interactive hover:text-text-highlight active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-              >
-                <span className="site-technical-label text-text-muted transition-colors duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] group-hover:text-brand-soft">
-                  {method.label}
-                </span>
-                <span className="text-right text-sm text-text-secondary transition-colors duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] group-hover:text-text-primary sm:text-base">
-                  {method.value}
-                </span>
-              </a>
-            ))}
-          </div>
+        <div className="about-contact-row">
+          <h2
+            id="contact-heading"
+            className="section-heading text-text-primary"
+          >
+            Have a project in mind?
+          </h2>
+          <ContactLayer />
         </div>
       </section>
 
-      <section className="site-safe-x pb-[clamp(5rem,12vh,9rem)] pt-[clamp(2rem,8vh,6rem)]">
-        <div className="grid gap-8 border-t border-border pt-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+      <section className="about-frame about-closing-nav">
+        <div className="about-closing-nav__inner">
           <div className="min-w-0">
             <p className="site-technical-label text-text-muted">
               Next discipline
             </p>
             <NextDisciplineLink
-              href="/photography"
-              index="02"
-              label="photography"
+              href={nextDiscipline.href}
+              index={nextDiscipline.index}
+              label={nextDiscipline.label}
             />
           </div>
 
           <div className="sm:text-right">
             <LiquidGlassButton asChild>
-              <Link href="/">
-                Return Home
+              <Link href={nextDiscipline.href}>
+                {nextDiscipline.ctaLabel}
                 <span
                   className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                   aria-hidden="true"

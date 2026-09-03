@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const port = process.env.PORT ?? "3000";
+const baseURL = `http://127.0.0.1:${port}`;
+const runWebKit = process.env.PLAYWRIGHT_WEBKIT === "1";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false,
@@ -8,14 +12,14 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
   webServer: {
     command: "npm run build && npm run start",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: false,
+    url: baseURL,
+    reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
   projects: [
@@ -33,12 +37,16 @@ export default defineConfig({
         viewport: { width: 1440, height: 900 },
       },
     },
-    {
-      name: "webkit",
-      use: {
-        ...devices["Desktop Safari"],
-        viewport: { width: 1440, height: 900 },
-      },
-    },
+    ...(runWebKit
+      ? [
+          {
+            name: "webkit",
+            use: {
+              ...devices["Desktop Safari"],
+              viewport: { width: 1440, height: 900 },
+            },
+          },
+        ]
+      : []),
   ],
 });

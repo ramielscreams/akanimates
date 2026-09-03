@@ -14,6 +14,7 @@ import {
 } from "@/components/visualization/visualization-mode-control";
 import { cgiProjects } from "@/data/cgi-projects";
 import { designProjects } from "@/data/design-projects";
+import { getNextDiscipline } from "@/data/top-level-disciplines";
 
 type VisualizationPageProps = {
   searchParams: Promise<{ mode?: string }>;
@@ -34,6 +35,7 @@ export default async function VisualizationPage({
 }: VisualizationPageProps) {
   const { mode: rawMode } = await searchParams;
   const mode = normalizeMode(rawMode);
+  const nextDiscipline = getNextDiscipline("visualization");
 
   return (
     <main
@@ -41,7 +43,20 @@ export default async function VisualizationPage({
       data-visualization-mode={mode}
     >
       <InteriorMenu />
-      <VisualizationModeControl mode={mode} />
+
+      <section className="visualization-mode-header site-safe-x">
+        <div className="visualization-mode-header__inner">
+          <div className="visualization-mode-header__context">
+            <p className="site-technical-label text-text-muted">
+              03 / visualization
+            </p>
+            <p className="visualization-mode-header__copy">
+              Choose the active visualization mode.
+            </p>
+          </div>
+          <VisualizationModeControl mode={mode} />
+        </div>
+      </section>
 
       <div className="visualization-content" key={mode}>
         {mode === "cgi" ? (
@@ -63,12 +78,16 @@ export default async function VisualizationPage({
             <p className="site-technical-label text-text-muted">
               Next discipline
             </p>
-            <NextDisciplineLink href="/about" index="01" label="about" />
+            <NextDisciplineLink
+              href={nextDiscipline.href}
+              index={nextDiscipline.index}
+              label={nextDiscipline.label}
+            />
           </div>
           <div className="sm:text-right">
             <LiquidGlassButton asChild>
-              <Link href="/">
-                Return Home
+              <Link href={nextDiscipline.href}>
+                {nextDiscipline.ctaLabel}
                 <span
                   className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                   aria-hidden="true"

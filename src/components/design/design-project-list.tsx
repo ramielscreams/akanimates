@@ -8,7 +8,7 @@ type DesignProjectListProps = {
 export function DesignProjectList({ projects }: DesignProjectListProps) {
   return (
     <section
-      className="site-safe-x site-section-y space-y-[clamp(6rem,17vw,18rem)]"
+      className="visualization-project-section visualization-project-section--design site-safe-x site-section-y space-y-[clamp(6rem,17vw,18rem)]"
       aria-labelledby="selected-design-work"
     >
       <div className="mx-auto max-w-[88rem]">

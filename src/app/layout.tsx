@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import {
+  Abril_Fatface,
   Barlow_Condensed,
   Inter,
   Roboto_Serif,
   Tenor_Sans,
 } from "next/font/google";
 import "./globals.css";
+
+const abrilFatface = Abril_Fatface({
+  subsets: ["latin"],
+  variable: "--font-abril-fatface",
+  weight: "400",
+});
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
@@ -44,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${barlowCondensed.variable} ${tenorSans.variable} ${robotoSerif.variable} ${inter.variable} h-full antialiased`}
+      className={`${abrilFatface.variable} ${barlowCondensed.variable} ${tenorSans.variable} ${robotoSerif.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-text-primary">
         {children}

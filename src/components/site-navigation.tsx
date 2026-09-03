@@ -14,7 +14,7 @@ export function SiteNavigation() {
       <Link
         href="/"
         aria-label="AK home"
-        className="inline-flex w-fit items-center opacity-90 transition-opacity duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
+        className="ak-home-link opacity-90 transition-opacity duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
       >
         <Image
           src="/logo.svg"
@@ -22,7 +22,7 @@ export function SiteNavigation() {
           width={48}
           height={48}
           priority
-          className="h-7 w-7"
+          className="h-auto w-full"
         />
       </Link>
       <nav aria-label="Main navigation">

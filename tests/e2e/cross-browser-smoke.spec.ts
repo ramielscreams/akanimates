@@ -77,6 +77,7 @@ test.describe("cross-browser smoke", () => {
     await page.goto("/visualization");
 
     const menuButton = page.getByRole("button", { name: /open navigation menu/i });
+    await expect(menuButton).toHaveAttribute("data-ready", "true");
     if (browserName === "webkit") {
       await menuButton.focus();
     } else {
@@ -85,7 +86,7 @@ test.describe("cross-browser smoke", () => {
       await page.keyboard.press("Tab");
     }
     await expect(menuButton).toBeFocused();
-    await page.keyboard.press("Enter");
+    await menuButton.press("Enter");
 
     const dialog = page.getByRole("dialog", { name: /site navigation/i });
     await expect(dialog).toBeVisible();
