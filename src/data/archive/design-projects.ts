@@ -1,7 +1,5 @@
-import type {
-  BasePortfolioProject,
-  PortfolioCaseStudyProject,
-} from "@/data/portfolio-projects";
+// Archived content awaiting reassignment; intentionally excluded from published Work.
+import type { BasePortfolioProject } from "@/data/portfolio-projects";
 
 export type DesignProjectLayout =
   | "wide"
@@ -19,8 +17,6 @@ export type DesignProject = BasePortfolioProject & {
   secondaryLabel?: string;
   year: string;
 };
-
-export type DesignCaseStudyProject = DesignProject & PortfolioCaseStudyProject;
 
 export const designProjects: DesignProject[] = [
   {
@@ -122,34 +118,3 @@ export const designProjects: DesignProject[] = [
     year: "2024",
   },
 ];
-
-function isDesignCaseStudy(
-  project: DesignProject,
-): project is DesignCaseStudyProject {
-  return Boolean(project.hero && project.intro && project.media && project.role);
-}
-
-export const designCaseStudyProjects =
-  designProjects.filter(isDesignCaseStudy);
-
-export function getDesignProject(slug: string) {
-  return designCaseStudyProjects.find((project) => project.slug === slug);
-}
-
-export function getNextDesignProject(slug: string) {
-  if (designCaseStudyProjects.length < 2) {
-    return undefined;
-  }
-
-  const currentIndex = designCaseStudyProjects.findIndex(
-    (project) => project.slug === slug,
-  );
-
-  if (currentIndex === -1) {
-    return undefined;
-  }
-
-  return designCaseStudyProjects[
-    (currentIndex + 1) % designCaseStudyProjects.length
-  ];
-}

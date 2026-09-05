@@ -1,9 +1,12 @@
+import Image from "next/image";
+import type { ProjectHero } from "@/data/portfolio-projects";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { KineticPanelTypography } from "@/components/home/kinetic-panel-typography";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 
 export type RolodexEntry = {
+  cover?: ProjectHero;
   index: string;
   title: string;
   description: string;
@@ -59,6 +62,8 @@ export function RolodexItem({
       <div
         className="rolodex-panel"
         aria-hidden={isActive ? "false" : "true"}
+        inert={!isActive}
+        data-has-media={Boolean(entry.cover?.src)}
         data-focused-media-fit={entry.focusedMediaFit ?? "cover"}
         data-logical-index={logicalIndex}
         data-panel={panelKey}
@@ -66,7 +71,9 @@ export function RolodexItem({
         data-state={state}
       >
         <div className="rolodex-media-layer" aria-hidden="true">
-          {/* Replace this placeholder with a future full-screen image, video, or render. */}
+          {entry.cover?.src && (entry.cover.type === "video"
+            ? <video className="rolodex-cover" src={entry.cover.src} muted playsInline loop aria-label={entry.cover.alt} />
+            : <Image className="rolodex-cover" src={entry.cover.src} alt={entry.cover.alt} fill sizes="100vw" />)}
           <div className="rolodex-media-field" data-rolodex-media-field />
           <div className="rolodex-media-lines" />
           <p className="rolodex-media-label" data-rolodex-media-label>
@@ -79,6 +86,8 @@ export function RolodexItem({
 
         <div className="rolodex-overlay-layer" aria-hidden="true" />
 
+        <Link href={entry.href} aria-hidden="true" tabIndex={-1}
+          className="rolodex-project-hit-area" />
         <div className="rolodex-content-layer">
           <div className="rolodex-title-stack">
             <TitleTag className="rolodex-heading uppercase text-text-primary">

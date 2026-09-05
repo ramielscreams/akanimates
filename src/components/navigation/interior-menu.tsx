@@ -3,28 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 const navigationItems = [
   { index: "01", label: "about", href: "/about" },
-  { index: "02", label: "photography", href: "/photography" },
-  { index: "03", label: "visualization", href: "/visualization" },
+  { index: "02", label: "work", href: "/work" },
 ];
-
-function getCurrentTopLevelHref(pathname: string) {
-  const normalizedPathname = pathname.replace(/\/$/, "") || "/";
-
-  if (
-    normalizedPathname === "/cgi" ||
-    normalizedPathname.startsWith("/cgi/") ||
-    normalizedPathname === "/design" ||
-    normalizedPathname.startsWith("/design/")
-  ) {
-    return "/visualization";
-  }
-
-  return normalizedPathname;
-}
 
 export function InteriorMenu() {
   const pathname = usePathname();
@@ -38,18 +22,7 @@ export function InteriorMenu() {
     menuTriggerRef.current?.setAttribute("data-ready", "true");
   }, []);
 
-  const visibleItems = useMemo(
-    () =>
-      navigationItems.filter((item) => {
-        const currentTopLevelHref = getCurrentTopLevelHref(pathname);
-
-        return (
-          currentTopLevelHref !== item.href &&
-          !currentTopLevelHref.startsWith(`${item.href}/`)
-        );
-      }),
-    [pathname],
-  );
+  const visibleItems = navigationItems;
 
   useEffect(() => {
     if (!isOpen) {
@@ -166,6 +139,7 @@ export function InteriorMenu() {
         role="dialog"
         aria-modal={isOpen ? "true" : undefined}
         aria-label="Site navigation"
+        inert={!isOpen}
         className="fixed inset-0 z-[220] origin-top-right bg-bg text-text-primary transition-[opacity,transform] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] data-[open=false]:pointer-events-none data-[open=false]:scale-[0.985] data-[open=false]:opacity-0 data-[open=true]:scale-100 data-[open=true]:opacity-100 motion-reduce:scale-100 motion-reduce:duration-[1ms]"
         data-open={isOpen ? "true" : "false"}
         aria-hidden={isOpen ? undefined : "true"}

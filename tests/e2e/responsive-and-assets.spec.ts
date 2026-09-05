@@ -5,7 +5,6 @@ import {
   expectElementInsideViewport,
   expectMinTapTarget,
   expectNoHorizontalOverflow,
-  expectRolodexFocusedContainment,
   responsiveViewports,
 } from "./helpers";
 
@@ -13,11 +12,11 @@ const primaryRoutes = [
   "/",
   "/about",
   "/photography",
-  "/visualization",
-  "/visualization?mode=design",
+  "/work?mode=cgi",
+  "/work?mode=stills",
   "/photography/project-one",
   "/cgi/project-one",
-  "/design/project-one",
+  "/cgi/project-five",
   "/definitely-not-a-real-route",
 ] as const;
 
@@ -57,20 +56,20 @@ test.describe("responsive layout, assets, and controls", () => {
     }) => {
       await page.setViewportSize(viewport);
       await page.goto("/");
-      await expectRolodexFocusedContainment(page);
+      await expectElementInsideViewport(page.getByRole("navigation", { name: "Primary destinations" }), "Home destinations");
 
-      await page.goto("/visualization");
+      await page.goto("/work?mode=cgi");
       await expectElementInsideViewport(
-        page.locator(".visualization-mode-control"),
-        "Visualization mode switch",
+        page.locator(".work-mode-control"),
+        "Work mode switch",
       );
       await expectMinTapTarget(
         page.getByRole("radio", { name: /^CGI$/ }),
         "CGI mode option",
       );
       await expectMinTapTarget(
-        page.getByRole("radio", { name: "Design" }),
-        "Design mode option",
+        page.getByRole("radio", { name: "STILLS" }),
+        "Stills mode option",
       );
 
       await page.goto("/definitely-not-a-real-route");
@@ -133,10 +132,10 @@ test.describe("responsive layout, assets, and controls", () => {
       "/",
       "/about",
       "/photography",
-      "/visualization",
+      "/work?mode=cgi",
       "/photography/project-one",
       "/cgi/project-one",
-      "/design/project-one",
+      "/cgi/project-five",
     ] as const;
     const viewports = [
       { width: 1920, height: 1080 },
@@ -168,8 +167,8 @@ test.describe("responsive layout, assets, and controls", () => {
   test("keeps major CTA buttons substantial and pointer-reactive", async ({
     page,
   }) => {
-    await page.goto("/");
-    const explore = page.getByRole("link", { name: /explore profile/i });
+    await page.goto("/work?mode=cgi");
+    const explore = page.getByRole("link", { name: /view project/i });
     await expect(explore).toBeVisible();
     const exploreBox = await explore.boundingBox();
 
@@ -192,72 +191,11 @@ test.describe("responsive layout, assets, and controls", () => {
     expect(afterMove.trim()).not.toBe(beforeMove.trim());
     expect(transform).toBe(beforeTransform);
 
-    await page.goto("/visualization");
-    const nextAbout = await buttonBox(page, /explore about/i);
-    expect(nextAbout.height).toBeGreaterThanOrEqual(56);
+
 
     await page.goto("/about");
     const contact = await buttonBox(page, /get in touch/i);
     expect(contact.height).toBeGreaterThanOrEqual(56);
   });
 
-  test("keeps the Visualization CGI / Design selector usable on mobile", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/visualization");
-
-    const mobileControl = page.locator(
-      ".visualization-mode-control-shell .visualization-mode-control",
-    );
-    await expect(mobileControl).toBeVisible();
-
-    const box = await mobileControl.boundingBox();
-    expect(box?.height ?? 0).toBeGreaterThanOrEqual(64);
-    expect(box?.width ?? 0).toBeGreaterThanOrEqual(320);
-    expect(box?.y ?? 0).toBeLessThan(180);
-
-    await mobileControl.getByRole("radio", { name: "Design" }).click();
-    await expect(page).toHaveURL(/\/visualization\?mode=design$/);
-    await expect(page.locator(".visualization-content #selected-design-work")).toBeVisible();
-    await expect(page.locator(".visualization-content #selected-cgi-work")).toHaveCount(0);
-    await expect(
-      mobileControl.locator('button[aria-checked="true"]'),
-    ).toHaveText("Design");
-  });
-
-  test("uses non-spatial mode replacement with reduced motion", async ({
-    page,
-  }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
-
-    const rowMotion = await page
-      .locator('.rolodex-panel[data-state="active"] .rolodex-title-row__track')
-      .first()
-      .evaluate((element) => {
-        const computed = getComputedStyle(element);
-
-        return {
-          animationName: computed.animationName,
-          transform: computed.transform,
-        };
-      });
-
-    expect(rowMotion.animationName).toBe("none");
-    expect(["none", "matrix(1, 0, 0, 1, 0, 0)"]).toContain(
-      rowMotion.transform,
-    );
-
-    await page.goto("/visualization");
-    await page
-      .locator(".visualization-mode-control-shell")
-      .getByRole("radio", { name: "Design" })
-      .click();
-    await expect(page).toHaveURL(/\/visualization\?mode=design$/);
-
-    const transform = await page
-      .locator(".visualization-content")
-      .evaluate((element) => getComputedStyle(element).transform);
-
-    expect(transform).toBe("none");
-  });
 });

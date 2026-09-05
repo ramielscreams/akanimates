@@ -1,7 +1,4 @@
-import type {
-  BasePortfolioProject,
-  PortfolioCaseStudyProject,
-} from "@/data/portfolio-projects";
+import type { BasePortfolioProject } from "@/data/portfolio-projects";
 
 export type CgiProjectLayout = "standard" | "wide" | "cinematic" | "offset";
 
@@ -12,8 +9,6 @@ export type CgiProject = BasePortfolioProject & {
   mediaType: string;
   year: string;
 };
-
-export type CgiCaseStudyProject = CgiProject & PortfolioCaseStudyProject;
 
 export const cgiProjects: CgiProject[] = [
   {
@@ -109,31 +104,3 @@ export const cgiProjects: CgiProject[] = [
     year: "2024",
   },
 ];
-
-function isCgiCaseStudy(project: CgiProject): project is CgiCaseStudyProject {
-  return Boolean(project.hero && project.intro && project.media && project.role);
-}
-
-export const cgiCaseStudyProjects = cgiProjects.filter(isCgiCaseStudy);
-
-export function getCgiProject(slug: string) {
-  return cgiCaseStudyProjects.find((project) => project.slug === slug);
-}
-
-export function getNextCgiProject(slug: string) {
-  if (cgiCaseStudyProjects.length < 2) {
-    return undefined;
-  }
-
-  const currentIndex = cgiCaseStudyProjects.findIndex(
-    (project) => project.slug === slug,
-  );
-
-  if (currentIndex === -1) {
-    return undefined;
-  }
-
-  return cgiCaseStudyProjects[
-    (currentIndex + 1) % cgiCaseStudyProjects.length
-  ];
-}

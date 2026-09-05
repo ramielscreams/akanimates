@@ -1,56 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import {
   type CSSProperties,
-  type MouseEvent,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import Link from "next/link";
+import { projectHref, type WorkProject } from "@/data/work-projects";
 import { RolodexItem, type RolodexEntry } from "@/components/home/rolodex-item";
 import { RolodexNav } from "@/components/home/rolodex-nav";
-
-const rolodexEntries: RolodexEntry[] = [
-  {
-    index: "01",
-    title: "About",
-    description:
-      "AK. Automotive photography, visualization and design. Selected visual work and focused experimentation.",
-    href: "/about",
-    cta: "Explore profile",
-    mediaLabel: "About media placeholder",
-    mediaNote: "Future media: portrait, studio scene, showreel frame, or abstract detail.",
-    accent: "rgb(var(--brand-rgb) / 0.22)",
-    surface: "var(--bg)",
-  },
-  {
-    index: "02",
-    title: "Photography",
-    description: "Automotive, motorsport and editorial imagery.",
-    href: "/photography",
-    cta: "Explore photography",
-    panelKey: "photography",
-    mediaLabel: "Photography media placeholder",
-    mediaNote: "Future media: full-screen automotive still.",
-    accent: "rgb(var(--brand-rgb) / 0.22)",
-    surface: "var(--bg)",
-  },
-  {
-    index: "03",
-    title: "Visualization",
-    description: "Digital imagery, motion and automotive form.",
-    href: "/visualization",
-    cta: "Explore visualization",
-    panelKey: "visualization",
-    mediaLabel: "Visualization media placeholder",
-    mediaNote: "Future media: render, animation still, design study, or material detail.",
-    accent: "rgb(var(--brand-rgb) / 0.22)",
-    surface: "var(--bg)",
-  },
-];
 
 const ONE_PANEL_RESPONSE_SECONDS = 0.62;
 const MULTI_PANEL_RESPONSE_SECONDS = 0.95;
@@ -264,7 +223,7 @@ function normalizeWheelDelta(event: WheelEvent) {
   return event.deltaY;
 }
 
-type Direction = "next" | "previous";
+type Direction = "next";
 
 type MotionState = {
   direction: Direction | "none";
@@ -273,7 +232,22 @@ type MotionState = {
   targetIndex: number;
 };
 
-export function Rolodex() {
+export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
+  const rolodexEntries: RolodexEntry[] = useMemo(() => projects.map((project) => ({
+    index: String(project.order).padStart(2, "0"),
+    title: project.title,
+    description: project.discipline === "stills"
+      ? [project.manufacturer ?? project.client, project.location, project.year].filter(Boolean).join(" / ")
+      : [project.category, project.mediaType, project.year].filter(Boolean).join(" / "),
+    href: projectHref(project),
+    cta: "View project",
+    panelKey: project.discipline,
+    mediaLabel: project.cover.alt,
+    mediaNote: project.discipline === "stills" ? "Automotive photography" : project.category,
+    cover: project.cover,
+    accent: "rgb(var(--brand-rgb) / 0.22)",
+    surface: "var(--bg)",
+  })), [projects]);
   const shellRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const activeIndexRef = useRef(0);
@@ -321,7 +295,7 @@ export function Rolodex() {
         entry,
         logicalIndex: index,
       })),
-    [],
+    [rolodexEntries],
   );
 
   useEffect(() => {
@@ -336,10 +310,12 @@ export function Rolodex() {
   useEffect(() => {
     const track = trackRef.current;
 
-    if (!track) {
+    if (!track || rolodexEntries.length === 0) {
       return;
     }
 
+    let reducedTimer: number | undefined;
+    let lastSettledAt = 0;
     const loopLength = rolodexEntries.length;
     const measurePanel = () => {
       const computedStyle = window.getComputedStyle(track);
@@ -403,7 +379,6 @@ export function Rolodex() {
     };
 
     const applyPhysicalState = () => {
-      measurePanel();
       const currentPosition = positionRef.current;
       let strongestFocus = 0;
 
@@ -430,7 +405,7 @@ export function Rolodex() {
         );
         const sceneHeight = interpolate(
           mechanicalSceneHeight,
-          window.innerHeight,
+          track.clientHeight,
           focusProgress,
         );
         const panelWidth = interpolate(
@@ -440,7 +415,7 @@ export function Rolodex() {
         );
         const panelHeight = interpolate(
           mechanicalPanelHeight,
-          window.innerHeight,
+          track.clientHeight,
           focusProgress,
         );
         const mechanicalHeadingSize = clamp(
@@ -462,7 +437,7 @@ export function Rolodex() {
           panelMetricsRef.current.reserve,
           focusProgress,
         );
-        const titleLength = rolodexEntries[index].title.replace(/\s+/g, "").length;
+        const titleLength = rolodexEntries[index].title.length;
         const focusedFieldWidth = Math.min(
           window.innerWidth - panelMetricsRef.current.reserve - 48,
           clamp(window.innerWidth * 0.72, 448, 1216),
@@ -472,7 +447,7 @@ export function Rolodex() {
           focusedFieldWidth,
           focusProgress,
         );
-        const fittedHeadingSize = headingAvailableWidth / (titleLength * 0.53);
+        const fittedHeadingSize = headingAvailableWidth / (titleLength * 0.62);
         const headingSize = Math.min(
           rawHeadingSize,
           Math.max(44, fittedHeadingSize),
@@ -540,7 +515,7 @@ export function Rolodex() {
       wheelQuietTimeoutRef.current = window.setTimeout(() => {
         const quietFor = window.performance.now() - lastWheelAtRef.current;
 
-        if (quietFor >= WHEEL_GESTURE_QUIET_MS) {
+        if (!motionStateRef.current.isMoving && quietFor >= WHEEL_GESTURE_QUIET_MS && window.performance.now() - lastSettledAt >= WHEEL_GESTURE_QUIET_MS) {
           armNextWheelGesture();
           return;
         }
@@ -550,6 +525,7 @@ export function Rolodex() {
     };
 
     const settleImmediately = (targetPosition: number, direction: Direction) => {
+      lastSettledAt = window.performance.now();
       positionRef.current = targetPosition;
       targetPositionRef.current = targetPosition;
       sourcePositionRef.current = targetPosition;
@@ -603,6 +579,7 @@ export function Rolodex() {
             springResponseRef.current * MAX_SETTLE_RESPONSE_MULTIPLIER * 1000);
 
       if (isSettled) {
+        lastSettledAt = window.performance.now();
         const targetIndex = positiveModulo(Math.round(targetPosition), loopLength);
         positionRef.current = targetPosition;
         sourcePositionRef.current = targetPosition;
@@ -637,8 +614,8 @@ export function Rolodex() {
     };
 
     const triggerNavigation = (direction: Direction, distance = 1) => {
-      const signedDistance =
-        direction === "next" ? Math.max(1, distance) : -Math.max(1, distance);
+      if (motionStateRef.current.isMoving || loopLength < 2) return;
+      const signedDistance = Math.max(1, distance);
       const travelDistance = Math.abs(signedDistance);
       const currentTarget = targetPositionRef.current;
       const nextTarget = currentTarget + signedDistance;
@@ -656,7 +633,7 @@ export function Rolodex() {
           targetIndex: nextIndex,
         });
         setPendingNavIndex(nextIndex);
-        window.setTimeout(() => {
+        reducedTimer = window.setTimeout(() => {
           settleImmediately(nextTarget, direction);
         }, REDUCED_TRANSITION_MS);
         return;
@@ -704,7 +681,7 @@ export function Rolodex() {
 
       if (Math.abs(gestureDeltaRef.current) >= WHEEL_TRIGGER_THRESHOLD) {
         committedGestureRef.current = true;
-        triggerNavigation(gestureDeltaRef.current > 0 ? "next" : "previous");
+        if (gestureDeltaRef.current > 0) triggerNavigation("next");
       }
     };
     const onKeyDown = (event: KeyboardEvent) => {
@@ -717,12 +694,13 @@ export function Rolodex() {
         return;
       }
 
+      if (event.repeat || (event.target instanceof Element && event.target.closest('button, a, input, textarea, [role="dialog"]'))) return;
       event.preventDefault();
 
       if (event.key === "ArrowDown" || event.key === "PageDown") {
         triggerNavigation("next");
       } else {
-        triggerNavigation("previous");
+        return;
       }
     };
     const onTouchStart = (event: TouchEvent) => {
@@ -747,7 +725,7 @@ export function Rolodex() {
 
       event.preventDefault();
       touchStartYRef.current = null;
-      triggerNavigation(delta > 0 ? "next" : "previous");
+      if (delta > 0) triggerNavigation("next");
     };
     const onTouchEnd = () => {
       touchStartYRef.current = null;
@@ -758,6 +736,7 @@ export function Rolodex() {
       reducedMotionRef.current = motionQuery.matches;
     };
     const onResize = () => {
+      measurePanel();
       applyPhysicalState();
     };
 
@@ -765,30 +744,31 @@ export function Rolodex() {
     measurePanel();
     applyPhysicalState();
 
-    window.addEventListener("wheel", onWheel, { passive: false });
+    track.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("touchend", onTouchEnd);
+    track.addEventListener("touchstart", onTouchStart, { passive: true });
+    track.addEventListener("touchmove", onTouchMove, { passive: false });
+    track.addEventListener("touchend", onTouchEnd);
     window.addEventListener("resize", onResize);
     motionQuery.addEventListener("change", updateReducedMotion);
 
     return () => {
       triggerNavigationRef.current = () => {};
       clearWheelQuietTimeout();
+      window.clearTimeout(reducedTimer);
       if (springFrameRef.current !== null) {
         window.cancelAnimationFrame(springFrameRef.current);
         springFrameRef.current = null;
       }
-      window.removeEventListener("wheel", onWheel);
+      track.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
+      track.removeEventListener("touchstart", onTouchStart);
+      track.removeEventListener("touchmove", onTouchMove);
+      track.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("resize", onResize);
       motionQuery.removeEventListener("change", updateReducedMotion);
     };
-  }, []);
+  }, [rolodexEntries]);
 
   const navigateToPanel = (targetIndex: number) => {
     const normalizedTarget = positiveModulo(targetIndex, rolodexEntries.length);
@@ -815,42 +795,12 @@ export function Rolodex() {
     triggerNavigationRef.current("next", distance);
   };
 
-  const resetHomepage = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-
-    if (
-      window.location.pathname === "/" &&
-      window.location.search === "" &&
-      window.location.hash === ""
-    ) {
-      window.location.reload();
-      return;
-    }
-
-    window.location.assign("/");
-  };
-
   return (
     <section
       ref={shellRef}
       className="rolodex-shell"
-      aria-label="Primary site navigation"
+      aria-label="Project browsing"
     >
-      <Link
-        href="/"
-        aria-label="Home"
-        className="ak-home-link fixed left-[clamp(1.25rem,2.5vw,2.75rem)] top-[clamp(1.25rem,4vh,2rem)] z-[140] opacity-[0.88] transition-opacity duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[0.35rem] focus-visible:outline-brand-interactive"
-        onClick={resetHomepage}
-      >
-        <Image
-          src="/logo.svg"
-          alt=""
-          width={2000}
-          height={2000}
-          priority
-          className="h-auto w-full"
-        />
-      </Link>
       <RolodexNav
         activeIndex={activeIndex}
         entries={rolodexEntries}
@@ -858,6 +808,8 @@ export function Rolodex() {
         onNavigate={navigateToPanel}
         pendingIndex={pendingNavIndex}
       />
+      <p className="sr-only" role="status">{rolodexEntries[activeIndex]?.title}, project {activeIndex + 1} of {projects.length}</p>
+      <p className="work-scroll-hint site-technical-label">Scroll to next project <span aria-hidden="true">↓</span></p>
       <div className="rolodex-atmosphere" aria-hidden="true" />
       <div
         ref={trackRef}
@@ -887,7 +839,7 @@ export function Rolodex() {
               entry={entry}
               depth={logicalIndex + 1}
               logicalIndex={logicalIndex}
-              primaryHeading={logicalIndex === 0}
+              primaryHeading={false}
               sceneRef={(node) => {
                 sceneRefs.current[logicalIndex] = node;
               }}

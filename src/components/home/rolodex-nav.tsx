@@ -26,14 +26,16 @@ export function RolodexNav({
             <li key={entry.index}>
               <button
                 type="button"
-                aria-current={isActive ? "page" : undefined}
+                aria-current={isActive ? "true" : undefined}
+                aria-label={`${entry.index} / ${entry.title}`}
+                disabled={isNavigating}
                 className="rolodex-nav-item font-meta"
                 data-active={isActive ? "true" : "false"}
                 data-navigating={isNavigating ? "true" : "false"}
                 data-pending={isPending ? "true" : "false"}
                 onClick={() => onNavigate(index)}
               >
-                {entry.index} / {entry.title.toLowerCase()}
+                <span>{entry.index}</span><span className="rolodex-nav-name"> / {entry.title.toLowerCase()}</span>
               </button>
             </li>
           );

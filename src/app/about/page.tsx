@@ -2,24 +2,22 @@ import Link from "next/link";
 
 import { ContactLayer } from "@/components/about/contact-layer";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
-import { NextDisciplineLink } from "@/components/navigation/next-discipline-link";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
-import { getNextDiscipline } from "@/data/top-level-disciplines";
 
 const disciplines = [
   "Automotive photography",
-  "CGI and design visualization",
-  "Automotive design development",
+  "CGI and visualization",
+  "Automotive image development",
 ];
 
 const credentials = [
   "Selected automotive visual work",
-  "Design experimentation and development",
-  "Focused collaborations across photography, CGI and design",
+  "Visual experimentation and development",
+  "Focused collaborations across photography and CGI",
 ];
 
 export default function AboutPage() {
-  const nextDiscipline = getNextDiscipline("about");
+
 
   return (
     <main className="section-about min-h-dvh bg-bg text-text-primary">
@@ -40,7 +38,7 @@ export default function AboutPage() {
               <div className="site-prose space-y-6 text-text-secondary">
                 <p>
                   AK is an automotive visual practitioner working across
-                  photography, CGI and design. The portfolio is built around
+                  photography and CGI. The portfolio is built around
                   image-led projects, technical restraint and a focused interest in
                   vehicle form.
                 </p>
@@ -91,7 +89,7 @@ export default function AboutPage() {
                 <span className="signal-marker" aria-hidden="true" />
               </div>
               <p className="about-detail-copy text-text-secondary">
-                Available for automotive visual production, design development and
+                Available for automotive visual production, image development and
                 focused collaborations.
               </p>
             </section>
@@ -119,19 +117,15 @@ export default function AboutPage() {
         <div className="about-closing-nav__inner">
           <div className="min-w-0">
             <p className="site-technical-label text-text-muted">
-              Next discipline
+              Selected work
             </p>
-            <NextDisciplineLink
-              href={nextDiscipline.href}
-              index={nextDiscipline.index}
-              label={nextDiscipline.label}
-            />
+            <Link href="/work" className="large-nav-link mt-6 inline-block uppercase">Work</Link>
           </div>
 
           <div className="sm:text-right">
             <LiquidGlassButton asChild>
-              <Link href={nextDiscipline.href}>
-                {nextDiscipline.ctaLabel}
+              <Link href="/work">
+                Explore Work
                 <span
                   className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
                   aria-hidden="true"

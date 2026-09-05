@@ -184,19 +184,3 @@ export const photographyProjects: PhotographyProject[] = [
     year: "2025",
   },
 ];
-
-export function getPhotographyProject(slug: string) {
-  return photographyProjects.find((project) => project.slug === slug);
-}
-
-export function getNextPhotographyProject(slug: string) {
-  const currentIndex = photographyProjects.findIndex(
-    (project) => project.slug === slug,
-  );
-
-  if (currentIndex === -1) {
-    return undefined;
-  }
-
-  return photographyProjects[(currentIndex + 1) % photographyProjects.length];
-}

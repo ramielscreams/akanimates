@@ -54,9 +54,3 @@ export type PortfolioCaseStudyProject = BasePortfolioProject & {
   media: ProjectMediaItem[];
   role: string;
 };
-
-export function hasCaseStudy(
-  project: BasePortfolioProject,
-): project is PortfolioCaseStudyProject {
-  return Boolean(project.hero && project.intro && project.media && project.role);
-}
