@@ -17,6 +17,10 @@ export function ProjectCredits({ entries, project }: ProjectCreditsProps) {
     ...(project.credits ?? []),
   ];
 
+  if (projectEntries.length === 0) {
+    return null;
+  }
+
   return (
     <section className="site-safe-x site-section-y">
       <div className="border-t border-border pt-10">

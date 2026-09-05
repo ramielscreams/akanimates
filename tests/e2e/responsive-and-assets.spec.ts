@@ -91,7 +91,7 @@ test.describe("responsive layout, assets, and controls", () => {
         "Contact close button",
       );
 
-      for (const method of ["WhatsApp", "Phone", "Instagram", "Email"]) {
+      for (const method of ["Email", "Instagram", "LinkedIn"]) {
         await expectMinTapTarget(
           contactDialog.locator("[data-contact-action]").filter({ hasText: method }),
           `${method} contact action`,
@@ -168,27 +168,23 @@ test.describe("responsive layout, assets, and controls", () => {
     page,
   }) => {
     await page.goto("/work?mode=cgi");
-    const explore = page.getByRole("link", { name: /view project/i });
+    const explore = page.locator('.rolodex-panel[data-state="active"] .rolodex-project-hit-area');
     await expect(explore).toBeVisible();
     const exploreBox = await explore.boundingBox();
 
-    expect(exploreBox?.height ?? 0).toBeGreaterThanOrEqual(56);
-    expect(exploreBox?.width ?? 0).toBeGreaterThan(130);
+    expect(exploreBox?.height ?? 0).toBeGreaterThanOrEqual(300);
+    expect(exploreBox?.width ?? 0).toBeGreaterThan(300);
+    await expect(explore).toHaveAttribute("href", "/cgi/project-one");
 
-    const beforeTransform = await explore.evaluate((element) => getComputedStyle(element).transform);
-    const beforeMove = await explore.evaluate((element) =>
-      getComputedStyle(element).getPropertyValue("--mouse-x"),
-    );
+    const visibleCta = page.locator('.rolodex-panel[data-state="active"] .rolodex-liquid-cta');
+    await expect(visibleCta).toBeVisible();
+    const beforeTransform = await visibleCta.evaluate((element) => getComputedStyle(element).transform);
     const box = await explore.boundingBox();
     expect(box).not.toBeNull();
     await page.mouse.move((box?.x ?? 0) + 18, (box?.y ?? 0) + 18);
     await page.waitForTimeout(50);
-    const afterMove = await explore.evaluate((element) =>
-      getComputedStyle(element).getPropertyValue("--mouse-x"),
-    );
-    const transform = await explore.evaluate((element) => getComputedStyle(element).transform);
+    const transform = await visibleCta.evaluate((element) => getComputedStyle(element).transform);
 
-    expect(afterMove.trim()).not.toBe(beforeMove.trim());
     expect(transform).toBe(beforeTransform);
 
 

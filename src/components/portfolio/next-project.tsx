@@ -1,56 +1,69 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
-import type { BasePortfolioProject } from "@/data/portfolio-projects";
+import type { WorkProject } from "@/data/work-projects";
 
 type NextProjectProps = {
   backHref: string;
   backLabel: string;
   discipline: string;
-  hrefBase?: string;
-  project?: BasePortfolioProject;
+  href?: string;
+  project?: WorkProject;
 };
 
 export function NextProject({
   backHref,
   backLabel,
   discipline,
-  hrefBase,
+  href,
   project,
 }: NextProjectProps) {
-  const projectHrefBase = hrefBase ?? `/${discipline.toLowerCase()}`;
+  const projectHref = href;
 
   return (
     <nav
-      className="site-safe-x pb-[clamp(5rem,12vh,9rem)] pt-[clamp(2rem,8vh,6rem)]"
+      className="site-safe-x next-project-section"
       aria-label={`${discipline} project navigation`}
     >
-      <div className="grid gap-8 border-t border-border pt-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-        {project ? (
-          <div className="min-w-0">
-            <p className="site-technical-label text-text-muted">
-              Next Project / {project.index}
-            </p>
-            <Link
-              href={`${projectHrefBase}/${project.slug}`}
-              className="large-nav-link mt-6 inline-flex min-h-11 items-center uppercase tracking-[0.02em] text-text-primary transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-brand-soft hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-            >
-              {project.title}
-            </Link>
+      <div className="next-project-section__top">
+        <LiquidGlassButton asChild variant="quiet">
+          <Link href={backHref}>{backLabel}</Link>
+        </LiquidGlassButton>
+      </div>
+      {project && projectHref ? (
+        <Link
+          href={projectHref}
+          className="next-project-card"
+          aria-label={`Next project, ${project.title}`}
+        >
+          <div className="next-project-card__meta">
+            <span>Next Project</span>
+            <span>{project.index}</span>
+            <span>{discipline}</span>
           </div>
-        ) : (
+          <div className="next-project-card__title">
+            <span>{project.title}</span>
+            <span aria-hidden="true">-&gt;</span>
+          </div>
+          <div className="next-project-card__media" aria-hidden="true">
+            {project.cover.src ? (
+              project.cover.type === "video" ? (
+                <video src={project.cover.src} muted playsInline preload="metadata" />
+              ) : (
+                <Image src={project.cover.src} alt="" fill sizes="(max-width: 768px) 100vw, 44vw" />
+              )
+            ) : null}
+            <div className="next-project-card__placeholder" />
+          </div>
+        </Link>
+      ) : (
           <div>
             <p className="site-technical-label text-text-muted">
               Project index
             </p>
           </div>
-        )}
-        <div className="sm:text-right">
-          <LiquidGlassButton asChild>
-            <Link href={backHref}>{backLabel}</Link>
-          </LiquidGlassButton>
-        </div>
-      </div>
+      )}
     </nav>
   );
 }

@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { projectHref, type WorkProject } from "@/data/work-projects";
+import { projectHref, type WorkMode, type WorkProject } from "@/data/work-projects";
 import { RolodexItem, type RolodexEntry } from "@/components/home/rolodex-item";
 import { RolodexNav } from "@/components/home/rolodex-nav";
 
@@ -232,7 +232,14 @@ type MotionState = {
   targetIndex: number;
 };
 
-export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
+type ProjectRolodexProps = {
+  initialProjectSlug?: string;
+  mode: WorkMode;
+  projects: WorkProject[];
+  rememberState?: boolean;
+};
+
+export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberState = true }: ProjectRolodexProps) {
   const rolodexEntries: RolodexEntry[] = useMemo(() => projects.map((project) => ({
     index: String(project.order).padStart(2, "0"),
     title: project.title,
@@ -247,10 +254,16 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
     cover: project.cover,
     accent: "rgb(var(--brand-rgb) / 0.22)",
     surface: "var(--bg)",
+    meta: project.discipline === "stills" ? project.category : project.mediaType,
+    year: project.year,
   })), [projects]);
+  const initialIndex = Math.max(
+    0,
+    projects.findIndex((project) => project.slug === initialProjectSlug),
+  );
   const shellRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const activeIndexRef = useRef(0);
+  const activeIndexRef = useRef(initialIndex);
   const committedGestureRef = useRef(false);
   const gestureDeltaRef = useRef(0);
   const lastWheelAtRef = useRef(0);
@@ -259,33 +272,34 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
     reserve: 0,
     width: 0,
   });
-  const positionRef = useRef(0);
+  const positionRef = useRef(initialIndex);
   const reducedMotionRef = useRef(false);
   const sceneRefs = useRef<Array<HTMLElement | null>>([]);
-  const sourcePositionRef = useRef(0);
+  const sourcePositionRef = useRef(initialIndex);
   const springResponseRef = useRef(ONE_PANEL_RESPONSE_SECONDS);
   const springFrameRef = useRef<number | null>(null);
   const springLastTimestampRef = useRef<number | null>(null);
   const springStartedAtRef = useRef<number | null>(null);
-  const targetPositionRef = useRef(0);
+  const targetPositionRef = useRef(initialIndex);
   const triggerNavigationRef = useRef<(direction: Direction, distance?: number) => void>(
     () => {},
   );
   const velocityRef = useRef(0);
   const wheelQuietTimeoutRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [hasExplored, setHasExplored] = useState(false);
   const motionStateRef = useRef<MotionState>({
     direction: "none",
     isMoving: false,
-    sourceIndex: 0,
-    targetIndex: 0,
+    sourceIndex: initialIndex,
+    targetIndex: initialIndex,
   });
   const [motionState, setMotionState] = useState<MotionState>({
     direction: "none",
     isMoving: false,
-    sourceIndex: 0,
-    targetIndex: 0,
+    sourceIndex: initialIndex,
+    targetIndex: initialIndex,
   });
   const [pendingNavIndex, setPendingNavIndex] = useState<number | null>(null);
 
@@ -300,7 +314,21 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
-  }, [activeIndex]);
+    const activeProject = projects[activeIndex];
+
+    if (activeProject && rememberState) {
+      window.sessionStorage.setItem("ak-work-mode", mode);
+      window.sessionStorage.setItem(`ak-work-position:${mode}`, activeProject.slug);
+    }
+  }, [activeIndex, mode, projects, rememberState]);
+
+  useEffect(() => {
+    if (!hasExplored) {
+      return;
+    }
+
+    window.dispatchEvent(new CustomEvent("ak:work-explored"));
+  }, [hasExplored]);
 
   const updateMotionState = (state: MotionState) => {
     motionStateRef.current = state;
@@ -534,6 +562,7 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
       activeIndexRef.current = targetIndex;
       applyPhysicalState();
       setActiveIndex(targetIndex);
+      setHasExplored(true);
       setPendingNavIndex(null);
       updateMotionState({
         direction,
@@ -590,6 +619,7 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
         springStartedAtRef.current = null;
         applyPhysicalState();
         setActiveIndex(targetIndex);
+        setHasExplored(true);
         setPendingNavIndex(null);
         updateMotionState({
           direction: "none",
@@ -613,7 +643,7 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
       springFrameRef.current = window.requestAnimationFrame(runSpring);
     };
 
-    const triggerNavigation = (direction: Direction, distance = 1) => {
+    const triggerNavigation = (direction: Direction, distance = 1, inputIntensity = 0) => {
       if (motionStateRef.current.isMoving || loopLength < 2) return;
       const signedDistance = Math.max(1, distance);
       const travelDistance = Math.abs(signedDistance);
@@ -640,7 +670,10 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
       }
 
       springResponseRef.current =
-        travelDistance > 1 ? MULTI_PANEL_RESPONSE_SECONDS : ONE_PANEL_RESPONSE_SECONDS;
+        travelDistance > 1
+          ? MULTI_PANEL_RESPONSE_SECONDS
+          : ONE_PANEL_RESPONSE_SECONDS - clamp(inputIntensity, 0, 1) * 0.08;
+      velocityRef.current = signedDistance * clamp(inputIntensity * 0.72, 0.18, 0.72);
       sourcePositionRef.current = Number.isInteger(positionRef.current)
         ? positionRef.current
         : sourcePositionRef.current;
@@ -681,7 +714,9 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
 
       if (Math.abs(gestureDeltaRef.current) >= WHEEL_TRIGGER_THRESHOLD) {
         committedGestureRef.current = true;
-        if (gestureDeltaRef.current > 0) triggerNavigation("next");
+        if (gestureDeltaRef.current > 0) {
+          triggerNavigation("next", 1, clamp(Math.abs(gestureDeltaRef.current) / 160, 0, 1));
+        }
       }
     };
     const onKeyDown = (event: KeyboardEvent) => {
@@ -698,7 +733,7 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
       event.preventDefault();
 
       if (event.key === "ArrowDown" || event.key === "PageDown") {
-        triggerNavigation("next");
+        triggerNavigation("next", 1, 0.2);
       } else {
         return;
       }
@@ -725,7 +760,7 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
 
       event.preventDefault();
       touchStartYRef.current = null;
-      if (delta > 0) triggerNavigation("next");
+      if (delta > 0) triggerNavigation("next", 1, clamp(Math.abs(delta) / 180, 0, 1));
     };
     const onTouchEnd = () => {
       touchStartYRef.current = null;
@@ -795,10 +830,22 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
     triggerNavigationRef.current("next", distance);
   };
 
+  const rememberProjectOpen = () => {
+    const activeProject = projects[activeIndexRef.current];
+
+    if (!activeProject) {
+      return;
+    }
+
+    window.sessionStorage.setItem("ak-work-mode", mode);
+    window.sessionStorage.setItem(`ak-work-position:${mode}`, activeProject.slug);
+  };
+
   return (
     <section
       ref={shellRef}
       className="rolodex-shell"
+      data-explored={hasExplored ? "true" : "false"}
       aria-label="Project browsing"
     >
       <RolodexNav
@@ -809,7 +856,10 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
         pendingIndex={pendingNavIndex}
       />
       <p className="sr-only" role="status">{rolodexEntries[activeIndex]?.title}, project {activeIndex + 1} of {projects.length}</p>
-      <p className="work-scroll-hint site-technical-label">Scroll to next project <span aria-hidden="true">↓</span></p>
+      <div className="work-progress site-technical-label" aria-hidden="true">
+        {String(activeIndex + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+      </div>
+      <p className="work-scroll-hint site-technical-label" data-hidden={hasExplored ? "true" : "false"}>Scroll to explore <span aria-hidden="true">↓</span></p>
       <div className="rolodex-atmosphere" aria-hidden="true" />
       <div
         ref={trackRef}
@@ -846,6 +896,7 @@ export function ProjectRolodex({ projects }: { projects: WorkProject[] }) {
               slot={slot}
               slotStyle={getSlotStyle(slot)}
               state={state}
+              onOpenProject={rememberProjectOpen}
             />
           );
         })}

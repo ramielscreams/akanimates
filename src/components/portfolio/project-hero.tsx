@@ -1,21 +1,24 @@
+import Image from "next/image";
 import type { PortfolioCaseStudyProject } from "@/data/portfolio-projects";
+import type { ProjectProgress } from "@/data/work-projects";
 
 type ProjectHeroProps = {
   discipline: string;
   meta: string[];
+  progress: ProjectProgress;
   project: PortfolioCaseStudyProject;
 };
 
-export function ProjectHero({ discipline, meta, project }: ProjectHeroProps) {
+export function ProjectHero({ discipline, meta, progress, project }: ProjectHeroProps) {
   const isContained = project.hero.layout === "contained";
   const visibleMeta = meta.filter(Boolean);
 
   return (
-    <header className="site-safe-x site-hero-y min-h-[min(100dvh,58rem)]">
-      <div className="grid min-h-[min(calc(100dvh-clamp(10rem,22vh,15rem)),44rem)] gap-[clamp(2.5rem,7vw,4.5rem)] lg:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] lg:items-end">
-        <div className="relative z-10 min-w-0 max-w-4xl">
-          <p className="site-technical-label text-text-muted">
-            {project.index} / {discipline}
+    <header className="project-hero site-safe-x site-hero-y min-h-[min(100dvh,62rem)]">
+      <div className="project-hero__grid">
+        <div className="project-hero__copy relative z-10 min-w-0">
+          <p className="project-hero__progress site-technical-label text-text-muted">
+            {discipline} / {String(progress.current).padStart(2, "0")} / {String(progress.total).padStart(2, "0")}
           </p>
           <h1 className="site-display-title project-title type-wrap mt-8 text-text-primary">
             {project.title}
@@ -36,17 +39,41 @@ export function ProjectHero({ discipline, meta, project }: ProjectHeroProps) {
         </div>
 
         <figure
-          className={`relative overflow-hidden bg-surface ${
+          className={`project-hero__media relative overflow-hidden bg-surface ${
             isContained
               ? "min-h-[clamp(20rem,50dvh,42rem)] lg:min-h-[clamp(28rem,68dvh,50rem)]"
               : "min-h-[clamp(22rem,58dvh,44rem)] lg:min-h-[clamp(30rem,76dvh,54rem)]"
           }`}
         >
-          <div className="absolute inset-0 bg-surface" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_16%,rgb(var(--border-rgb)_/_0.8)_16%_calc(16%+1px),transparent_calc(16%+1px)),linear-gradient(180deg,transparent_0_70%,rgb(var(--border-rgb)_/_0.7)_70%_calc(70%+1px),transparent_calc(70%+1px))] opacity-65" />
-          <figcaption className="site-technical-label caption-text absolute bottom-6 left-6 max-w-[calc(100%-3rem)] text-text-muted/65">
-            Hero {project.hero.type} placeholder / {discipline}
-          </figcaption>
+          {project.hero.src ? (
+            project.hero.type === "video" ? (
+              <video
+                className="project-hero__asset"
+                src={project.hero.src}
+                muted
+                playsInline
+                controls
+                preload="metadata"
+              />
+            ) : (
+              <Image
+                className="project-hero__asset"
+                src={project.hero.src}
+                alt={project.hero.alt}
+                fill
+                priority
+                sizes="(min-width: 1024px) 58vw, 100vw"
+              />
+            )
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-surface" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_16%,rgb(var(--border-rgb)_/_0.8)_16%_calc(16%+1px),transparent_calc(16%+1px)),linear-gradient(180deg,transparent_0_70%,rgb(var(--border-rgb)_/_0.7)_70%_calc(70%+1px),transparent_calc(70%+1px))] opacity-65" />
+              <figcaption className="site-technical-label caption-text absolute bottom-6 left-6 max-w-[calc(100%-3rem)] text-text-muted/65">
+                Hero {project.hero.type} placeholder / {discipline}
+              </figcaption>
+            </>
+          )}
         </figure>
       </div>
     </header>

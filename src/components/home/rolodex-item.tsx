@@ -18,6 +18,8 @@ export type RolodexEntry = {
   focusedMediaFit?: "cover" | "contain";
   accent: string;
   surface: string;
+  year?: string;
+  meta?: string;
 };
 
 type RolodexItemProps = {
@@ -29,6 +31,7 @@ type RolodexItemProps = {
   slot: number;
   slotStyle: CSSProperties;
   state: "active" | "entering" | "exiting" | "stack";
+  onOpenProject?: () => void;
 };
 
 export function RolodexItem({
@@ -40,6 +43,7 @@ export function RolodexItem({
   slot,
   slotStyle,
   state,
+  onOpenProject,
 }: RolodexItemProps) {
   const style = {
     "--rolodex-accent": entry.accent,
@@ -86,9 +90,19 @@ export function RolodexItem({
 
         <div className="rolodex-overlay-layer" aria-hidden="true" />
 
-        <Link href={entry.href} aria-hidden="true" tabIndex={-1}
-          className="rolodex-project-hit-area" />
+        <Link
+          href={entry.href}
+          aria-label={`View project ${entry.index}, ${entry.title}`}
+          className="rolodex-project-hit-area"
+          onClick={onOpenProject}
+          tabIndex={isActive ? 0 : -1}
+        />
         <div className="rolodex-content-layer">
+          <div className="rolodex-card-meta site-technical-label" aria-hidden="true">
+            <span>{entry.index}</span>
+            {entry.meta ? <span>{entry.meta}</span> : null}
+            {entry.year ? <span>{entry.year}</span> : null}
+          </div>
           <div className="rolodex-title-stack">
             <TitleTag className="rolodex-heading uppercase text-text-primary">
               {entry.title}
@@ -98,8 +112,8 @@ export function RolodexItem({
             </p>
           </div>
 
-          <LiquidGlassButton asChild className="rolodex-liquid-cta">
-            <Link href={entry.href} tabIndex={isActive ? 0 : -1}>
+          <LiquidGlassButton asChild className="rolodex-liquid-cta" aria-hidden="true">
+            <span>
               {entry.cta}
               <span
                 className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
@@ -107,7 +121,7 @@ export function RolodexItem({
               >
                 -&gt;
               </span>
-            </Link>
+            </span>
           </LiquidGlassButton>
         </div>
       </div>

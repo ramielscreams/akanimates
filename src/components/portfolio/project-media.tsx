@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type {
   ProjectMediaAsset,
   ProjectMediaItem,
@@ -41,6 +42,30 @@ function MediaPlaceholder({
   );
 }
 
+function MediaAsset({
+  asset,
+  sizes = "(min-width: 1024px) 78vw, 100vw",
+}: {
+  asset: ProjectMediaAsset;
+  sizes?: string;
+}) {
+  if (!asset.src) {
+    return <MediaPlaceholder asset={asset} label="Media placeholder" />;
+  }
+
+  return (
+    <div className="project-media__asset-wrap">
+      <Image
+        className="project-media__asset"
+        src={asset.src}
+        alt={asset.alt}
+        fill
+        sizes={sizes}
+      />
+    </div>
+  );
+}
+
 function renderCaption(caption?: string) {
   if (!caption) {
     return null;
@@ -59,23 +84,23 @@ export function ProjectMedia({ media }: ProjectMediaProps) {
   }
 
   return (
-    <section className="space-y-[clamp(4.5rem,12vw,12rem)] py-[clamp(3rem,8vw,7rem)]">
+    <section className="project-media-sequence">
       {media.map((item, index) => {
         if (item.type === "pair") {
           return (
             <figure
               key={`${item.type}-${index}`}
-              className="site-safe-x"
+              className="project-media-figure project-media-figure--pair site-safe-x"
             >
-              <div className="mx-auto grid max-w-[88rem] gap-[clamp(1rem,3vw,2.5rem)] lg:grid-cols-2">
+              <div className="project-media-pair mx-auto grid max-w-[88rem] gap-[clamp(1rem,3vw,2.5rem)] lg:grid-cols-2">
                 {item.items.map((asset, assetIndex) => (
                   <div
                     key={`${asset.alt}-${assetIndex}`}
                     className="aspect-[4/3]"
                   >
-                    <MediaPlaceholder
+                    <MediaAsset
                       asset={asset}
-                      label={`Pair ${assetIndex + 1} placeholder`}
+                      sizes="(min-width: 1024px) 44vw, 100vw"
                     />
                   </div>
                 ))}
@@ -89,10 +114,21 @@ export function ProjectMedia({ media }: ProjectMediaProps) {
           return (
             <figure
               key={`${item.type}-${index}`}
-              className="site-safe-x"
+              className="project-media-figure project-media-figure--video site-safe-x"
             >
               <div className="mx-auto aspect-[16/9] max-w-[78rem]">
-                <MediaPlaceholder asset={item} label="Video placeholder" />
+                {item.src ? (
+                  <video
+                    className="project-media__asset"
+                    src={item.src}
+                    poster={item.poster}
+                    controls
+                    preload="metadata"
+                    playsInline
+                  />
+                ) : (
+                  <MediaPlaceholder asset={item} label="Video placeholder" />
+                )}
               </div>
               {renderCaption(item.caption)}
             </figure>
@@ -102,16 +138,14 @@ export function ProjectMedia({ media }: ProjectMediaProps) {
         return (
           <figure
             key={`${item.type}-${index}`}
-            className={
-              item.type === "full"
-                ? ""
-                : "site-safe-x"
-            }
+            className={`project-media-figure project-media-figure--${item.type} ${
+              item.type === "full" ? "" : "site-safe-x"
+            }`}
           >
             <div className={layoutClasses[item.type]}>
-              <MediaPlaceholder
+              <MediaAsset
                 asset={item}
-                label={`${item.type} image placeholder`}
+                sizes={item.type === "full" ? "100vw" : "(min-width: 1024px) 78vw, 100vw"}
               />
             </div>
             {renderCaption(item.caption)}

@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navigationItems = [
   { label: "Home", href: "/" },
@@ -8,6 +11,8 @@ const navigationItems = [
 ];
 
 export function SiteNavigation() {
+  const pathname = usePathname();
+
   return (
     <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
       <Link
@@ -30,6 +35,7 @@ export function SiteNavigation() {
             <li key={item.href}>
               <Link
                 href={item.href}
+                aria-current={pathname === item.href ? "page" : undefined}
                 className="inline-flex min-h-11 items-center transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
               >
                 {item.label}

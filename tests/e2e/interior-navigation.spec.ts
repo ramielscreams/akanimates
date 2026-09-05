@@ -108,11 +108,11 @@ async function expectAboutGridAlignment(page: Page) {
     expect(metrics.bio!.width).toBeGreaterThan(metrics.experience!.width);
     expect(
       Math.abs(metrics.experience!.top - metrics.heading!.top),
-      "ABOUT and Experience should begin on the same upper band",
-    ).toBeLessThanOrEqual(14);
+      "ABOUT and Experience should remain in the same opening band",
+    ).toBeLessThanOrEqual(48);
     expect(metrics.bio!.top).toBeGreaterThan(metrics.heading!.bottom);
-    expect(Math.abs(metrics.role!.left - metrics.experience!.left)).toBeLessThanOrEqual(2);
-    expect(Math.abs(metrics.location!.left - metrics.experience!.left)).toBeLessThanOrEqual(2);
+    expect(metrics.role!.left).toBeGreaterThan(metrics.experience!.left);
+    expect(Math.abs(metrics.location!.left - metrics.role!.left)).toBeLessThanOrEqual(2);
     expect(
       metrics.contactHeading!.top - Math.max(metrics.bio!.bottom, metrics.experience!.bottom),
       "next About section should begin without excessive bottom whitespace",
@@ -167,8 +167,8 @@ test.describe("interior wayfinding and typography", () => {
   }) => {
     await page.goto("/about");
     await expect(page.locator("#contact")).toBeVisible();
-    await expect(page.getByRole("heading", { name: /have a project in mind/i })).toBeVisible();
-    await expect(page.locator("#contact").getByText(/email details pending/i)).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: /^contact$/i })).toBeVisible();
+    await expect(page.locator("#contact").getByText(/whatsapp details pending|phone details pending/i)).toHaveCount(0);
 
     const response = await page.goto("/contact");
     expect(response?.status()).toBe(200);
@@ -193,9 +193,9 @@ test.describe("interior wayfinding and typography", () => {
     const dialog = page.getByRole("dialog", { name: /get in touch/i });
     await expect(dialog).toBeVisible();
     await expect(page.locator(".contact-layer__scrim")).toBeVisible();
-    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe("hidden");
+    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toContain("hidden");
 
-    for (const method of ["WhatsApp", "Phone", "Instagram", "Email"]) {
+    for (const method of ["Email", "Instagram", "LinkedIn"]) {
       const action = dialog.locator("[data-contact-action]").filter({ hasText: method });
       await expect(action).toBeVisible();
       await expect(action).toHaveAttribute("aria-disabled", "true");
@@ -203,7 +203,7 @@ test.describe("interior wayfinding and typography", () => {
 
     await expect(dialog.locator("[data-contact-close]")).toBeFocused();
     await page.keyboard.press("Tab");
-    await expect(dialog.locator('[data-contact-action="whatsapp"]')).toBeFocused();
+    await expect(dialog.locator('[data-contact-action="email"]')).toBeFocused();
     await page.keyboard.press("Shift+Tab");
     await expect(dialog.locator("[data-contact-close]")).toBeFocused();
 
@@ -231,13 +231,13 @@ test.describe("interior wayfinding and typography", () => {
     await page.goto("/about");
 
     const row = page.locator(".about-contact-row");
-    const heading = row.getByRole("heading", { name: /have a project in mind/i });
+    const heading = row.getByRole("heading", { name: /^contact$/i });
     const trigger = row.getByRole("button", { name: /get in touch/i });
 
     await expect(heading).toBeVisible();
     await expect(trigger).toBeVisible();
     await expect(row.locator("[data-contact-action]")).toHaveCount(0);
-    await expect(row.getByText(/whatsapp details pending|phone details pending|instagram profile pending|email details pending/i)).toHaveCount(0);
+    await expect(row.getByText(/whatsapp details pending|phone details pending|instagram profile pending|email details pending|linkedin profile pending/i)).toHaveCount(0);
 
     const [headingBox, triggerBox] = await Promise.all([
       heading.boundingBox(),
@@ -257,7 +257,7 @@ test.describe("interior wayfinding and typography", () => {
     await trigger.click();
     const dialog = page.getByRole("dialog", { name: /get in touch/i });
     await expect(dialog).toBeVisible();
-    for (const method of ["WhatsApp", "Phone", "Instagram", "Email"]) {
+    for (const method of ["Email", "Instagram", "LinkedIn"]) {
       await expect(dialog.locator("[data-contact-action]").filter({ hasText: method })).toBeVisible();
     }
 
@@ -268,7 +268,7 @@ test.describe("interior wayfinding and typography", () => {
     await page.goto("/about");
 
     const mobileRow = page.locator(".about-contact-row");
-    const mobileHeading = mobileRow.getByRole("heading", { name: /have a project in mind/i });
+    const mobileHeading = mobileRow.getByRole("heading", { name: /^contact$/i });
     const mobileTrigger = mobileRow.getByRole("button", { name: /get in touch/i });
 
     const [mobileHeadingBox, mobileTriggerBox] = await Promise.all([

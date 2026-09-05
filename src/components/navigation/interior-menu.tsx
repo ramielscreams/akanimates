@@ -23,6 +23,7 @@ export function InteriorMenu() {
   }, []);
 
   const visibleItems = navigationItems;
+  const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   useEffect(() => {
     if (!isOpen) {
@@ -162,6 +163,7 @@ export function InteriorMenu() {
                 <Link
                   ref={index === 0 ? firstMenuLinkRef : undefined}
                   href={item.href}
+                  aria-current={isCurrent(item.href) ? "page" : undefined}
                   tabIndex={isOpen ? 0 : -1}
                   className="type-nowrap group flex max-w-[calc(100vw-2.5rem)] items-baseline justify-center gap-[0.26em] py-2 text-center text-[length:var(--type-menu-item)] lowercase leading-[1.02] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
                   onClick={() => {

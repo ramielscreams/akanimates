@@ -7,6 +7,7 @@ test("core routes and local Work mode remain coherent", async ({ page }) => {
     await expectNoHorizontalOverflow(page);
     await expect(page.getByRole("link", {name: "Home", exact: true})).toBeVisible();
   }
+  await page.evaluate(() => window.sessionStorage.clear());
   await page.goto("/work");
   const stills = page.getByRole("radio", {name:"STILLS",exact:true});
   await stills.focus();

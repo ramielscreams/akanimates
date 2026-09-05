@@ -25,16 +25,17 @@ function ContactIcon({ type }: { type: ContactMethodKey }) {
     xmlns: "http://www.w3.org/2000/svg",
   };
 
-  if (type === "phone") {
+  if (type === "linkedin") {
     return (
       <svg {...common}>
         <path
-          d="M6.8 4.6 9 4.1l2 4.6-1.6 1.1c.8 1.8 2.1 3.1 3.9 3.9l1.1-1.6 4.6 2-.5 2.2c-.2 1-1.1 1.7-2.1 1.6C10.3 17.5 6.5 13.7 6 7.6c-.1-1 .6-1.9 1.6-2.1Z"
+          d="M7.2 10.2v7.1M7.2 6.9v.05M11.1 17.3v-7.1M11.1 13.4c0-2 1.2-3.4 3.1-3.4 1.8 0 2.9 1.2 2.9 3.5v3.8"
           stroke="currentColor"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="1.7"
         />
+        <rect height="17" rx="3.2" stroke="currentColor" strokeWidth="1.7" width="17" x="3.5" y="3.5" />
       </svg>
     );
   }
@@ -80,24 +81,7 @@ function ContactIcon({ type }: { type: ContactMethodKey }) {
     );
   }
 
-  return (
-    <svg {...common}>
-      <path
-        d="M5.4 18.7 6.5 15A7.4 7.4 0 1 1 9 17.2l-3.6 1.5Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.7"
-      />
-      <path
-        d="M9.5 8.7c.2-.3.4-.4.7-.4h.5c.3 0 .5.2.6.5l.4 1c.1.3 0 .6-.2.8l-.4.4c.5.9 1.1 1.5 2 2l.4-.4c.2-.2.5-.3.8-.2l1 .4c.3.1.5.3.5.6v.5c0 .3-.1.6-.4.7-.6.3-1.3.4-2 .2-2.2-.5-4-2.3-4.5-4.5-.2-.7-.1-1.4.2-2Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.55"
-      />
-    </svg>
-  );
+  return null;
 }
 
 function getFocusableElements(container: HTMLElement) {
@@ -178,7 +162,9 @@ export function ContactLayer() {
     }
 
     const previousOverflow = document.body.style.overflow;
+    const previousOverflowY = document.body.style.overflowY;
     document.body.style.overflow = "hidden";
+    document.body.style.overflowY = "hidden";
 
     const focusTarget =
       dialogRef.current?.querySelector<HTMLElement>('[data-contact-action]:not([aria-disabled="true"])') ??
@@ -220,6 +206,7 @@ export function ContactLayer() {
       window.clearTimeout(focusTimer);
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
+      document.body.style.overflowY = previousOverflowY;
     };
   }, [closeContact, isOpen, isRendered]);
 
@@ -227,6 +214,7 @@ export function ContactLayer() {
     return () => {
       clearCloseTimer();
       document.body.style.overflow = "";
+      document.body.style.overflowY = "";
     };
   }, [clearCloseTimer]);
 

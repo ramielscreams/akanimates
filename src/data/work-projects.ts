@@ -16,6 +16,11 @@ export type WorkProject = PortfolioCaseStudyProject & {
   mediaType?: string;
 };
 
+export type ProjectProgress = {
+  current: number;
+  total: number;
+};
+
 export const projects: WorkProject[] = [
   ...photographyProjects.map((project) => ({
     ...project,
@@ -56,6 +61,21 @@ export function getNextProject(project: WorkProject) {
 export function projectHref(project: WorkProject) {
   return `/${project.discipline === "stills" ? "photography" : "cgi"}/${project.slug}`;
 }
-export function workHref(mode: WorkMode) {
-  return `/work?mode=${mode}`;
+export function workHref(mode: WorkMode, projectSlug?: string) {
+  const params = new URLSearchParams({ mode });
+
+  if (projectSlug) {
+    params.set("project", projectSlug);
+  }
+
+  return `/work?${params.toString()}`;
+}
+export function getProjectProgress(project: WorkProject): ProjectProgress {
+  const siblings = getProjects(project.discipline);
+  const index = siblings.findIndex((item) => item.slug === project.slug);
+
+  return {
+    current: index >= 0 ? index + 1 : 1,
+    total: siblings.length,
+  };
 }

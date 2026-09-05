@@ -1,16 +1,17 @@
-import Link from "next/link";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
 import { NextProject } from "@/components/portfolio/next-project";
 import { ProjectCopy } from "@/components/portfolio/project-copy";
 import { ProjectCredits } from "@/components/portfolio/project-credits";
 import { ProjectHero } from "@/components/portfolio/project-hero";
+import { ProjectLocalNav } from "@/components/portfolio/project-local-nav";
 import { ProjectMedia } from "@/components/portfolio/project-media";
 import { ProjectMeta, type ProjectMetaEntry } from "@/components/portfolio/project-meta";
-import { getNextProject, workHref, type WorkProject } from "@/data/work-projects";
+import { getNextProject, getProjectProgress, projectHref, workHref, type WorkProject } from "@/data/work-projects";
 export function ProjectInterior({ project }: { project: WorkProject }) {
   const stills = project.discipline === "stills";
   const label = stills ? "Stills" : "CGI";
   const nextProject = getNextProject(project);
+  const progress = getProjectProgress(project);
   const entries: ProjectMetaEntry[] = [
     { label: "Client", value: project.client },
     { label: "Year", value: project.year },
@@ -25,20 +26,36 @@ export function ProjectInterior({ project }: { project: WorkProject }) {
       { label: "Media", tone: "technical" as const, value: project.mediaType },
     ]),
   ];
+  const returnHref = workHref(project.discipline, project.slug);
+
   return (
     <main className={`section-${stills ? "photography" : "cgi"} project-interior min-h-dvh bg-bg text-text-primary`} data-discipline={project.discipline}>
       <InteriorMenu />
-      <Link className="project-return site-technical-label" href={workHref(project.discipline)}>Work / {label}</Link>
+      <ProjectLocalNav
+        discipline={project.discipline}
+        progress={progress}
+        returnHref={returnHref}
+        returnLabel={label}
+        title={project.title}
+      />
       <article>
         <ProjectHero discipline={label} meta={stills
           ? [project.manufacturer ?? project.client, project.location ?? "", project.year]
-          : [project.client, project.category, project.year]} project={project} />
-        <section className="site-safe-x py-[clamp(4rem,10vw,8rem)]"><ProjectMeta entries={entries} /></section>
-        {project.intro.length > 0 && <ProjectCopy paragraphs={project.intro} />}
+          : [project.client, project.category, project.year]} progress={progress} project={project} />
+        <section className="project-overview site-safe-x">
+          <div className="project-overview__context">
+            <p className="site-technical-label">{label} / Overview</p>
+            <p className="project-overview__title" aria-hidden="true">{project.title}</p>
+          </div>
+          <div className="project-overview__content">
+            {project.intro.length > 0 && <ProjectCopy paragraphs={project.intro} />}
+            <ProjectMeta entries={entries} />
+          </div>
+        </section>
         {project.media.length > 0 && <ProjectMedia media={project.media} />}
-        <ProjectCredits entries={[...entries, ...(project.credits ?? [])]} project={project} />
-        <NextProject backHref={workHref(project.discipline)} backLabel={`Back to ${label}`}
-          discipline={label} hrefBase={stills ? "/photography" : "/cgi"} project={nextProject} />
+        <ProjectCredits entries={project.credits ?? []} project={project} />
+        <NextProject backHref={returnHref} backLabel={`Back to ${label}`}
+          discipline={label} href={nextProject ? projectHref(nextProject) : undefined} project={nextProject} />
       </article>
     </main>
   );

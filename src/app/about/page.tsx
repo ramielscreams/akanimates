@@ -12,7 +12,7 @@ const disciplines = [
 
 const credentials = [
   "Selected automotive visual work",
-  "Visual experimentation and development",
+  "Automotive image development",
   "Focused collaborations across photography and CGI",
 ];
 
@@ -24,12 +24,11 @@ export default function AboutPage() {
       <InteriorMenu />
 
       <section className="about-frame about-hero">
-        <p className="site-technical-label text-text-muted">
-          01 / about
-        </p>
-
         <div className="about-bio-experience">
           <div className="about-title-column min-w-0">
+            <p className="site-technical-label text-text-muted">
+              About / Biography
+            </p>
             <h1 className="site-display-title interior-heading type-controlled-wrap text-text-primary">
               About
             </h1>
@@ -56,7 +55,7 @@ export default function AboutPage() {
               id="about-experience"
               className="site-technical-label text-text-muted"
             >
-              experience
+              Experience
             </p>
             <ul className="about-detail-list text-text-secondary">
               {credentials.map((credential) => (
@@ -69,7 +68,7 @@ export default function AboutPage() {
                 id="about-disciplines"
                 className="site-technical-label text-text-muted"
               >
-                role / disciplines
+                Role
               </p>
               <ul className="about-detail-list text-text-secondary">
                 {disciplines.map((discipline) => (
@@ -84,7 +83,7 @@ export default function AboutPage() {
                   id="about-availability"
                   className="site-technical-label text-text-muted"
                 >
-                  location / availability
+                  Location
                 </p>
                 <span className="signal-marker" aria-hidden="true" />
               </div>
@@ -107,7 +106,7 @@ export default function AboutPage() {
             id="contact-heading"
             className="section-heading text-text-primary"
           >
-            Have a project in mind?
+            Contact
           </h2>
           <ContactLayer />
         </div>

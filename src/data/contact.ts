@@ -1,4 +1,4 @@
-export type ContactMethodKey = "whatsapp" | "phone" | "instagram" | "email";
+export type ContactMethodKey = "instagram" | "email" | "linkedin";
 
 export type ContactMethod = {
   key: ContactMethodKey;
@@ -11,18 +11,11 @@ export type ContactMethod = {
 
 export const contactMethods: ContactMethod[] = [
   {
-    key: "whatsapp",
-    label: "WhatsApp",
-    value: "WhatsApp details pending",
+    key: "email",
+    label: "Email",
+    value: "Email details pending",
     href: null,
-    unavailableLabel: "WhatsApp contact details are pending",
-  },
-  {
-    key: "phone",
-    label: "Phone",
-    value: "Phone details pending",
-    href: null,
-    unavailableLabel: "Phone contact details are pending",
+    unavailableLabel: "Email address is pending",
   },
   {
     key: "instagram",
@@ -33,10 +26,11 @@ export const contactMethods: ContactMethod[] = [
     unavailableLabel: "Instagram profile is pending",
   },
   {
-    key: "email",
-    label: "Email",
-    value: "Email details pending",
+    key: "linkedin",
+    label: "LinkedIn",
+    value: "LinkedIn profile pending",
     href: null,
-    unavailableLabel: "Email address is pending",
+    external: true,
+    unavailableLabel: "LinkedIn profile is pending",
   },
 ];

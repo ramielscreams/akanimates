@@ -47,6 +47,19 @@ test("mode changes are isolated, instantaneous client history entries", async ({
   await checkErrors();
 });
 
+test("Work restores session mode and project position", async ({ page }) => {
+  await page.goto("/work?mode=cgi&project=project-four");
+  await waitForRolodexIdle(page, "Project Four");
+  await page.getByRole("link", { name: /view project 04, project four/i }).click();
+  await expect(page).toHaveURL(/\/cgi\/project-four$/);
+  await page.getByRole("link", { name: /^← CGI$/ }).click();
+  await expect(page).toHaveURL(/\/work\?mode=cgi&project=project-four$/);
+  await waitForRolodexIdle(page, "Project Four");
+  await page.goto("/work");
+  await expect(page.getByRole("radio", { name: "CGI", exact: true })).toBeChecked();
+  await waitForRolodexIdle(page, "Project Four");
+});
+
 for (const mode of ["stills", "cgi"] as const) {
   test(`${mode}: intentional scrolling cycles forward and opens every project`, async ({ page }) => {
     await page.goto(workHref(mode));
@@ -94,11 +107,11 @@ for (const project of projects) {
     await expect(page.locator("main")).toHaveAttribute("data-discipline", project.discipline);
     const footer = page.getByRole("navigation", { name: /project navigation/ });
     await expect(footer).toContainText("Next Project");
-    await expect(footer.getByRole("link", { name: next.title, exact: true })).toHaveAttribute("href", projectHref(next));
-    await footer.getByRole("link", { name: next.title, exact: true }).click();
+    await expect(footer.getByRole("link", { name: new RegExp(`next project, ${next.title}`, "i") })).toHaveAttribute("href", projectHref(next));
+    await footer.getByRole("link", { name: new RegExp(`next project, ${next.title}`, "i") }).click();
     await expect(page).toHaveURL(new RegExp(`${projectHref(next)}$`));
     await page.getByRole("link", { name: /^Back to/ }).click();
-    await expect(page).toHaveURL(new RegExp(`/work\\?mode=${project.discipline}$`));
+    await expect(page).toHaveURL(new RegExp(`/work\\?mode=${project.discipline}&project=${next.slug}$`));
     await expect(page.getByRole("radio", { name: project.discipline.toUpperCase(), exact: true })).toBeChecked();
     await checkErrors();
   });
