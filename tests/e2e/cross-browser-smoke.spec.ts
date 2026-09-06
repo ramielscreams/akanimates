@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { expectNoHorizontalOverflow } from "./helpers";
 test("core routes and local Work mode remain coherent", async ({ page }) => {
-  for (const route of ["/", "/about", "/work?mode=stills", "/work?mode=cgi", "/photography/project-one", "/cgi/project-five"]) {
+  for (const route of ["/", "/about", "/work?mode=stills", "/work?mode=cgi", "/work/stills/2024/goodwood", "/cgi/project-five"]) {
     const response = await page.goto(route);
     expect(response?.status()).toBe(200);
     await expectNoHorizontalOverflow(page);

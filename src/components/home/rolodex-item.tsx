@@ -5,7 +5,16 @@ import Link from "next/link";
 import { KineticPanelTypography } from "@/components/home/kinetic-panel-typography";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 
+export type RolodexCollectionLink = {
+  href: string;
+  label: string;
+  slug: string;
+  title: string;
+  year: string;
+};
+
 export type RolodexEntry = {
+  collections?: RolodexCollectionLink[];
   cover?: ProjectHero;
   index: string;
   title: string;
@@ -31,7 +40,7 @@ type RolodexItemProps = {
   slot: number;
   slotStyle: CSSProperties;
   state: "active" | "entering" | "exiting" | "stack";
-  onOpenProject?: () => void;
+  onOpenProject?: (slug?: string) => void;
 };
 
 export function RolodexItem({
@@ -54,6 +63,7 @@ export function RolodexItem({
   const TitleTag = primaryHeading ? "h1" : "h2";
   const isActive = state === "active";
   const panelKey = entry.panelKey ?? entry.title.toLowerCase();
+  const hasCollections = Boolean(entry.collections?.length);
 
   return (
     <article
@@ -90,13 +100,15 @@ export function RolodexItem({
 
         <div className="rolodex-overlay-layer" aria-hidden="true" />
 
-        <Link
-          href={entry.href}
-          aria-label={`View project ${entry.index}, ${entry.title}`}
-          className="rolodex-project-hit-area"
-          onClick={onOpenProject}
-          tabIndex={isActive ? 0 : -1}
-        />
+        {!hasCollections ? (
+          <Link
+            href={entry.href}
+            aria-label={`View project ${entry.index}, ${entry.title}`}
+            className="rolodex-project-hit-area"
+            onClick={() => onOpenProject?.()}
+            tabIndex={isActive ? 0 : -1}
+          />
+        ) : null}
         <div className="rolodex-content-layer">
           <div className="rolodex-card-meta site-technical-label" aria-hidden="true">
             <span>{entry.index}</span>
@@ -110,19 +122,37 @@ export function RolodexItem({
             <p className="rolodex-copy text-base leading-8 text-text-secondary sm:text-lg">
               {entry.description}
             </p>
+            {hasCollections ? (
+              <nav className="stills-year-collections" aria-label={`${entry.title} stills collections`}>
+                {entry.collections?.map((collection) => (
+                  <Link
+                    key={collection.href}
+                    href={collection.href}
+                    aria-label={`${collection.title} ${collection.year}`}
+                    className="stills-year-collection-link"
+                    onClick={() => onOpenProject?.(collection.slug)}
+                    tabIndex={isActive ? 0 : -1}
+                  >
+                    <span>{collection.label}</span>
+                  </Link>
+                ))}
+              </nav>
+            ) : null}
           </div>
 
-          <LiquidGlassButton asChild className="rolodex-liquid-cta" aria-hidden="true">
-            <span>
-              {entry.cta}
-              <span
-                className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
-                aria-hidden="true"
-              >
-                -&gt;
+          {!hasCollections ? (
+            <LiquidGlassButton asChild className="rolodex-liquid-cta" aria-hidden="true">
+              <span>
+                {entry.cta}
+                <span
+                  className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
+                  aria-hidden="true"
+                >
+                  -&gt;
+                </span>
               </span>
-            </span>
-          </LiquidGlassButton>
+            </LiquidGlassButton>
+          ) : null}
         </div>
       </div>
     </article>

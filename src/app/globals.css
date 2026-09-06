@@ -3102,9 +3102,131 @@ body::-webkit-scrollbar {
   .next-project-card {
     min-height: clamp(29rem, 68dvh, 42rem);
   }
+}
 
-  .about-contact-section {
-    min-height: 0;
+.about-contact-section {
+  min-height: 0;
+}
+
+/* Stills year browsing: the Rolodex selects years, active panels expose collection links. */
+.section-work[data-work-mode="stills"] .work-progress::before {
+  content: "YEAR";
+}
+
+.section-work[data-work-mode="stills"] .rolodex-panel[data-state="active"] {
+  border-color: rgb(var(--brand-soft-rgb) / 0.28);
+}
+
+.section-work[data-work-mode="stills"] .rolodex-panel[data-state="active"] .rolodex-heading {
+  color: var(--text-primary);
+  font-size: min(var(--rolodex-heading-size), 13vw, 13rem);
+  line-height: 0.78;
+}
+
+.section-work[data-work-mode="stills"] .rolodex-panel[data-state="active"] .rolodex-copy {
+  max-width: 22rem;
+  color: rgb(var(--text-secondary-rgb) / 0.68);
+  font-family: var(--font-editorial), Georgia, serif;
+}
+
+.stills-year-collections {
+  display: grid;
+  gap: clamp(0.2rem, 0.8vw, 0.5rem);
+  width: min(100%, 28rem);
+  margin-top: clamp(0.5rem, 1.6vw, 1rem);
+  pointer-events: auto;
+}
+
+.stills-year-collection-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  width: fit-content;
+  max-width: 100%;
+  padding-block: 0.35rem;
+  padding-inline: 0 0.85rem;
+  color: rgb(var(--text-muted-rgb) / 0.96);
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
+  font-size: clamp(0.9rem, 1.25vw, 1.18rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    color var(--motion-press) var(--ease-ui),
+    opacity var(--motion-press) var(--ease-ui),
+    transform var(--motion-press) var(--ease-ui);
+}
+
+.stills-year-collection-link::before {
+  content: "";
+  width: clamp(1.2rem, 2.6vw, 2.2rem);
+  height: 1px;
+  margin-right: clamp(0.65rem, 1.2vw, 0.9rem);
+  background: rgb(var(--border-rgb) / 0.95);
+  transition:
+    background-color var(--motion-press) var(--ease-ui),
+    transform var(--motion-press) var(--ease-ui);
+  transform-origin: left center;
+}
+
+.stills-year-collection-link:hover {
+  color: var(--brand-soft);
+}
+
+.stills-year-collection-link:active {
+  transform: translateX(0.08rem) scale(0.995);
+}
+
+.stills-year-collection-link:focus-visible {
+  outline: 2px solid var(--brand-soft);
+  outline-offset: 0.35rem;
+}
+
+.stills-year-collection-link:hover::before,
+.stills-year-collection-link:focus-visible::before {
+  background: var(--brand-interactive);
+  transform: scaleX(1.18);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .section-work[data-work-mode="stills"] .rolodex-panel[data-state="active"]:has(.stills-year-collection-link:hover) .rolodex-heading {
+    color: var(--text-highlight);
+  }
+}
+
+@media (max-width: 767px) {
+  .section-work[data-work-mode="stills"] .rolodex-panel[data-state="active"] .rolodex-heading {
+    font-size: min(var(--rolodex-heading-size), 26vw, 7.8rem);
+  }
+
+  .stills-year-collections {
+    justify-items: center;
+    width: min(100%, 21rem);
+    margin-top: 0.35rem;
+  }
+
+  .stills-year-collection-link {
+    justify-content: center;
+    width: 100%;
+    padding-inline: 0.75rem;
+    font-size: clamp(0.8rem, 3.2vw, 0.98rem);
+    letter-spacing: 0.14em;
+  }
+
+  .stills-year-collection-link::before {
+    width: 1.35rem;
+    margin-right: 0.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stills-year-collection-link,
+  .stills-year-collection-link::before {
+    transition-duration: 0.01ms !important;
+    transform: none !important;
   }
 }
 

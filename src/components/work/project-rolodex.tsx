@@ -7,7 +7,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { projectHref, type WorkMode, type WorkProject } from "@/data/work-projects";
+import {
+  getStillsYearForProject,
+  projectHref,
+  stillsYears,
+  workHref,
+  type WorkMode,
+  type WorkProject,
+} from "@/data/work-projects";
 import { RolodexItem, type RolodexEntry } from "@/components/home/rolodex-item";
 import { RolodexNav } from "@/components/home/rolodex-nav";
 
@@ -240,26 +247,57 @@ type ProjectRolodexProps = {
 };
 
 export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberState = true }: ProjectRolodexProps) {
-  const rolodexEntries: RolodexEntry[] = useMemo(() => projects.map((project) => ({
-    index: String(project.order).padStart(2, "0"),
-    title: project.title,
-    description: project.discipline === "stills"
-      ? [project.manufacturer ?? project.client, project.location, project.year].filter(Boolean).join(" / ")
-      : [project.category, project.mediaType, project.year].filter(Boolean).join(" / "),
-    href: projectHref(project),
-    cta: "View project",
-    panelKey: project.discipline,
-    mediaLabel: project.cover.alt,
-    mediaNote: project.discipline === "stills" ? "Automotive photography" : project.category,
-    cover: project.cover,
-    accent: "rgb(var(--brand-rgb) / 0.22)",
-    surface: "var(--bg)",
-    meta: project.discipline === "stills" ? project.category : project.mediaType,
-    year: project.year,
-  })), [projects]);
+  const rolodexEntries: RolodexEntry[] = useMemo(() => {
+    if (mode === "stills") {
+      return stillsYears.map((group, index) => {
+        const firstCollection = group.collections[0];
+
+        return {
+          index: String(index + 1).padStart(2, "0"),
+          title: group.year,
+          description: "Select a collection from the active Stills year.",
+          href: firstCollection ? projectHref(firstCollection) : workHref("stills"),
+          cta: "View collection",
+          panelKey: "stills",
+          mediaLabel: `Stills archive / ${group.year}`,
+          mediaNote: "Automotive photography",
+          cover: firstCollection?.cover,
+          accent: "rgb(var(--brand-rgb) / 0.22)",
+          surface: "var(--bg)",
+          meta: "Stills",
+          year: group.year,
+          collections: group.collections.map((collection) => ({
+            href: projectHref(collection),
+            label: collection.displayLabel.toUpperCase(),
+            slug: collection.slug,
+            title: collection.title,
+            year: collection.year,
+          })),
+        };
+      });
+    }
+
+    return projects.map((project) => ({
+      index: String(project.order).padStart(2, "0"),
+      title: project.title,
+      description: [project.category, project.mediaType, project.year].filter(Boolean).join(" / "),
+      href: projectHref(project),
+      cta: "View project",
+      panelKey: project.discipline,
+      mediaLabel: project.cover.alt,
+      mediaNote: project.category,
+      cover: project.cover,
+      accent: "rgb(var(--brand-rgb) / 0.22)",
+      surface: "var(--bg)",
+      meta: project.mediaType,
+      year: project.year,
+    }));
+  }, [mode, projects]);
   const initialIndex = Math.max(
     0,
-    projects.findIndex((project) => project.slug === initialProjectSlug),
+    mode === "stills"
+      ? stillsYears.findIndex((group) => group.year === getStillsYearForProject(initialProjectSlug)?.year)
+      : projects.findIndex((project) => project.slug === initialProjectSlug),
   );
   const shellRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -314,7 +352,9 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
-    const activeProject = projects[activeIndex];
+    const activeProject = mode === "stills"
+      ? stillsYears[activeIndex]?.collections[0]
+      : projects[activeIndex];
 
     if (activeProject && rememberState) {
       window.sessionStorage.setItem("ak-work-mode", mode);
@@ -830,8 +870,10 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     triggerNavigationRef.current("next", distance);
   };
 
-  const rememberProjectOpen = () => {
-    const activeProject = projects[activeIndexRef.current];
+  const rememberProjectOpen = (slug?: string) => {
+    const activeProject = mode === "stills"
+      ? stillsYears[activeIndexRef.current]?.collections.find((collection) => collection.slug === slug) ?? stillsYears[activeIndexRef.current]?.collections[0]
+      : projects[activeIndexRef.current];
 
     if (!activeProject) {
       return;
@@ -855,9 +897,11 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         onNavigate={navigateToPanel}
         pendingIndex={pendingNavIndex}
       />
-      <p className="sr-only" role="status">{rolodexEntries[activeIndex]?.title}, project {activeIndex + 1} of {projects.length}</p>
+      <p className="sr-only" role="status">
+        {rolodexEntries[activeIndex]?.title}, {mode === "stills" ? "year" : "project"} {activeIndex + 1} of {rolodexEntries.length}
+      </p>
       <div className="work-progress site-technical-label" aria-hidden="true">
-        {String(activeIndex + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+        {String(activeIndex + 1).padStart(2, "0")} / {String(rolodexEntries.length).padStart(2, "0")}
       </div>
       <p className="work-scroll-hint site-technical-label" data-hidden={hasExplored ? "true" : "false"}>Scroll to explore <span aria-hidden="true">↓</span></p>
       <div className="rolodex-atmosphere" aria-hidden="true" />

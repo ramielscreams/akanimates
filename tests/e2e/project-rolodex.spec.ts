@@ -17,13 +17,13 @@ test("touch swipes commit one forward project", async ({ page, browserName }) =>
   test.skip(browserName !== "chromium", "Uses Chromium touch emulation.");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/work");
-  await waitForRolodexIdle(page, "Project One");
+  await waitForRolodexIdle(page, "2024");
   const session = await page.context().newCDPSession(page);
   await session.send("Input.dispatchTouchEvent", {type:"touchStart", touchPoints:[{x:195,y:450}]});
   await session.send("Input.dispatchTouchEvent", {type:"touchMove", touchPoints:[{x:195,y:350}]});
   await session.send("Input.dispatchTouchEvent", {type:"touchMove", touchPoints:[{x:195,y:300}]});
   await session.send("Input.dispatchTouchEvent", {type:"touchEnd", touchPoints:[]});
-  await waitForRolodexIdle(page, "Project Two");
+  await waitForRolodexIdle(page, "2025");
 });
 
 test("burst input keeps hidden panels inert and reveals the mechanical stage", async ({ page }) => {

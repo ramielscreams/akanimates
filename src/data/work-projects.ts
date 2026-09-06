@@ -4,7 +4,9 @@ import type { PortfolioCaseStudyProject, ProjectHero } from "@/data/portfolio-pr
 
 export type WorkMode = "stills" | "cgi";
 export type WorkProject = PortfolioCaseStudyProject & {
+  collectionSlug?: string;
   discipline: WorkMode;
+  displayLabel?: string;
   order: number;
   cover: ProjectHero;
   client: string;
@@ -19,6 +21,18 @@ export type WorkProject = PortfolioCaseStudyProject & {
 export type ProjectProgress = {
   current: number;
   total: number;
+};
+
+export type StillsCollection = WorkProject & {
+  collectionSlug: string;
+  displayLabel: string;
+  discipline: "stills";
+};
+
+export type StillsYearGroup = {
+  collections: StillsCollection[];
+  order: number;
+  year: string;
 };
 
 export const projects: WorkProject[] = [
@@ -48,17 +62,54 @@ export const projects: WorkProject[] = [
 
 export const stillsProjects = projects.filter((project) => project.discipline === "stills");
 export const cgiProjects = projects.filter((project) => project.discipline === "cgi");
+export const stillsYears: StillsYearGroup[] = Array.from(
+  stillsProjects.reduce((groups, project) => {
+    if (!project.collectionSlug || !project.displayLabel) {
+      return groups;
+    }
+
+    const yearGroup = groups.get(project.year) ?? [];
+    yearGroup.push(project as StillsCollection);
+    groups.set(project.year, yearGroup);
+
+    return groups;
+  }, new Map<string, StillsCollection[]>()),
+  ([year, collections]) => ({
+    collections: collections.sort((a, b) => a.order - b.order),
+    order: Number(year),
+    year,
+  }),
+).sort((a, b) => a.order - b.order);
+
 export function getProjects(mode: WorkMode) {
   return mode === "cgi" ? cgiProjects : stillsProjects;
 }
 export function getProject(mode: WorkMode, slug: string) {
   return getProjects(mode).find((project) => project.slug === slug);
 }
+export function getStillsProjectByRoute(year: string, collectionSlug: string) {
+  return stillsProjects.find(
+    (project) => project.year === year && project.collectionSlug === collectionSlug,
+  );
+}
+export function getStillsYearForProject(slug?: string) {
+  if (!slug) {
+    return undefined;
+  }
+
+  return stillsYears.find((group) =>
+    group.collections.some((collection) => collection.slug === slug),
+  );
+}
 export function getNextProject(project: WorkProject) {
   const siblings = getProjects(project.discipline);
   return siblings[(siblings.findIndex((item) => item.slug === project.slug) + 1) % siblings.length];
 }
 export function projectHref(project: WorkProject) {
+  if (project.discipline === "stills" && project.collectionSlug) {
+    return `/work/stills/${project.year}/${project.collectionSlug}`;
+  }
+
   return `/${project.discipline === "stills" ? "photography" : "cgi"}/${project.slug}`;
 }
 export function workHref(mode: WorkMode, projectSlug?: string) {

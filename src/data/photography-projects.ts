@@ -4,7 +4,9 @@ export type PhotographyProjectLayout = "wide" | "left" | "right";
 
 export type PhotographyProject = PortfolioCaseStudyProject & {
   client: string;
+  collectionSlug: string;
   discipline: string;
+  displayLabel: string;
   event?: string;
   layout: PhotographyProjectLayout;
   location: string;
@@ -12,175 +14,182 @@ export type PhotographyProject = PortfolioCaseStudyProject & {
   year: string;
 };
 
-export const photographyProjects: PhotographyProject[] = [
+type StillsCollectionSeed = {
+  collectionSlug: string;
+  client: string;
+  displayLabel: string;
+  event: string;
+  index: string;
+  layout: PhotographyProjectLayout;
+  location: string;
+  manufacturer: string;
+  role?: string;
+  title: string;
+  year: string;
+};
+
+const stillsCollectionSeeds: StillsCollectionSeed[] = [
   {
-    client: "Porsche",
+    collectionSlug: "goodwood",
+    client: "Goodwood Festival of Speed",
+    displayLabel: "Goodwood",
+    event: "Festival of Speed",
+    index: "01",
+    layout: "wide",
+    location: "Goodwood",
+    manufacturer: "Mixed manufacturers",
+    title: "Goodwood Festival of Speed",
+    year: "2024",
+  },
+  {
+    collectionSlug: "ultrace",
+    client: "Ultrace",
+    displayLabel: "Ultrace",
+    event: "Ultrace",
+    index: "02",
+    layout: "left",
+    location: "Wroclaw",
+    manufacturer: "Mixed manufacturers",
+    title: "Ultrace",
+    year: "2024",
+  },
+  {
+    collectionSlug: "goodwood",
+    client: "Goodwood Festival of Speed",
+    displayLabel: "Goodwood",
+    event: "Festival of Speed",
+    index: "03",
+    layout: "wide",
+    location: "Goodwood",
+    manufacturer: "Mixed manufacturers",
+    title: "Goodwood Festival of Speed",
+    year: "2025",
+  },
+  {
+    collectionSlug: "ultrace",
+    client: "Ultrace",
+    displayLabel: "Ultrace",
+    event: "Ultrace",
+    index: "04",
+    layout: "left",
+    location: "Wroclaw",
+    manufacturer: "Mixed manufacturers",
+    title: "Ultrace",
+    year: "2025",
+  },
+  {
+    collectionSlug: "formula-one",
+    client: "Formula One",
+    displayLabel: "Formula One",
+    event: "Grand Prix weekend",
+    index: "05",
+    layout: "right",
+    location: "Trackside",
+    manufacturer: "Formula One",
+    title: "Formula One",
+    year: "2025",
+  },
+  {
+    collectionSlug: "goodwood",
+    client: "Goodwood Festival of Speed",
+    displayLabel: "Goodwood",
+    event: "Festival of Speed",
+    index: "06",
+    layout: "wide",
+    location: "Goodwood",
+    manufacturer: "Mixed manufacturers",
+    title: "Goodwood Festival of Speed",
+    year: "2026",
+  },
+  {
+    collectionSlug: "ultrace",
+    client: "Ultrace",
+    displayLabel: "Ultrace",
+    event: "Ultrace",
+    index: "07",
+    layout: "left",
+    location: "Wroclaw",
+    manufacturer: "Mixed manufacturers",
+    title: "Ultrace",
+    year: "2026",
+  },
+  {
+    collectionSlug: "formula-one",
+    client: "Formula One",
+    displayLabel: "Formula One",
+    event: "Grand Prix weekend",
+    index: "08",
+    layout: "right",
+    location: "Trackside",
+    manufacturer: "Formula One",
+    title: "Formula One",
+    year: "2026",
+  },
+];
+
+function buildStillsCollection(seed: StillsCollectionSeed): PhotographyProject {
+  const slug = `${seed.collectionSlug}-${seed.year}`;
+  const yearTitle = `${seed.title} ${seed.year}`;
+
+  return {
+    client: seed.client,
+    collectionSlug: seed.collectionSlug,
     credits: [
-      { label: "Deliverables", value: "Editorial set / social campaign" },
+      { label: "Collection", value: yearTitle },
       { label: "Production", value: "AK" },
     ],
     discipline: "Automotive editorial",
-    event: "Launch drive",
+    displayLabel: seed.displayLabel,
+    event: seed.event,
     hero: {
-      alt: "Future hero image for Project One automotive photography.",
+      alt: `Future hero photography for ${yearTitle}.`,
       layout: "full",
       type: "image",
     },
-    index: "01",
+    index: seed.index,
     intro: [
-      "A restrained automotive editorial study built around clean form, surface tension and the atmosphere of a launch drive.",
-      "The temporary structure establishes how hero imagery, short context and a paced media sequence will support the final photography.",
+      `${yearTitle} is prepared as a photography collection within the Stills archive, ready for the assigned editorial sequence.`,
+      "The page structure preserves the current image-led presentation while keeping room for future photosets, selects and collection-specific notes.",
     ],
-    layout: "left",
-    location: "Hyderabad",
-    manufacturer: "Porsche",
+    layout: seed.layout,
+    location: seed.location,
+    manufacturer: seed.manufacturer,
     media: [
       {
-        alt: "Future full-width exterior driving image for Project One.",
+        alt: `Future full-width photography from ${yearTitle}.`,
         type: "full",
       },
       {
-        alt: "Future wide detail image for Project One.",
-        caption: "Exterior detail sequence",
+        alt: `Future wide detail image from ${yearTitle}.`,
+        caption: "Collection detail sequence",
         type: "wide",
       },
       {
-        caption: "Motion and surface",
+        caption: "Editorial rhythm",
         items: [
           {
-            alt: "Future paired motion image for Project One.",
+            alt: `Future paired action image from ${yearTitle}.`,
           },
           {
-            alt: "Future paired detail image for Project One.",
+            alt: `Future paired detail image from ${yearTitle}.`,
           },
         ],
         type: "pair",
       },
       {
-        alt: "Future contained atmospheric image for Project One.",
+        alt: `Future contained atmosphere image from ${yearTitle}.`,
         type: "contained",
       },
       {
-        alt: "Future video placeholder for Project One.",
+        alt: `Future video placeholder for ${yearTitle}.`,
         type: "video",
       },
     ],
-    role: "Photography",
-    slug: "project-one",
-    title: "Project One",
-    year: "2026",
-  },
-  {
-    client: "BMW",
-    credits: [
-      { label: "Deliverables", value: "Trackside photo story" },
-      { label: "Support", value: "Independent production" },
-    ],
-    discipline: "Motorsport study",
-    event: "Track test",
-    hero: {
-      alt: "Future contained hero image for Project Two motorsport photography.",
-      layout: "contained",
-      type: "image",
-    },
-    index: "02",
-    intro: [
-      "A motorsport-focused sequence designed around speed, heat and mechanical presence without turning the page into a gallery wall.",
-      "The case-study architecture leaves room for future trackside images, portrait crops and controlled video moments.",
-    ],
-    layout: "right",
-    location: "Chennai",
-    manufacturer: "BMW",
-    media: [
-      {
-        alt: "Future wide track image for Project Two.",
-        type: "wide",
-      },
-      {
-        alt: "Future portrait pit-lane image for Project Two.",
-        caption: "Pit-lane study",
-        type: "portrait",
-      },
-      {
-        caption: "Speed and detail",
-        items: [
-          {
-            alt: "Future paired action image for Project Two.",
-          },
-          {
-            alt: "Future paired mechanical detail for Project Two.",
-          },
-        ],
-        type: "pair",
-      },
-      {
-        alt: "Future full-width closing image for Project Two.",
-        type: "full",
-      },
-      {
-        alt: "Future video placeholder for Project Two.",
-        type: "video",
-      },
-    ],
-    role: "Photography",
-    slug: "project-two",
-    title: "Project Two",
-    year: "2026",
-  },
-  {
-    client: "Mercedes-AMG",
-    credits: [
-      { label: "Deliverables", value: "Editorial selects / detail studies" },
-      { label: "Production", value: "AK" },
-    ],
-    discipline: "Trackside imagery",
-    event: "Performance feature",
-    hero: {
-      alt: "Future hero image for Project Three performance photography.",
-      layout: "full",
-      type: "image",
-    },
-    index: "03",
-    intro: [
-      "A performance feature paced as a quiet editorial study, balancing track energy with close attention to design and material.",
-      "The media sequence is deliberately varied so the final story can move from full-bleed impact to quieter contained frames.",
-    ],
-    layout: "wide",
-    location: "Coimbatore",
-    manufacturer: "Mercedes-AMG",
-    media: [
-      {
-        alt: "Future full-width performance image for Project Three.",
-        type: "full",
-      },
-      {
-        alt: "Future contained detail image for Project Three.",
-        type: "contained",
-      },
-      {
-        alt: "Future portrait image for Project Three.",
-        type: "portrait",
-      },
-      {
-        caption: "Trackside rhythm",
-        items: [
-          {
-            alt: "Future paired trackside image for Project Three.",
-          },
-          {
-            alt: "Future paired ambient image for Project Three.",
-          },
-        ],
-        type: "pair",
-      },
-      {
-        alt: "Future video placeholder for Project Three.",
-        type: "video",
-      },
-    ],
-    role: "Photography",
-    slug: "project-three",
-    title: "Project Three",
-    year: "2025",
-  },
-];
+    role: seed.role ?? "Photography",
+    slug,
+    title: seed.title,
+    year: seed.year,
+  };
+}
+
+export const photographyProjects: PhotographyProject[] = stillsCollectionSeeds.map(buildStillsCollection);

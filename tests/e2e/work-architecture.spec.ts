@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { projects, getProjects, projectHref, workHref } from "../../src/data/work-projects";
+import { projects, getProjects, projectHref, stillsYears, workHref } from "../../src/data/work-projects";
 import { expectElementInsideViewport, expectNoHorizontalOverflow, expectNoConsoleFailures, waitForRolodexIdle } from "./helpers";
 
 test("Home, menu and About use the reduced hierarchy", async ({ page }) => {
@@ -60,38 +60,71 @@ test("Work restores session mode and project position", async ({ page }) => {
   await waitForRolodexIdle(page, "Project Four");
 });
 
-for (const mode of ["stills", "cgi"] as const) {
-  test(`${mode}: intentional scrolling cycles forward and opens every project`, async ({ page }) => {
-    await page.goto(workHref(mode));
-    const items = getProjects(mode);
-    for (let i = 0; i < items.length; i++) {
-      await waitForRolodexIdle(page, items[i].title);
-      const active = page.locator('.rolodex-panel[data-state="active"]');
-      await expect(active.getByRole("link")).toHaveAttribute("href", projectHref(items[i]));
-      await expect(page.locator('.rolodex-panel[aria-hidden="false"]')).toHaveCount(1);
-      await page.mouse.move(900, 500);
-      await page.mouse.wheel(0, 90);
-      await page.mouse.wheel(0, 65);
-      await page.mouse.wheel(0, 25);
-      await waitForRolodexIdle(page, items[(i + 1) % items.length].title);
-    }
-    await page.mouse.wheel(0, -150);
-    await page.waitForTimeout(400);
-    await waitForRolodexIdle(page, items[0].title);
-    await page.locator('.rolodex-panel[data-state="active"]').getByRole("link").click();
-    await expect(page).toHaveURL(new RegExp(`${projectHref(items[0])}$`));
-  });
+test("stills: year panels cycle forward and expose only assigned collections", async ({ page }) => {
+  await page.goto(workHref("stills"));
 
+  for (let i = 0; i < stillsYears.length; i++) {
+    const year = stillsYears[i];
+    await waitForRolodexIdle(page, year.year);
+    const active = page.locator('.rolodex-panel[data-state="active"]');
+
+    await expect(active.getByRole("link")).toHaveCount(year.collections.length);
+
+    for (const collection of year.collections) {
+      await expect(active.getByRole("link", { name: `${collection.title} ${collection.year}` })).toHaveAttribute("href", projectHref(collection));
+    }
+
+    if (year.year === "2024") {
+      await expect(active.getByRole("link", { name: /formula one/i })).toHaveCount(0);
+    }
+
+    await expect(page.locator('.rolodex-panel[aria-hidden="false"]')).toHaveCount(1);
+    await page.mouse.move(900, 500);
+    await page.mouse.wheel(0, 90);
+    await page.mouse.wheel(0, 65);
+    await page.mouse.wheel(0, 25);
+    await waitForRolodexIdle(page, stillsYears[(i + 1) % stillsYears.length].year);
+  }
+
+  await page.mouse.wheel(0, -150);
+  await page.waitForTimeout(400);
+  await waitForRolodexIdle(page, stillsYears[0].year);
+  await page.locator('.rolodex-panel[data-state="active"]').getByRole("link", { name: /goodwood festival of speed 2024/i }).click();
+  await expect(page).toHaveURL(new RegExp(`${projectHref(stillsYears[0].collections[0])}$`));
+});
+
+test("cgi: intentional scrolling cycles forward and opens every project", async ({ page }) => {
+  await page.goto(workHref("cgi"));
+  const items = getProjects("cgi");
+  for (let i = 0; i < items.length; i++) {
+    await waitForRolodexIdle(page, items[i].title);
+    const active = page.locator('.rolodex-panel[data-state="active"]');
+    await expect(active.getByRole("link")).toHaveAttribute("href", projectHref(items[i]));
+    await expect(page.locator('.rolodex-panel[aria-hidden="false"]')).toHaveCount(1);
+    await page.mouse.move(900, 500);
+    await page.mouse.wheel(0, 90);
+    await page.mouse.wheel(0, 65);
+    await page.mouse.wheel(0, 25);
+    await waitForRolodexIdle(page, items[(i + 1) % items.length].title);
+  }
+  await page.mouse.wheel(0, -150);
+  await page.waitForTimeout(400);
+  await waitForRolodexIdle(page, items[0].title);
+  await page.locator('.rolodex-panel[data-state="active"]').getByRole("link").click();
+  await expect(page).toHaveURL(new RegExp(`${projectHref(items[0])}$`));
+});
+
+for (const mode of ["stills", "cgi"] as const) {
   test(`${mode}: reduced motion and switching while moving clean up the engine`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(workHref(mode));
-    await waitForRolodexIdle(page, "Project One");
+    await waitForRolodexIdle(page, mode === "stills" ? "2024" : "Project One");
     await page.keyboard.press("ArrowDown");
-    await waitForRolodexIdle(page, "Project Two");
+    await waitForRolodexIdle(page, mode === "stills" ? "2025" : "Project Two");
     await expect(page.locator('.rolodex-scene-wrap[data-state="active"]')).toHaveCSS("transform", "none");
     await page.keyboard.press("ArrowDown");
     await page.getByRole("radio", { name: mode === "stills" ? "CGI" : "STILLS", exact: true }).click();
-    await waitForRolodexIdle(page, "Project One");
+    await waitForRolodexIdle(page, mode === "stills" ? "Project One" : "2024");
     await expect(page.locator('.rolodex-panel[aria-hidden="false"]')).toHaveCount(1);
   });
 }
@@ -130,9 +163,13 @@ for (const viewport of [{width: 1440, height: 900}, {width: 1920, height: 1080},
     await page.setViewportSize(viewport);
     for (const mode of ["stills", "cgi"]) {
       await page.goto(`/work?mode=${mode}`);
-      await waitForRolodexIdle(page, "Project One");
+      await waitForRolodexIdle(page, mode === "stills" ? "2024" : "Project One");
       await expectNoHorizontalOverflow(page);
-      for (const selector of ['.work-mode-control', '.rolodex-nav', '.rolodex-panel[data-state="active"] .rolodex-heading', '.rolodex-panel[data-state="active"] .rolodex-liquid-cta']) {
+      const selectors = mode === "stills"
+        ? ['.work-mode-control', '.rolodex-nav', '.rolodex-panel[data-state="active"] .rolodex-heading', '.rolodex-panel[data-state="active"] .stills-year-collections']
+        : ['.work-mode-control', '.rolodex-nav', '.rolodex-panel[data-state="active"] .rolodex-heading', '.rolodex-panel[data-state="active"] .rolodex-liquid-cta'];
+
+      for (const selector of selectors) {
         await expectElementInsideViewport(page.locator(selector), selector);
       }
       await page.screenshot({path: testInfo.outputPath(`${mode}.png`)});

@@ -149,7 +149,7 @@ test.describe("interior wayfinding and typography", () => {
     const checks = [
       { path: "/about", selector: "h1" },
       { path: "/about#contact", selector: "#contact-heading" },
-      { path: "/photography/project-one", selector: "h1" },
+      { path: "/work/stills/2024/goodwood", selector: "h1" },
       { path: "/cgi/project-one", selector: "h1" },
       { path: "/missing-route-for-404", selector: "h1" },
     ];
@@ -358,7 +358,7 @@ test.describe("interior wayfinding and typography", () => {
       "/work?mode=stills",
       "/cgi",
       "/work",
-      "/photography/project-one",
+      "/work/stills/2024/goodwood",
       "/cgi/project-one",
       "/cgi/project-five",
     ]) {

@@ -14,7 +14,7 @@ const primaryRoutes = [
   "/photography",
   "/work?mode=cgi",
   "/work?mode=stills",
-  "/photography/project-one",
+  "/work/stills/2024/goodwood",
   "/cgi/project-one",
   "/cgi/project-five",
   "/definitely-not-a-real-route",
@@ -133,7 +133,7 @@ test.describe("responsive layout, assets, and controls", () => {
       "/about",
       "/photography",
       "/work?mode=cgi",
-      "/photography/project-one",
+      "/work/stills/2024/goodwood",
       "/cgi/project-one",
       "/cgi/project-five",
     ] as const;
@@ -156,7 +156,7 @@ test.describe("responsive layout, assets, and controls", () => {
       }
     }
 
-    await page.goto("/photography/project-one");
+    await page.goto("/work/stills/2024/goodwood");
     await page.getByRole("link", { name: "Home" }).first().click();
     await expect(page).toHaveURL("/");
 
