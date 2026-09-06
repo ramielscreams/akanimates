@@ -26,7 +26,7 @@ export function ProjectInterior({ project }: { project: WorkProject }) {
       { label: "Media", tone: "technical" as const, value: project.mediaType },
     ]),
   ];
-  const returnHref = workHref(project.discipline, project.slug);
+  const returnHref = stills ? workHref(project.discipline, project.slug) : workHref(project.discipline);
 
   return (
     <main className={`section-${stills ? "photography" : "cgi"} project-interior min-h-dvh bg-bg text-text-primary`} data-discipline={project.discipline}>

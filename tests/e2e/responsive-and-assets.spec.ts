@@ -168,24 +168,19 @@ test.describe("responsive layout, assets, and controls", () => {
     page,
   }) => {
     await page.goto("/work?mode=cgi");
-    const explore = page.locator('.rolodex-panel[data-state="active"] .rolodex-project-hit-area');
-    await expect(explore).toBeVisible();
-    const exploreBox = await explore.boundingBox();
+    const tile = page.getByRole("button", { name: /open cgi project 01, project one/i });
+    await expect(tile).toBeVisible();
+    const tileBox = await tile.boundingBox();
 
-    expect(exploreBox?.height ?? 0).toBeGreaterThanOrEqual(300);
-    expect(exploreBox?.width ?? 0).toBeGreaterThan(300);
-    await expect(explore).toHaveAttribute("href", "/cgi/project-one");
-
-    const visibleCta = page.locator('.rolodex-panel[data-state="active"] .rolodex-liquid-cta');
-    await expect(visibleCta).toBeVisible();
-    const beforeTransform = await visibleCta.evaluate((element) => getComputedStyle(element).transform);
-    const box = await explore.boundingBox();
-    expect(box).not.toBeNull();
-    await page.mouse.move((box?.x ?? 0) + 18, (box?.y ?? 0) + 18);
+    expect(tileBox?.height ?? 0).toBeGreaterThanOrEqual(220);
+    expect(tileBox?.width ?? 0).toBeGreaterThan(300);
+    await page.mouse.move((tileBox?.x ?? 0) + 18, (tileBox?.y ?? 0) + 18);
     await page.waitForTimeout(50);
-    const transform = await visibleCta.evaluate((element) => getComputedStyle(element).transform);
+    await expect(page.locator(".cgi-project-tile").first()).toHaveAttribute("data-hovered", "true");
 
-    expect(transform).toBe(beforeTransform);
+    await tile.click();
+    await expect(page.getByRole("button", { name: /close cgi player/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /view full project/i })).toHaveAttribute("href", "/cgi/project-one");
 
 
 

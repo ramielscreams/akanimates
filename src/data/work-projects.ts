@@ -1,5 +1,5 @@
 import { photographyProjects } from "@/data/photography-projects";
-import { cgiProjects as cgiRecords } from "@/data/cgi-projects";
+import { cgiProjects as cgiRecords, type CgiTileLayout } from "@/data/cgi-projects";
 import type { PortfolioCaseStudyProject, ProjectHero } from "@/data/portfolio-projects";
 
 export type WorkMode = "stills" | "cgi";
@@ -16,6 +16,7 @@ export type WorkProject = PortfolioCaseStudyProject & {
   manufacturer?: string;
   event?: string;
   mediaType?: string;
+  tile?: CgiTileLayout;
 };
 
 export type ProjectProgress = {

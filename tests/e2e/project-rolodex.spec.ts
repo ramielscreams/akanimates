@@ -1,14 +1,14 @@
 import { test, expect } from "@playwright/test";
 import { waitForRolodexIdle } from "./helpers";
 
-test("direct project navigation wraps forward and uses Barlow typography", async ({ page }) => {
-  await page.goto("/work?mode=cgi");
-  await waitForRolodexIdle(page, "Project One");
-  await page.getByRole("button", { name: "05 / Project Five" }).click();
-  await waitForRolodexIdle(page, "Project Five");
-  await page.getByRole("button", { name: "01 / Project One" }).click();
+test("Stills direct year navigation wraps forward and uses Barlow typography", async ({ page }) => {
+  await page.goto("/work?mode=stills");
+  await waitForRolodexIdle(page, "2024");
+  await page.getByRole("button", { name: "03 / 2026" }).click();
+  await waitForRolodexIdle(page, "2026");
+  await page.getByRole("button", { name: "01 / 2024" }).click();
   await expect(page.locator(".rolodex-track")).toHaveAttribute("data-direction", "next");
-  await waitForRolodexIdle(page, "Project One");
+  await waitForRolodexIdle(page, "2024");
   await expect(page.locator('.rolodex-panel[data-state="active"] h2')).toHaveCSS("font-weight", "900");
   expect(await page.locator('.rolodex-panel[data-state="active"] h2').evaluate(el => getComputedStyle(el).fontFamily)).toContain("Barlow");
 });
@@ -26,15 +26,15 @@ test("touch swipes commit one forward project", async ({ page, browserName }) =>
   await waitForRolodexIdle(page, "2025");
 });
 
-test("burst input keeps hidden panels inert and reveals the mechanical stage", async ({ page }) => {
-  await page.goto("/work?mode=cgi");
-  await waitForRolodexIdle(page, "Project One");
+test("Stills burst input keeps hidden panels inert and reveals the mechanical stage", async ({ page }) => {
+  await page.goto("/work?mode=stills");
+  await waitForRolodexIdle(page, "2024");
   await page.locator(".rolodex-track").evaluate(el => {
     for (const deltaY of [1, 2, 8, 20, 15, 7]) el.dispatchEvent(new WheelEvent("wheel", {deltaY, bubbles:true, cancelable:true}));
   });
   await expect(page.locator(".rolodex-track")).toHaveAttribute("data-phase", "motion");
   await expect(page.locator('.rolodex-panel:not([inert])')).toHaveCount(0);
-  await waitForRolodexIdle(page, "Project Two");
+  await waitForRolodexIdle(page, "2025");
   await expect(page.locator('.rolodex-panel:not([inert])')).toHaveCount(1);
   await expect(page.locator('.rolodex-panel[data-state="stack"]').first()).toBeHidden();
 });

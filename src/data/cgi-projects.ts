@@ -1,12 +1,23 @@
 import type { BasePortfolioProject } from "@/data/portfolio-projects";
 
 export type CgiProjectLayout = "standard" | "wide" | "cinematic" | "offset";
+export type CgiTileAspect = "16/9" | "21/9" | "3/2" | "4/5" | "4/3" | "2/3";
+export type CgiTileSize = "hero" | "large" | "medium" | "small";
+
+export type CgiTileLayout = {
+  aspectRatio: CgiTileAspect;
+  columnEnd?: number;
+  columnStart: number;
+  offset?: "none" | "low" | "lower" | "high";
+  size: CgiTileSize;
+};
 
 export type CgiProject = BasePortfolioProject & {
   category: string;
   client: string;
   layout: CgiProjectLayout;
   mediaType: string;
+  tile: CgiTileLayout;
   year: string;
 };
 
@@ -60,6 +71,13 @@ export const cgiProjects: CgiProject[] = [
     mediaType: "render",
     role: "CGI / Visualization",
     slug: "project-one",
+    tile: {
+      aspectRatio: "16/9",
+      columnEnd: 8,
+      columnStart: 1,
+      offset: "none",
+      size: "hero",
+    },
     title: "Project One",
     year: "2026",
   },
@@ -70,6 +88,13 @@ export const cgiProjects: CgiProject[] = [
     layout: "cinematic",
     mediaType: "motion frame",
     slug: "project-two",
+    tile: {
+      aspectRatio: "4/5",
+      columnEnd: 13,
+      columnStart: 8,
+      offset: "low",
+      size: "medium",
+    },
     title: "Project Two",
     year: "2026",
   },
@@ -80,6 +105,13 @@ export const cgiProjects: CgiProject[] = [
     layout: "offset",
     mediaType: "render study",
     slug: "project-three",
+    tile: {
+      aspectRatio: "3/2",
+      columnEnd: 6,
+      columnStart: 2,
+      offset: "none",
+      size: "small",
+    },
     title: "Project Three",
     year: "2025",
   },
@@ -90,6 +122,13 @@ export const cgiProjects: CgiProject[] = [
     layout: "standard",
     mediaType: "material study",
     slug: "project-four",
+    tile: {
+      aspectRatio: "21/9",
+      columnEnd: 13,
+      columnStart: 6,
+      offset: "lower",
+      size: "large",
+    },
     title: "Project Four",
     year: "2025",
   },
@@ -100,6 +139,13 @@ export const cgiProjects: CgiProject[] = [
     layout: "wide",
     mediaType: "studio render",
     slug: "project-five",
+    tile: {
+      aspectRatio: "4/3",
+      columnEnd: 5,
+      columnStart: 1,
+      offset: "high",
+      size: "medium",
+    },
     title: "Project Five",
     year: "2024",
   },

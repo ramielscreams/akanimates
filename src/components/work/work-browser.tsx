@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
+import { CgiTileBrowser } from "@/components/work/cgi-tile-browser";
 import { ProjectRolodex } from "@/components/work/project-rolodex";
 import { WorkModeControl } from "@/components/work/work-mode-control";
 import { getProjects, workHref, type WorkMode } from "@/data/work-projects";
@@ -13,6 +14,7 @@ export function WorkBrowser() {
   const hasQueryMode = queryMode === "cgi" || queryMode === "stills";
   const queryWorkMode: WorkMode | undefined = hasQueryMode ? queryMode : undefined;
   const [sessionMode, setSessionMode] = useState<WorkMode>("stills");
+  const [sessionProjectByMode, setSessionProjectByMode] = useState<Partial<Record<WorkMode, string>>>({});
   const [hasRestoredSession, setHasRestoredSession] = useState(false);
   const [historyMode, setHistoryMode] = useState<WorkMode | undefined>(undefined);
   const [hasEnteredBrowse, setHasEnteredBrowse] = useState(false);
@@ -20,23 +22,24 @@ export function WorkBrowser() {
 
   useEffect(() => {
     const storedMode = window.sessionStorage.getItem("ak-work-mode");
+    const storedStillsProject = window.sessionStorage.getItem("ak-work-position:stills") ?? undefined;
 
     window.requestAnimationFrame(() => {
       if (storedMode === "cgi" || storedMode === "stills") {
         setSessionMode(storedMode);
       }
 
+      setSessionProjectByMode({
+        stills: storedStillsProject,
+      });
       setHasRestoredSession(true);
     });
   }, []);
 
   const mode: WorkMode = queryWorkMode ?? historyMode ?? sessionMode;
   const projects = useMemo(() => getProjects(mode), [mode]);
-  const storedProject =
-    typeof window === "undefined"
-      ? undefined
-      : window.sessionStorage.getItem(`ak-work-position:${mode}`) ?? undefined;
-  const initialProjectSlug = queryProject ?? storedProject;
+  const rememberedProjectSlug = mode === "stills" ? sessionProjectByMode.stills : undefined;
+  const initialProjectSlug = queryProject ?? rememberedProjectSlug;
 
   useEffect(() => {
     const readHistoryMode = () => {
@@ -92,13 +95,22 @@ export function WorkBrowser() {
           }
         }} />
       </header>
-      <ProjectRolodex
-        key={`${mode}:${initialProjectSlug ?? ""}`}
-        mode={mode}
-        initialProjectSlug={initialProjectSlug}
-        projects={projects}
-        rememberState={hasQueryMode || hasRestoredSession}
-      />
+      {mode === "stills" ? (
+        <ProjectRolodex
+          key={`${mode}:${initialProjectSlug ?? ""}`}
+          mode={mode}
+          initialProjectSlug={initialProjectSlug}
+          projects={projects}
+          rememberState={hasQueryMode || hasRestoredSession}
+        />
+      ) : (
+        <CgiTileBrowser
+          key={`${mode}:${initialProjectSlug ?? ""}`}
+          initialProjectSlug={initialProjectSlug}
+          projects={projects}
+          rememberState={hasQueryMode || hasRestoredSession}
+        />
+      )}
     </main>
   );
 }
