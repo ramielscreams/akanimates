@@ -66,18 +66,25 @@ test("Work restores session mode and project position", async ({ page }) => {
 
 test("CGI persisted browser context does not hydrate into an expanded player", async ({ page }) => {
   const checkErrors = await expectNoConsoleFailures(page);
-  await page.goto("/work");
-  await page.evaluate(() => {
+  await page.addInitScript(() => {
     window.sessionStorage.setItem("ak-work-mode", "cgi");
     window.sessionStorage.setItem("ak-work-position:cgi", "project-three");
     window.sessionStorage.setItem("ak-work-scroll:cgi", "0");
   });
-  await page.reload();
+  await page.goto("/work");
   await expect(page).toHaveURL(/\/work$/);
   await expect(page.getByRole("radio", { name: "CGI", exact: true })).toBeChecked();
   await expect(page.locator(".cgi-tile-browser")).toHaveAttribute("data-active", "false");
   await expect(page.locator(".cgi-expanded-player")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /open cgi project 03, project three/i })).toBeVisible();
+
+  await page.goto("/work?mode=cgi");
+  await expect(page.locator(".cgi-tile-browser")).toHaveAttribute("data-active", "false");
+  await expect(page.locator(".cgi-expanded-player")).toHaveCount(0);
+
+  await page.goto("/work?mode=cgi&project=project-three");
+  await expect(page.locator(".cgi-tile-browser")).toHaveAttribute("data-active", "true");
+  await expect(page.getByRole("heading", { name: "Project Three", exact: true })).toBeVisible();
   await checkErrors();
 });
 
