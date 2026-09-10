@@ -6,9 +6,11 @@ export type CgiTileSize = "hero" | "large" | "medium" | "small";
 
 export type CgiTileLayout = {
   aspectRatio: CgiTileAspect;
+  captionPosition?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
   columnEnd?: number;
   columnStart: number;
   offset?: "none" | "low" | "lower" | "high";
+  rowSpan?: number;
   size: CgiTileSize;
 };
 
@@ -73,9 +75,10 @@ export const cgiProjects: CgiProject[] = [
     slug: "project-one",
     tile: {
       aspectRatio: "16/9",
-      columnEnd: 8,
+      columnEnd: 6,
       columnStart: 1,
       offset: "none",
+      rowSpan: 14,
       size: "hero",
     },
     title: "Project One",
@@ -90,9 +93,11 @@ export const cgiProjects: CgiProject[] = [
     slug: "project-two",
     tile: {
       aspectRatio: "4/5",
-      columnEnd: 13,
-      columnStart: 8,
+      captionPosition: "bottom-right",
+      columnEnd: 9,
+      columnStart: 6,
       offset: "low",
+      rowSpan: 18,
       size: "medium",
     },
     title: "Project Two",
@@ -107,9 +112,10 @@ export const cgiProjects: CgiProject[] = [
     slug: "project-three",
     tile: {
       aspectRatio: "3/2",
-      columnEnd: 6,
-      columnStart: 2,
-      offset: "none",
+      columnEnd: 13,
+      columnStart: 9,
+      offset: "lower",
+      rowSpan: 11,
       size: "small",
     },
     title: "Project Three",
@@ -125,8 +131,9 @@ export const cgiProjects: CgiProject[] = [
     tile: {
       aspectRatio: "21/9",
       columnEnd: 13,
-      columnStart: 6,
-      offset: "lower",
+      columnStart: 5,
+      offset: "none",
+      rowSpan: 11,
       size: "large",
     },
     title: "Project Four",
@@ -140,10 +147,11 @@ export const cgiProjects: CgiProject[] = [
     mediaType: "studio render",
     slug: "project-five",
     tile: {
-      aspectRatio: "4/3",
+      aspectRatio: "2/3",
       columnEnd: 5,
       columnStart: 1,
-      offset: "high",
+      offset: "low",
+      rowSpan: 18,
       size: "medium",
     },
     title: "Project Five",

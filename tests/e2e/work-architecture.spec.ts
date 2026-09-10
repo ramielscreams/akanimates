@@ -88,7 +88,7 @@ test("CGI persisted browser context does not hydrate into an expanded player", a
   await checkErrors();
 });
 
-test("stills: year panels cycle forward and expose only assigned collections", async ({ page }) => {
+test("stills: year panels cycle in both directions and expose only assigned collections", async ({ page }) => {
   await page.goto(workHref("stills"));
 
   for (let i = 0; i < stillsYears.length; i++) {
@@ -116,9 +116,9 @@ test("stills: year panels cycle forward and expose only assigned collections", a
 
   await page.mouse.wheel(0, -150);
   await page.waitForTimeout(400);
-  await waitForRolodexIdle(page, stillsYears[0].year);
-  await page.locator('.rolodex-panel[data-state="active"]').getByRole("link", { name: /goodwood festival of speed 2024/i }).click();
-  await expect(page).toHaveURL(new RegExp(`${projectHref(stillsYears[0].collections[0])}$`));
+  await waitForRolodexIdle(page, stillsYears[stillsYears.length - 1].year);
+  await page.locator('.rolodex-panel[data-state="active"]').getByRole("link", { name: /goodwood festival of speed 2026/i }).click();
+  await expect(page).toHaveURL(new RegExp(`${projectHref(stillsYears[stillsYears.length - 1].collections[0])}$`));
 });
 
 test("cgi: tile field opens and closes an inline player without a Rolodex", async ({ page }) => {
@@ -127,10 +127,12 @@ test("cgi: tile field opens and closes an inline player without a Rolodex", asyn
 
   await expect(page.locator(".rolodex-shell")).toHaveCount(0);
   await expect(page.locator(".cgi-project-tile")).toHaveCount(items.length);
+  await expect(page.locator(".cgi-project-tile__info")).toHaveCount(0);
 
   for (const project of items) {
     const tile = page.getByRole("button", { name: new RegExp(`open cgi project ${project.index}, ${project.title}`, "i") });
     await expect(tile).toBeVisible();
+    await expect(tile.locator(".cgi-project-tile__media .cgi-project-tile__caption")).toContainText(project.title);
   }
 
   await page.getByRole("button", { name: /open cgi project 04, project four/i }).click();

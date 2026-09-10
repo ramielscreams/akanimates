@@ -302,6 +302,7 @@ export function CgiTileBrowser({
             "--tile-column-end": tile?.columnEnd,
             "--tile-column-start": tile?.columnStart,
             "--tile-ratio": tile?.aspectRatio?.replace("/", " / ") ?? "3 / 2",
+            "--tile-row-span": tile?.rowSpan,
           } as CSSProperties;
 
           return (
@@ -318,6 +319,7 @@ export function CgiTileBrowser({
               data-active={activeSlug === project.slug ? "true" : "false"}
               data-hovered={hoveredSlug === project.slug ? "true" : "false"}
               data-offset={tile?.offset ?? "none"}
+              data-caption-position={tile?.captionPosition ?? "bottom-left"}
               data-size={tile?.size ?? "medium"}
               style={style}
             >
@@ -335,12 +337,12 @@ export function CgiTileBrowser({
                   ) : (
                     <span className="cgi-project-tile__placeholder" />
                   )}
-                </span>
-                <span className="cgi-project-tile__info">
-                  <span className="cgi-project-tile__index">{project.index}</span>
-                  <span className="cgi-project-tile__title">{project.title}</span>
-                  <span className="cgi-project-tile__meta">
-                    {[project.year, project.mediaType, project.client].filter(Boolean).join(" / ")}
+                  <span className="cgi-project-tile__caption">
+                    <span className="cgi-project-tile__index">{project.index}</span>
+                    <span className="cgi-project-tile__title">{project.title}</span>
+                    <span className="cgi-project-tile__meta">
+                      {[project.year, project.mediaType].filter(Boolean).join(" / ")}
+                    </span>
                   </span>
                 </span>
               </button>

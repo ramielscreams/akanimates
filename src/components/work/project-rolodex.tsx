@@ -18,16 +18,16 @@ import {
 import { RolodexItem, type RolodexEntry } from "@/components/home/rolodex-item";
 import { RolodexNav } from "@/components/home/rolodex-nav";
 
-const ONE_PANEL_RESPONSE_SECONDS = 0.62;
+const ONE_PANEL_RESPONSE_SECONDS = 0.74;
 const MULTI_PANEL_RESPONSE_SECONDS = 0.95;
 const SPRING_DAMPING_RATIO = 1;
 const SETTLE_EPSILON = 0.0015;
 const VELOCITY_EPSILON = 0.006;
-const MAX_SETTLE_RESPONSE_MULTIPLIER = 2.35;
-const REDUCED_TRANSITION_MS = 220;
+const MAX_SETTLE_RESPONSE_MULTIPLIER = 1.38;
+const REDUCED_TRANSITION_MS = 140;
 const WHEEL_TRIGGER_THRESHOLD = 5;
 const WHEEL_NOISE_FLOOR = 1.25;
-const WHEEL_GESTURE_QUIET_MS = 220;
+const WHEEL_GESTURE_QUIET_MS = 260;
 const TOUCH_TRIGGER_THRESHOLD = 34;
 
 function positiveModulo(value: number, modulo: number) {
@@ -146,7 +146,7 @@ function getSlotMetrics(slot: number) {
       saturate: 0.9,
       brightness: 0.68,
       blur: 0.25,
-      frameScale: 0.58,
+      frameScale: 0.68,
     },
     {
       y: 132,
@@ -156,7 +156,7 @@ function getSlotMetrics(slot: number) {
       saturate: 0.78,
       brightness: 0.44,
       blur: 1,
-      frameScale: 0.42,
+      frameScale: 0.48,
     },
     {
       y: 174,
@@ -230,7 +230,7 @@ function normalizeWheelDelta(event: WheelEvent) {
   return event.deltaY;
 }
 
-type Direction = "next";
+type Direction = "next" | "previous";
 
 type MotionState = {
   direction: Direction | "none";
@@ -685,7 +685,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
 
     const triggerNavigation = (direction: Direction, distance = 1, inputIntensity = 0) => {
       if (motionStateRef.current.isMoving || loopLength < 2) return;
-      const signedDistance = Math.max(1, distance);
+      const signedDistance = (direction === "next" ? 1 : -1) * Math.max(1, distance);
       const travelDistance = Math.abs(signedDistance);
       const currentTarget = targetPositionRef.current;
       const nextTarget = currentTarget + signedDistance;
@@ -754,9 +754,8 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
 
       if (Math.abs(gestureDeltaRef.current) >= WHEEL_TRIGGER_THRESHOLD) {
         committedGestureRef.current = true;
-        if (gestureDeltaRef.current > 0) {
-          triggerNavigation("next", 1, clamp(Math.abs(gestureDeltaRef.current) / 160, 0, 1));
-        }
+        const direction = gestureDeltaRef.current > 0 ? "next" : "previous";
+        triggerNavigation(direction, 1, clamp(Math.abs(gestureDeltaRef.current) / 160, 0, 1));
       }
     };
     const onKeyDown = (event: KeyboardEvent) => {
@@ -775,7 +774,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       if (event.key === "ArrowDown" || event.key === "PageDown") {
         triggerNavigation("next", 1, 0.2);
       } else {
-        return;
+        triggerNavigation("previous", 1, 0.2);
       }
     };
     const onTouchStart = (event: TouchEvent) => {
@@ -800,7 +799,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
 
       event.preventDefault();
       touchStartYRef.current = null;
-      if (delta > 0) triggerNavigation("next", 1, clamp(Math.abs(delta) / 180, 0, 1));
+      triggerNavigation(delta > 0 ? "next" : "previous", 1, clamp(Math.abs(delta) / 180, 0, 1));
     };
     const onTouchEnd = () => {
       touchStartYRef.current = null;
@@ -857,17 +856,21 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       return;
     }
 
-    const distance = positiveModulo(
+    const forwardDistance = positiveModulo(
       normalizedTarget - currentTargetIndex,
       rolodexEntries.length,
     );
 
-    if (distance === 0) {
+    if (forwardDistance === 0) {
       return;
     }
 
+    const backwardDistance = rolodexEntries.length - forwardDistance;
+    const direction: Direction = forwardDistance <= backwardDistance ? "next" : "previous";
+    const distance = direction === "next" ? forwardDistance : backwardDistance;
+
     setPendingNavIndex(normalizedTarget);
-    triggerNavigationRef.current("next", distance);
+    triggerNavigationRef.current(direction, distance);
   };
 
   const rememberProjectOpen = (slug?: string) => {
