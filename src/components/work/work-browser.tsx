@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
 import { CgiTileBrowser } from "@/components/work/cgi-tile-browser";
 import { ProjectRolodex } from "@/components/work/project-rolodex";
+import { StillsCuratedOpening } from "@/components/work/stills-curated-opening";
 import { WorkModeControl } from "@/components/work/work-mode-control";
-import { getProjects, workHref, type WorkMode } from "@/data/work-projects";
+import { curatedStills, getProjects, workHref, type WorkMode } from "@/data/work-projects";
 
 export function WorkBrowser() {
   const searchParams = useSearchParams();
@@ -21,10 +22,10 @@ export function WorkBrowser() {
   const [isModeChanging, setIsModeChanging] = useState(false);
 
   useEffect(() => {
-    const storedMode = window.sessionStorage.getItem("ak-work-mode");
-    const storedStillsProject = window.sessionStorage.getItem("ak-work-position:stills") ?? undefined;
+    const restoreTimer = window.setTimeout(() => {
+      const storedMode = window.sessionStorage.getItem("ak-work-mode");
+      const storedStillsProject = window.sessionStorage.getItem("ak-work-position:stills") ?? undefined;
 
-    window.requestAnimationFrame(() => {
       if (storedMode === "cgi" || storedMode === "stills") {
         setSessionMode(storedMode);
       }
@@ -33,7 +34,9 @@ export function WorkBrowser() {
         stills: storedStillsProject,
       });
       setHasRestoredSession(true);
-    });
+    }, 0);
+
+    return () => window.clearTimeout(restoreTimer);
   }, []);
 
   const mode: WorkMode = queryWorkMode ?? historyMode ?? sessionMode;
@@ -47,7 +50,6 @@ export function WorkBrowser() {
       setHistoryMode(stateMode === "cgi" || stateMode === "stills" ? stateMode : undefined);
     };
 
-    readHistoryMode();
     window.addEventListener("popstate", readHistoryMode);
 
     return () => window.removeEventListener("popstate", readHistoryMode);
@@ -96,13 +98,21 @@ export function WorkBrowser() {
         }} />
       </header>
       {mode === "stills" ? (
-        <ProjectRolodex
-          key={`${mode}:${initialProjectSlug ?? ""}`}
-          mode={mode}
-          initialProjectSlug={initialProjectSlug}
-          projects={projects}
-          rememberState={hasQueryMode || hasRestoredSession}
-        />
+        <>
+          <StillsCuratedOpening items={curatedStills} />
+          <section className="stills-archive" aria-label="Stills archive by year">
+            <div className="stills-archive__intro site-safe-x">
+              <p className="site-technical-label">Archive / By Year</p>
+            </div>
+            <ProjectRolodex
+              key={`${mode}:${initialProjectSlug ?? ""}`}
+              mode={mode}
+              initialProjectSlug={initialProjectSlug}
+              projects={projects}
+              rememberState={hasQueryMode || hasRestoredSession}
+            />
+          </section>
+        </>
       ) : (
         <CgiTileBrowser
           key={`${mode}:${initialProjectSlug ?? ""}`}

@@ -28,7 +28,7 @@ test("mode changes are isolated, instantaneous client history entries", async ({
   await expect(page.locator(".rolodex-panel")).toHaveCount(3);
   await page.evaluate(() => { (window as unknown as { workDocument: string }).workDocument = "same-document"; });
   await page.getByRole("radio", { name: "CGI", exact: true }).click();
-  await expect(page).toHaveURL(/\/work\?mode=cgi$/);
+  await expect(page).toHaveURL(/\/work\?mode=cgi(&project=project-four)?$/);
   await expect(page.locator(".rolodex-shell")).toHaveCount(0);
   await expect(page.locator(".cgi-project-tile")).toHaveCount(5);
   await expect(page.locator('[data-panel="stills"]')).toHaveCount(0);
@@ -55,16 +55,16 @@ test("Work restores session mode and project position", async ({ page }) => {
   await page.getByRole("link", { name: /view full project/i }).click();
   await expect(page).toHaveURL(/\/cgi\/project-four$/);
   await page.getByRole("link", { name: /^← CGI$/ }).click();
-  await expect(page).toHaveURL(/\/work\?mode=cgi$/);
-  await expect(page.locator(".cgi-expanded-player")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /open cgi project 04, project four/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/work\?mode=cgi(&project=project-four)?$/);
+  await expect(page.getByRole("heading", { name: "Project Four", exact: true })).toBeVisible();
+  await expect(page.locator('.cgi-project-tile[data-active="true"]').getByRole("button", { name: /open cgi project 04, project four/i })).toBeVisible();
   await page.goto("/work");
   await expect(page.getByRole("radio", { name: "CGI", exact: true })).toBeChecked();
-  await expect(page.locator(".cgi-expanded-player")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Project Four", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /open cgi project 04, project four/i })).toBeVisible();
 });
 
-test("CGI persisted browser context does not hydrate into an expanded player", async ({ page }) => {
+test("CGI persisted browser context keeps a deterministic featured player", async ({ page }) => {
   const checkErrors = await expectNoConsoleFailures(page);
   await page.addInitScript(() => {
     window.sessionStorage.setItem("ak-work-mode", "cgi");
@@ -74,13 +74,13 @@ test("CGI persisted browser context does not hydrate into an expanded player", a
   await page.goto("/work");
   await expect(page).toHaveURL(/\/work$/);
   await expect(page.getByRole("radio", { name: "CGI", exact: true })).toBeChecked();
-  await expect(page.locator(".cgi-tile-browser")).toHaveAttribute("data-active", "false");
-  await expect(page.locator(".cgi-expanded-player")).toHaveCount(0);
+  await expect(page.locator(".cgi-tile-browser")).toHaveAttribute("data-active", "true");
+  await expect(page.getByRole("heading", { name: "Project Three", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /open cgi project 03, project three/i })).toBeVisible();
 
   await page.goto("/work?mode=cgi");
-  await expect(page.locator(".cgi-tile-browser")).toHaveAttribute("data-active", "false");
-  await expect(page.locator(".cgi-expanded-player")).toHaveCount(0);
+  await expect(page.locator(".cgi-tile-browser")).toHaveAttribute("data-active", "true");
+  await expect(page.getByRole("heading", { name: "Project Three", exact: true })).toBeVisible();
 
   await page.goto("/work?mode=cgi&project=project-three");
   await expect(page.locator(".cgi-tile-browser")).toHaveAttribute("data-active", "true");
@@ -90,6 +90,8 @@ test("CGI persisted browser context does not hydrate into an expanded player", a
 
 test("stills: year panels cycle in both directions and expose only assigned collections", async ({ page }) => {
   await page.goto(workHref("stills"));
+  await page.waitForSelector(".rolodex-shell");
+  await page.evaluate(() => document.querySelector(".rolodex-shell")?.scrollIntoView());
 
   for (let i = 0; i < stillsYears.length; i++) {
     const year = stillsYears[i];
@@ -117,11 +119,11 @@ test("stills: year panels cycle in both directions and expose only assigned coll
   await page.mouse.wheel(0, -150);
   await page.waitForTimeout(400);
   await waitForRolodexIdle(page, stillsYears[stillsYears.length - 1].year);
-  await page.locator('.rolodex-panel[data-state="active"]').getByRole("link", { name: /goodwood festival of speed 2026/i }).click();
+  await page.locator('.rolodex-panel[data-state="active"]').getByRole("link", { name: /goodwood festival of speed 2024/i }).click();
   await expect(page).toHaveURL(new RegExp(`${projectHref(stillsYears[stillsYears.length - 1].collections[0])}$`));
 });
 
-test("cgi: tile field opens and closes an inline player without a Rolodex", async ({ page }) => {
+test("cgi: tile field drives the persistent featured player without a Rolodex", async ({ page }) => {
   await page.goto(workHref("cgi"));
   const items = getProjects("cgi");
 
@@ -138,17 +140,18 @@ test("cgi: tile field opens and closes an inline player without a Rolodex", asyn
   await page.getByRole("button", { name: /open cgi project 04, project four/i }).click();
   await expect(page).toHaveURL(/\/work\?mode=cgi&project=project-four$/);
   await expect(page.getByRole("heading", { name: "Project Four", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: /close cgi player/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /view full project/i })).toHaveAttribute("href", "/cgi/project-four");
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("heading", { name: "Project Four", exact: true })).toHaveCount(0);
-  await expect(page).toHaveURL(/\/work\?mode=cgi$/);
+  await expect(page.getByRole("heading", { name: "Project One", exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/work\?mode=cgi(&project=project-four)?$/);
 });
 
 test("stills: reduced motion keeps the Rolodex engine clean", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(workHref("stills"));
-  await waitForRolodexIdle(page, "2024");
+  await page.waitForSelector(".rolodex-shell");
+  await page.evaluate(() => document.querySelector(".rolodex-shell")?.scrollIntoView());
+  await waitForRolodexIdle(page, "2026");
   await page.keyboard.press("ArrowDown");
   await waitForRolodexIdle(page, "2025");
   await expect(page.locator('.rolodex-scene-wrap[data-state="active"]')).toHaveCSS("transform", "none");
@@ -165,7 +168,8 @@ test("cgi: reduced motion and mode switching close the inline player cleanly", a
   await page.getByRole("button", { name: /open cgi project 02, project two/i }).click();
   await expect(page.getByRole("heading", { name: "Project Two", exact: true })).toBeVisible();
   await page.getByRole("radio", { name: "STILLS", exact: true }).click();
-  await waitForRolodexIdle(page, "2024");
+  await page.locator(".rolodex-shell").scrollIntoViewIfNeeded();
+  await waitForRolodexIdle(page, "2026");
   await expect(page.locator(".cgi-expanded-player")).toHaveCount(0);
   await expect(page.locator('.rolodex-panel[aria-hidden="false"]')).toHaveCount(1);
 });
@@ -186,12 +190,12 @@ for (const project of projects) {
     await expect(page).toHaveURL(new RegExp(`${projectHref(next)}$`));
     await page.getByRole("link", { name: /^Back to/ }).click();
     const returnPattern = project.discipline === "cgi"
-      ? /\/work\?mode=cgi$/
+      ? /\/work\?mode=cgi(&project=[^&]+)?$/
       : new RegExp(`/work\\?mode=${project.discipline}&project=${next.slug}$`);
     await expect(page).toHaveURL(returnPattern);
     await expect(page.getByRole("radio", { name: project.discipline.toUpperCase(), exact: true })).toBeChecked();
     if (project.discipline === "cgi") {
-      await expect(page.locator(".cgi-expanded-player")).toHaveCount(0);
+      await expect(page.getByRole("heading", { name: next.title, exact: true })).toBeVisible();
     }
     await checkErrors();
   });
@@ -211,7 +215,9 @@ for (const viewport of [{width: 1440, height: 900}, {width: 1920, height: 1080},
     for (const mode of ["stills", "cgi"]) {
       await page.goto(`/work?mode=${mode}`);
       if (mode === "stills") {
-        await waitForRolodexIdle(page, "2024");
+        await page.waitForSelector(".rolodex-shell");
+        await page.evaluate(() => document.querySelector(".rolodex-shell")?.scrollIntoView());
+        await waitForRolodexIdle(page, "2026");
       } else {
         await expect(page.locator(".cgi-project-tile")).toHaveCount(getProjects("cgi").length);
       }
@@ -226,6 +232,7 @@ for (const viewport of [{width: 1440, height: 900}, {width: 1920, height: 1080},
 
       if (mode === "cgi") {
         await expect(page.locator(".cgi-tile-field")).toBeVisible();
+        await page.locator(".cgi-tile-field").scrollIntoViewIfNeeded();
         const firstTile = page.locator(".cgi-project-tile").first();
         await expect(firstTile).toBeVisible();
         const box = await firstTile.boundingBox();
@@ -244,3 +251,4 @@ for (const viewport of [{width: 1440, height: 900}, {width: 1920, height: 1080},
     await page.screenshot({path: testInfo.outputPath("home.png")});
   });
 }
+

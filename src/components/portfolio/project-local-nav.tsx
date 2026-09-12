@@ -8,6 +8,7 @@ import type { ProjectProgress, WorkMode } from "@/data/work-projects";
 type ProjectLocalNavProps = {
   discipline: WorkMode;
   progress: ProjectProgress;
+  projectSlug: string;
   returnHref: string;
   returnLabel: string;
   title: string;
@@ -16,6 +17,7 @@ type ProjectLocalNavProps = {
 export function ProjectLocalNav({
   discipline,
   progress,
+  projectSlug,
   returnHref,
   returnLabel,
   title,
@@ -68,6 +70,10 @@ export function ProjectLocalNav({
         className="project-local-nav__return site-technical-label"
         href={returnHref}
         aria-label={`← ${returnLabel}`}
+        onClick={() => {
+          window.sessionStorage.setItem("ak-work-mode", discipline);
+          window.sessionStorage.setItem(`ak-work-position:${discipline}`, projectSlug);
+        }}
       >
         <span aria-hidden="true">←</span>
         <span>{returnLabel}</span>

@@ -6,7 +6,7 @@ import { ProjectHero } from "@/components/portfolio/project-hero";
 import { ProjectLocalNav } from "@/components/portfolio/project-local-nav";
 import { ProjectMedia } from "@/components/portfolio/project-media";
 import { ProjectMeta, type ProjectMetaEntry } from "@/components/portfolio/project-meta";
-import { getNextProject, getProjectProgress, projectHref, workHref, type WorkProject } from "@/data/work-projects";
+import { getNextProject, getProjectProgress, projectHref, type WorkProject } from "@/data/work-projects";
 export function ProjectInterior({ project }: { project: WorkProject }) {
   const stills = project.discipline === "stills";
   const label = stills ? "Stills" : "CGI";
@@ -26,7 +26,7 @@ export function ProjectInterior({ project }: { project: WorkProject }) {
       { label: "Media", tone: "technical" as const, value: project.mediaType },
     ]),
   ];
-  const returnHref = stills ? workHref(project.discipline, project.slug) : workHref(project.discipline);
+  const returnHref = `/work?mode=${project.discipline}&project=${project.slug}`;
 
   return (
     <main className={`section-${stills ? "photography" : "cgi"} project-interior min-h-dvh bg-bg text-text-primary`} data-discipline={project.discipline}>
@@ -34,6 +34,7 @@ export function ProjectInterior({ project }: { project: WorkProject }) {
       <ProjectLocalNav
         discipline={project.discipline}
         progress={progress}
+        projectSlug={project.slug}
         returnHref={returnHref}
         returnLabel={label}
         title={project.title}
@@ -54,7 +55,7 @@ export function ProjectInterior({ project }: { project: WorkProject }) {
         </section>
         {project.media.length > 0 && <ProjectMedia media={project.media} />}
         <ProjectCredits entries={project.credits ?? []} project={project} />
-        <NextProject backHref={returnHref} backLabel={`Back to ${label}`}
+        <NextProject backHref={returnHref} backLabel={`Back to ${label}`} backMode={project.discipline} backProjectSlug={project.slug}
           discipline={label} href={nextProject ? projectHref(nextProject) : undefined} project={nextProject} />
       </article>
     </main>

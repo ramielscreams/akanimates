@@ -47,9 +47,10 @@ export function CgiTileBrowser({
   projects,
   rememberState = true,
 }: CgiTileBrowserProps) {
+  const defaultProjectSlug = projects[0]?.slug ?? null;
   const initialActiveSlug = useMemo(
-    () => projects.some((project) => project.slug === initialProjectSlug) ? initialProjectSlug ?? null : null,
-    [initialProjectSlug, projects],
+    () => projects.some((project) => project.slug === initialProjectSlug) ? initialProjectSlug ?? null : defaultProjectSlug,
+    [defaultProjectSlug, initialProjectSlug, projects],
   );
   const [activeSlug, setActiveSlug] = useState<string | null>(initialActiveSlug);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
@@ -61,21 +62,22 @@ export function CgiTileBrowser({
   const playerRef = useRef<HTMLDivElement>(null);
   const tileRefs = useRef(new Map<string, HTMLElement>());
   const videoRef = useRef<HTMLVideoElement>(null);
-  const activeProject = projects.find((project) => project.slug === activeSlug);
+  const activeProject = projects.find((project) => project.slug === activeSlug) ?? projects[0];
   const activeVideoSource = activeProject ? getVideoSource(activeProject) : undefined;
+  const hasIntentionalSelection = Boolean(activeProject && activeProject.slug !== defaultProjectSlug);
 
   useEffect(() => {
     const readProjectFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
       const projectSlug = params.get("project");
 
-      setActiveSlug(projects.some((project) => project.slug === projectSlug) ? projectSlug : null);
+      setActiveSlug(projects.some((project) => project.slug === projectSlug) ? projectSlug : defaultProjectSlug);
     };
 
     window.addEventListener("popstate", readProjectFromUrl);
 
     return () => window.removeEventListener("popstate", readProjectFromUrl);
-  }, [projects]);
+  }, [defaultProjectSlug, projects]);
 
   useEffect(() => {
     if (!rememberState || initialProjectSlug) {
@@ -84,15 +86,20 @@ export function CgiTileBrowser({
 
     const storedScrollY = Number(window.sessionStorage.getItem("ak-work-scroll:cgi"));
     const storedSlug = window.sessionStorage.getItem("ak-work-position:cgi");
+    const restoredSlug = storedSlug && projects.some((project) => project.slug === storedSlug) ? storedSlug : null;
 
     window.requestAnimationFrame(() => {
+      if (restoredSlug) {
+        setActiveSlug(restoredSlug);
+      }
+
       if (Number.isFinite(storedScrollY) && storedScrollY > 0) {
         window.scrollTo({ top: storedScrollY, behavior: "auto" });
         return;
       }
 
-      if (storedSlug && projects.some((project) => project.slug === storedSlug)) {
-        tileRefs.current.get(storedSlug)?.scrollIntoView({ block: "center", behavior: "auto" });
+      if (restoredSlug) {
+        tileRefs.current.get(restoredSlug)?.scrollIntoView({ block: "center", behavior: "auto" });
       }
     });
   }, [initialProjectSlug, projects, rememberState]);
@@ -110,7 +117,7 @@ export function CgiTileBrowser({
     video.muted = isMuted;
   }, [activeSlug, isMuted]);
 
-  const openProject = (project: WorkProject) => {
+  const selectProject = (project: WorkProject) => {
     lastScrollYRef.current = window.scrollY;
     setActiveSlug(project.slug);
     setIsPlaying(false);
@@ -121,37 +128,37 @@ export function CgiTileBrowser({
     window.history.pushState({ akWorkMode: "cgi", akCgiProject: project.slug }, "", `/work?mode=cgi&project=${project.slug}`);
 
     window.requestAnimationFrame(() => {
-      playerRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    });
-  };
+      const playerBox = playerRef.current?.getBoundingClientRect();
 
-  const closeProject = () => {
-    const video = videoRef.current;
+      if (!playerBox) {
+        return;
+      }
 
-    video?.pause();
-    setIsPlaying(false);
-    setActiveSlug(null);
-    window.history.replaceState({ akWorkMode: "cgi" }, "", "/work?mode=cgi");
-
-    window.requestAnimationFrame(() => {
-      window.scrollTo({ top: lastScrollYRef.current, behavior: "auto" });
+      if (playerBox.bottom < 120 || playerBox.top > window.innerHeight - 160) {
+        playerRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
     });
   };
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape" || !activeProject) {
+      if (event.key !== "Escape" || !hasIntentionalSelection) {
         return;
       }
 
       event.preventDefault();
-      closeProject();
+      const video = videoRef.current;
+
+      video?.pause();
+      setIsPlaying(false);
+      setActiveSlug(defaultProjectSlug);
+      window.history.replaceState({ akWorkMode: "cgi" }, "", "/work?mode=cgi");
     };
 
     window.addEventListener("keydown", onKeyDown);
 
     return () => window.removeEventListener("keydown", onKeyDown);
-  });
+  }, [defaultProjectSlug, hasIntentionalSelection]);
 
   const togglePlayback = async () => {
     const video = videoRef.current;
@@ -181,6 +188,7 @@ export function CgiTileBrowser({
     <section
       className="cgi-tile-browser site-safe-x"
       data-active={activeProject ? "true" : "false"}
+      data-selection={hasIntentionalSelection ? "true" : "false"}
       aria-label="CGI project browser"
     >
       <div className="cgi-tile-browser__intro">
@@ -191,20 +199,17 @@ export function CgiTileBrowser({
       {activeProject ? (
         <section
           ref={playerRef}
-          className="cgi-expanded-player"
-          aria-label={`${activeProject.title} expanded player`}
+          className="cgi-expanded-player cgi-featured-player"
+          aria-label={`${activeProject.title} featured player`}
         >
           <div className="cgi-expanded-player__header">
             <div>
-              <p className="site-technical-label">CGI / Active Project</p>
+              <p className="site-technical-label">CGI / Featured Media</p>
               <h3>{activeProject.title}</h3>
               <p className="cgi-expanded-player__meta site-technical-label">
                 {[activeProject.year, activeProject.role, activeProject.client].filter(Boolean).join(" / ")}
               </p>
             </div>
-            <button type="button" className="cgi-player-icon-button" onClick={closeProject} aria-label="Close CGI player">
-              Close
-            </button>
           </div>
 
           <div className="cgi-expanded-player__stage">
@@ -327,7 +332,7 @@ export function CgiTileBrowser({
                 type="button"
                 className="cgi-project-tile__button"
                 aria-label={`Open CGI project ${project.index}, ${project.title}`}
-                onClick={() => openProject(project)}
+                onClick={() => selectProject(project)}
                 onMouseEnter={() => setHoveredSlug(project.slug)}
                 onMouseLeave={() => setHoveredSlug((slug) => slug === project.slug ? null : slug)}
               >
@@ -353,3 +358,4 @@ export function CgiTileBrowser({
     </section>
   );
 }
+

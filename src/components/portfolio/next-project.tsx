@@ -1,20 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
 
+import { ProjectReturnLink } from "@/components/portfolio/project-return-link";
 import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
-import type { WorkProject } from "@/data/work-projects";
+import type { WorkMode, WorkProject } from "@/data/work-projects";
 
 type NextProjectProps = {
+  backMode: WorkMode;
   backHref: string;
   backLabel: string;
+  backProjectSlug: string;
   discipline: string;
   href?: string;
   project?: WorkProject;
 };
 
 export function NextProject({
+  backMode,
   backHref,
   backLabel,
+  backProjectSlug,
   discipline,
   href,
   project,
@@ -28,7 +33,13 @@ export function NextProject({
     >
       <div className="next-project-section__top">
         <LiquidGlassButton asChild variant="quiet">
-          <Link href={backHref}>{backLabel}</Link>
+          <ProjectReturnLink
+            href={backHref}
+            mode={backMode}
+            projectSlug={backProjectSlug}
+          >
+            {backLabel}
+          </ProjectReturnLink>
         </LiquidGlassButton>
       </div>
       {project && projectHref ? (

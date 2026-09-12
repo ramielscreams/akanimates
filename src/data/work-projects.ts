@@ -36,6 +36,17 @@ export type StillsYearGroup = {
   year: string;
 };
 
+type StillsCuratedReference = {
+  caption: string;
+  projectSlug: string;
+  scale: "lead" | "wide" | "tall" | "support";
+};
+
+export type StillsCuratedItem = StillsCuratedReference & {
+  image: ProjectHero | NonNullable<WorkProject["media"][number]>;
+  project: StillsCollection;
+};
+
 export const projects: WorkProject[] = [
   ...photographyProjects.map((project) => ({
     ...project,
@@ -80,7 +91,51 @@ export const stillsYears: StillsYearGroup[] = Array.from(
     order: Number(year),
     year,
   }),
-).sort((a, b) => a.order - b.order);
+).sort((a, b) => b.order - a.order);
+
+const curatedStillsReferences: StillsCuratedReference[] = [
+  {
+    caption: "Hillclimb atmosphere",
+    projectSlug: "goodwood-2026",
+    scale: "lead",
+  },
+  {
+    caption: "Trackside detail",
+    projectSlug: "formula-one-2026",
+    scale: "tall",
+  },
+  {
+    caption: "Night field",
+    projectSlug: "ultrace-2026",
+    scale: "wide",
+  },
+  {
+    caption: "Festival archive",
+    projectSlug: "goodwood-2025",
+    scale: "support",
+  },
+  {
+    caption: "Paddock sequence",
+    projectSlug: "formula-one-2025",
+    scale: "support",
+  },
+];
+
+export const curatedStills: StillsCuratedItem[] = curatedStillsReferences.flatMap((reference) => {
+  const project = stillsProjects.find((item) => item.slug === reference.projectSlug) as StillsCollection | undefined;
+
+  if (!project) {
+    return [];
+  }
+
+  return [
+    {
+      ...reference,
+      image: project.cover,
+      project,
+    },
+  ];
+});
 
 export function getProjects(mode: WorkMode) {
   return mode === "cgi" ? cgiProjects : stillsProjects;
