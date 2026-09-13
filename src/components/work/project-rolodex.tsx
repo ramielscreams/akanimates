@@ -1,4 +1,5 @@
 "use client";
+import { StillsCollectionGrid } from "@/components/work/stills-collection-grid";
 
 import {
   type CSSProperties,
@@ -300,6 +301,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       : projects.findIndex((project) => project.slug === initialProjectSlug),
   );
   const shellRef = useRef<HTMLElement>(null);
+  const releaseInputRef = useRef<() => void>(() => {});
   const trackRef = useRef<HTMLDivElement>(null);
   const activeIndexRef = useRef(initialIndex);
   const committedGestureRef = useRef(false);
@@ -377,8 +379,9 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
 
   useEffect(() => {
     const track = trackRef.current;
+    const shell = shellRef.current;
 
-    if (!track || rolodexEntries.length === 0) {
+    if (!track || !shell || rolodexEntries.length === 0) {
       return;
     }
 
@@ -730,7 +733,17 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
 
     triggerNavigationRef.current = triggerNavigation;
 
+    let engaged = false;
+    let released = false;
+    let reverseGestures = 0;
+    let approachWheelAt = -Infinity;
+    const overlayOpen = () => Boolean(document.querySelector('[role="dialog"][aria-modal="true"]'));
+    const releaseInput = () => { released = true; setEngaged(false); };
+    releaseInputRef.current = releaseInput;
     const onWheel = (event: WheelEvent) => {
+      if (!engaged || overlayOpen()) return;
+      const now = performance.now();
+      if (now - approachWheelAt < WHEEL_GESTURE_QUIET_MS) { approachWheelAt = now; return; }
       if (event.ctrlKey) {
         return;
       }
@@ -741,6 +754,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         return;
       }
 
+      if (normalizedDelta < 0 && reverseGestures >= loopLength && !committedGestureRef.current && !motionStateRef.current.isMoving) { releaseInput(); return; }
       event.preventDefault();
       lastWheelAtRef.current = window.performance.now();
 
@@ -755,10 +769,19 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       if (Math.abs(gestureDeltaRef.current) >= WHEEL_TRIGGER_THRESHOLD) {
         committedGestureRef.current = true;
         const direction = gestureDeltaRef.current > 0 ? "next" : "previous";
+        reverseGestures = direction === "previous" ? reverseGestures + 1 : 0;
         triggerNavigation(direction, 1, clamp(Math.abs(gestureDeltaRef.current) / 160, 0, 1));
       }
     };
     const onKeyDown = (event: KeyboardEvent) => {
+      if (!engaged || overlayOpen()) return;
+      if (event.key === "Escape") {
+        releaseInput();
+        const collections = document.getElementById("stills-collections");
+        collections?.focus({ preventScroll: true });
+        collections?.scrollIntoView({ behavior: "auto" });
+        return;
+      }
       if (
         event.key !== "ArrowDown" &&
         event.key !== "PageDown" &&
@@ -778,10 +801,11 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       }
     };
     const onTouchStart = (event: TouchEvent) => {
+      if (!engaged || overlayOpen()) return;
       touchStartYRef.current = event.touches[0]?.clientY ?? null;
     };
     const onTouchMove = (event: TouchEvent) => {
-      if (touchStartYRef.current === null) {
+      if (!engaged || overlayOpen() || touchStartYRef.current === null) {
         return;
       }
 
@@ -805,6 +829,35 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       touchStartYRef.current = null;
     };
 
+    function setEngaged(next: boolean) {
+      if (engaged === next) return;
+      engaged = next;
+      shell!.dataset.engaged = String(next);
+      if (next) {
+        window.addEventListener("wheel", onWheel, { passive: false });
+        window.addEventListener("keydown", onKeyDown);
+        window.addEventListener("touchstart", onTouchStart, { passive: true });
+        window.addEventListener("touchmove", onTouchMove, { passive: false });
+        window.addEventListener("touchend", onTouchEnd);
+      } else {
+        window.removeEventListener("wheel", onWheel);
+        window.removeEventListener("keydown", onKeyDown);
+        window.removeEventListener("touchstart", onTouchStart);
+        window.removeEventListener("touchmove", onTouchMove);
+        window.removeEventListener("touchend", onTouchEnd);
+        touchStartYRef.current = null;
+      }
+    }
+    const updateEngagement = () => {
+      const frame = track.getBoundingClientRect();
+      const section = shell.getBoundingClientRect();
+      const visible = Math.max(0, Math.min(frame.bottom, innerHeight) - Math.max(frame.top, 0));
+      const arrived = section.top <= 2 && section.bottom >= innerHeight - 2 && visible / Math.max(frame.height, 1) >= 0.85;
+      if (!arrived) { released = false; reverseGestures = 0; }
+      setEngaged(arrived && !released);
+    };
+    const observeApproachWheel = () => { if (!engaged) approachWheelAt = performance.now(); };
+
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const updateReducedMotion = () => {
       reducedMotionRef.current = motionQuery.matches;
@@ -812,17 +865,16 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     const onResize = () => {
       measurePanel();
       applyPhysicalState();
+      updateEngagement();
     };
 
     reducedMotionRef.current = motionQuery.matches;
     measurePanel();
     applyPhysicalState();
 
-    track.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("keydown", onKeyDown);
-    track.addEventListener("touchstart", onTouchStart, { passive: true });
-    track.addEventListener("touchmove", onTouchMove, { passive: false });
-    track.addEventListener("touchend", onTouchEnd);
+    updateEngagement();
+    window.addEventListener("scroll", updateEngagement, { passive: true });
+    window.addEventListener("wheel", observeApproachWheel, { passive: true });
     window.addEventListener("resize", onResize);
     motionQuery.addEventListener("change", updateReducedMotion);
 
@@ -834,11 +886,10 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         window.cancelAnimationFrame(springFrameRef.current);
         springFrameRef.current = null;
       }
-      track.removeEventListener("wheel", onWheel);
-      window.removeEventListener("keydown", onKeyDown);
-      track.removeEventListener("touchstart", onTouchStart);
-      track.removeEventListener("touchmove", onTouchMove);
-      track.removeEventListener("touchend", onTouchEnd);
+      setEngaged(false);
+      releaseInputRef.current = () => {};
+      window.removeEventListener("scroll", updateEngagement);
+      window.removeEventListener("wheel", observeApproachWheel);
       window.removeEventListener("resize", onResize);
       motionQuery.removeEventListener("change", updateReducedMotion);
     };
@@ -887,12 +938,16 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
   };
 
   return (
+    <>
+    {mode === "stills" ? <StillsCollectionGrid group={stillsYears[activeIndex]} onOpen={rememberProjectOpen} /> : null}
     <section
+      id="stills-rolodex"
       ref={shellRef}
       className="rolodex-shell"
       data-explored={hasExplored ? "true" : "false"}
       aria-label="Project browsing"
     >
+      {mode === "stills" ? <a className="stills-return-collections" href="#stills-collections" onClick={() => releaseInputRef.current()}>View {stillsYears[activeIndex].year} photosets ↑</a> : null}
       <RolodexNav
         activeIndex={activeIndex}
         entries={rolodexEntries}
@@ -937,6 +992,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
               depth={logicalIndex + 1}
               logicalIndex={logicalIndex}
               primaryHeading={false}
+              hideCollections={mode === "stills"}
               sceneRef={(node) => {
                 sceneRefs.current[logicalIndex] = node;
               }}
@@ -949,5 +1005,6 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         })}
       </div>
     </section>
+    </>
   );
 }

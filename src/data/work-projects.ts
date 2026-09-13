@@ -9,6 +9,7 @@ export type WorkProject = PortfolioCaseStudyProject & {
   displayLabel?: string;
   order: number;
   cover: ProjectHero;
+  coverPosition?: string;
   client: string;
   year: string;
   category: string;

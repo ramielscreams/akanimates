@@ -1,8 +1,9 @@
-import type { PortfolioCaseStudyProject } from "@/data/portfolio-projects";
+import type { PortfolioCaseStudyProject, ProjectHero } from "@/data/portfolio-projects";
 
 export type PhotographyProjectLayout = "wide" | "left" | "right";
 
 export type PhotographyProject = PortfolioCaseStudyProject & {
+  coverPosition?: string;
   client: string;
   collectionSlug: string;
   discipline: string;
@@ -15,6 +16,8 @@ export type PhotographyProject = PortfolioCaseStudyProject & {
 };
 
 type StillsCollectionSeed = {
+  cover?: ProjectHero;
+  coverPosition?: string;
   collectionSlug: string;
   client: string;
   displayLabel: string;
@@ -132,6 +135,7 @@ function buildStillsCollection(seed: StillsCollectionSeed): PhotographyProject {
   const yearTitle = `${seed.title} ${seed.year}`;
 
   return {
+    coverPosition: seed.coverPosition,
     client: seed.client,
     collectionSlug: seed.collectionSlug,
     credits: [
@@ -141,7 +145,7 @@ function buildStillsCollection(seed: StillsCollectionSeed): PhotographyProject {
     discipline: "Automotive editorial",
     displayLabel: seed.displayLabel,
     event: seed.event,
-    hero: {
+    hero: seed.cover ?? {
       alt: `Future hero photography for ${yearTitle}.`,
       layout: "full",
       type: "image",
