@@ -8,6 +8,7 @@ import { useEffect, useId, useRef, useState } from "react";
 const navigationItems = [
   { index: "01", label: "about", href: "/about" },
   { index: "02", label: "work", href: "/work" },
+  { index: "03", label: "contact", href: "/about#contact" },
 ];
 
 export function InteriorMenu() {
@@ -17,13 +18,32 @@ export function InteriorMenu() {
   const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
   const menuPanelRef = useRef<HTMLDivElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [currentHash, setCurrentHash] = useState("");
 
   useEffect(() => {
     menuTriggerRef.current?.setAttribute("data-ready", "true");
   }, []);
 
   const visibleItems = navigationItems;
-  const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const isCurrent = (href: string) => {
+    const [route, hash] = href.split("#");
+    const routeMatches = pathname === route || pathname.startsWith(`${route}/`);
+
+    if (hash) {
+      return routeMatches && currentHash === `#${hash}`;
+    }
+
+    return routeMatches && !currentHash;
+  };
+
+  useEffect(() => {
+    const readHash = () => setCurrentHash(window.location.hash);
+
+    readHash();
+    window.addEventListener("hashchange", readHash);
+
+    return () => window.removeEventListener("hashchange", readHash);
+  }, [pathname]);
 
   useEffect(() => {
     if (!isOpen) {

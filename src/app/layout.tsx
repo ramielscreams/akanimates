@@ -40,7 +40,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "AK",
-  description: "A minimal portfolio workspace for AK.",
+  description: "Automotive photography and CGI by AK.",
 };
 
 export default function RootLayout({

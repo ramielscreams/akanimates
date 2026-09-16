@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
 import { CgiTileBrowser } from "@/components/work/cgi-tile-browser";
 import { ProjectRolodex } from "@/components/work/project-rolodex";
@@ -20,6 +20,13 @@ export function WorkBrowser() {
   const [historyMode, setHistoryMode] = useState<WorkMode | undefined>(undefined);
   const [hasEnteredBrowse, setHasEnteredBrowse] = useState(false);
   const [isModeChanging, setIsModeChanging] = useState(false);
+  const stillsTopRef = useRef<HTMLElement>(null);
+  const cgiBoardRef = useRef<HTMLDivElement | null>(null);
+  const entryTargetRef = useRef<WorkMode | null>(
+    queryWorkMode === "stills" || (queryWorkMode === "cgi" && !queryProject)
+      ? queryWorkMode
+      : null,
+  );
 
   useEffect(() => {
     const restoreTimer = window.setTimeout(() => {
@@ -73,6 +80,23 @@ export function WorkBrowser() {
     window.history.replaceState(nextState, "", window.location.href);
   }, [mode]);
 
+  useLayoutEffect(() => {
+    const entryTarget = entryTargetRef.current;
+
+    if (entryTarget !== mode) {
+      return;
+    }
+
+    const target = entryTarget === "stills" ? stillsTopRef.current : cgiBoardRef.current;
+
+    if (!target) {
+      return;
+    }
+
+    target.scrollIntoView({ block: "start", behavior: "auto" });
+    entryTargetRef.current = null;
+  }, [mode]);
+
   return (
     <main
       className={`section-work section-${mode === "stills" ? "photography" : "cgi"}`}
@@ -84,13 +108,15 @@ export function WorkBrowser() {
       <header className="work-header site-safe-x">
         <div className="work-header__context">
           <h1 className="site-technical-label">02 / Work</h1>
-          <p>{mode === "stills" ? "Automotive, motorsport & editorial imagery." : "Digital imagery, motion & automotive form."}</p>
         </div>
         <WorkModeControl mode={mode} onChange={(nextMode) => {
           if (nextMode !== mode) {
             setIsModeChanging(true);
+            setHasEnteredBrowse(false);
+            entryTargetRef.current = nextMode;
             window.setTimeout(() => setIsModeChanging(false), 360);
             window.sessionStorage.setItem("ak-work-mode", nextMode);
+            window.sessionStorage.removeItem("ak-work-scroll:cgi");
             setSessionMode(nextMode);
             setHistoryMode(nextMode);
             window.history.pushState({ akWorkMode: nextMode }, "", workHref(nextMode));
@@ -99,17 +125,14 @@ export function WorkBrowser() {
       </header>
       {mode === "stills" ? (
         <>
-          <StillsCuratedOpening items={curatedStills} />
+          <StillsCuratedOpening ref={stillsTopRef} items={curatedStills} />
           <section className="stills-archive" aria-label="Stills archive by year">
-            <div className="stills-archive__intro site-safe-x">
-              <p className="site-technical-label">Archive / By Year</p>
-            </div>
             <ProjectRolodex
               key={`${mode}:${initialProjectSlug ?? ""}`}
               mode={mode}
               initialProjectSlug={initialProjectSlug}
               projects={projects}
-              rememberState={hasQueryMode || hasRestoredSession}
+              rememberState={hasRestoredSession}
             />
           </section>
         </>
@@ -117,6 +140,9 @@ export function WorkBrowser() {
         <CgiTileBrowser
           key={`${mode}:${initialProjectSlug ?? ""}`}
           initialProjectSlug={initialProjectSlug}
+          onBoardEntryReady={(node) => {
+            cgiBoardRef.current = node;
+          }}
           projects={projects}
           rememberState={hasQueryMode || hasRestoredSession}
         />

@@ -41,7 +41,6 @@ type RolodexItemProps = {
   slotStyle: CSSProperties;
   state: "active" | "entering" | "exiting" | "stack";
   onOpenProject?: (slug?: string) => void;
-  hideCollections?: boolean;
 };
 
 export function RolodexItem({
@@ -54,7 +53,6 @@ export function RolodexItem({
   slotStyle,
   state,
   onOpenProject,
-  hideCollections = false,
 }: RolodexItemProps) {
   const style = {
     "--rolodex-accent": entry.accent,
@@ -124,7 +122,7 @@ export function RolodexItem({
             <p className="rolodex-copy text-base leading-8 text-text-secondary sm:text-lg">
               {entry.description}
             </p>
-            {hasCollections && !hideCollections ? (
+            {hasCollections ? (
               <nav className="stills-year-collections" aria-label={`${entry.title} stills collections`}>
                 {entry.collections?.map((collection) => (
                   <Link

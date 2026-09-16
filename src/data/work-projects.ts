@@ -39,8 +39,10 @@ export type StillsYearGroup = {
 
 type StillsCuratedReference = {
   caption: string;
+  id: string;
+  objectPosition?: string;
   projectSlug: string;
-  scale: "lead" | "wide" | "tall" | "support";
+  tone: "track" | "paddock" | "night" | "detail";
 };
 
 export type StillsCuratedItem = StillsCuratedReference & {
@@ -97,28 +99,66 @@ export const stillsYears: StillsYearGroup[] = Array.from(
 const curatedStillsReferences: StillsCuratedReference[] = [
   {
     caption: "Hillclimb atmosphere",
+    id: "selection-goodwood-2026-a",
+    objectPosition: "center",
     projectSlug: "goodwood-2026",
-    scale: "lead",
+    tone: "track",
   },
   {
-    caption: "Trackside detail",
+    caption: "Single-seater study",
+    id: "selection-formula-one-2026-a",
+    objectPosition: "center",
     projectSlug: "formula-one-2026",
-    scale: "tall",
+    tone: "detail",
   },
   {
     caption: "Night field",
+    id: "selection-ultrace-2026-a",
+    objectPosition: "center",
     projectSlug: "ultrace-2026",
-    scale: "wide",
+    tone: "night",
   },
   {
     caption: "Festival archive",
+    id: "selection-goodwood-2025-a",
+    objectPosition: "center",
     projectSlug: "goodwood-2025",
-    scale: "support",
+    tone: "paddock",
   },
   {
     caption: "Paddock sequence",
+    id: "selection-formula-one-2025-a",
+    objectPosition: "center",
     projectSlug: "formula-one-2025",
-    scale: "support",
+    tone: "track",
+  },
+  {
+    caption: "Street arrival",
+    id: "selection-ultrace-2025-a",
+    objectPosition: "center",
+    projectSlug: "ultrace-2025",
+    tone: "detail",
+  },
+  {
+    caption: "Road-side colour",
+    id: "selection-goodwood-2024-a",
+    objectPosition: "center",
+    projectSlug: "goodwood-2024",
+    tone: "paddock",
+  },
+  {
+    caption: "Show field detail",
+    id: "selection-ultrace-2024-a",
+    objectPosition: "center",
+    projectSlug: "ultrace-2024",
+    tone: "night",
+  },
+  {
+    caption: "Festival motion",
+    id: "selection-goodwood-2026-b",
+    objectPosition: "center",
+    projectSlug: "goodwood-2026",
+    tone: "track",
   },
 ];
 

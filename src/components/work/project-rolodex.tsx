@@ -1,5 +1,4 @@
 "use client";
-import { StillsCollectionGrid } from "@/components/work/stills-collection-grid";
 
 import {
   type CSSProperties,
@@ -301,7 +300,6 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       : projects.findIndex((project) => project.slug === initialProjectSlug),
   );
   const shellRef = useRef<HTMLElement>(null);
-  const releaseInputRef = useRef<() => void>(() => {});
   const trackRef = useRef<HTMLDivElement>(null);
   const activeIndexRef = useRef(initialIndex);
   const committedGestureRef = useRef(false);
@@ -739,7 +737,6 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     let approachWheelAt = -Infinity;
     const overlayOpen = () => Boolean(document.querySelector('[role="dialog"][aria-modal="true"]'));
     const releaseInput = () => { released = true; setEngaged(false); };
-    releaseInputRef.current = releaseInput;
     const onWheel = (event: WheelEvent) => {
       if (!engaged || overlayOpen()) return;
       const now = performance.now();
@@ -777,9 +774,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       if (!engaged || overlayOpen()) return;
       if (event.key === "Escape") {
         releaseInput();
-        const collections = document.getElementById("stills-collections");
-        collections?.focus({ preventScroll: true });
-        collections?.scrollIntoView({ behavior: "auto" });
+        shell.scrollIntoView({ behavior: "auto", block: "start" });
         return;
       }
       if (
@@ -887,7 +882,6 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         springFrameRef.current = null;
       }
       setEngaged(false);
-      releaseInputRef.current = () => {};
       window.removeEventListener("scroll", updateEngagement);
       window.removeEventListener("wheel", observeApproachWheel);
       window.removeEventListener("resize", onResize);
@@ -938,8 +932,6 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
   };
 
   return (
-    <>
-    {mode === "stills" ? <StillsCollectionGrid group={stillsYears[activeIndex]} onOpen={rememberProjectOpen} /> : null}
     <section
       id="stills-rolodex"
       ref={shellRef}
@@ -947,7 +939,6 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       data-explored={hasExplored ? "true" : "false"}
       aria-label="Project browsing"
     >
-      {mode === "stills" ? <a className="stills-return-collections" href="#stills-collections" onClick={() => releaseInputRef.current()}>View {stillsYears[activeIndex].year} photosets ↑</a> : null}
       <RolodexNav
         activeIndex={activeIndex}
         entries={rolodexEntries}
@@ -992,7 +983,6 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
               depth={logicalIndex + 1}
               logicalIndex={logicalIndex}
               primaryHeading={false}
-              hideCollections={mode === "stills"}
               sceneRef={(node) => {
                 sceneRefs.current[logicalIndex] = node;
               }}
@@ -1005,6 +995,5 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         })}
       </div>
     </section>
-    </>
   );
 }

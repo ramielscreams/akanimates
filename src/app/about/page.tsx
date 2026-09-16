@@ -1,8 +1,5 @@
-import Link from "next/link";
-
 import { ContactLayer } from "@/components/about/contact-layer";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
-import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 
 const disciplines = [
   "Automotive photography",
@@ -106,34 +103,9 @@ export default function AboutPage() {
             id="contact-heading"
             className="section-heading text-text-primary"
           >
-            Contact
+            LET&apos;S WORK TOGETHER
           </h2>
           <ContactLayer />
-        </div>
-      </section>
-
-      <section className="about-frame about-closing-nav">
-        <div className="about-closing-nav__inner">
-          <div className="min-w-0">
-            <p className="site-technical-label text-text-muted">
-              Selected work
-            </p>
-            <Link href="/work" className="large-nav-link mt-6 inline-block uppercase">Work</Link>
-          </div>
-
-          <div className="sm:text-right">
-            <LiquidGlassButton asChild>
-              <Link href="/work">
-                Explore Work
-                <span
-                  className="transition-transform duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] group-hover/liquid:translate-x-1 motion-reduce:transition-none"
-                  aria-hidden="true"
-                >
-                  -&gt;
-                </span>
-              </Link>
-            </LiquidGlassButton>
-          </div>
         </div>
       </section>
     </main>

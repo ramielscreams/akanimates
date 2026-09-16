@@ -13,6 +13,7 @@ import { projectHref, type WorkProject } from "@/data/work-projects";
 
 type CgiTileBrowserProps = {
   initialProjectSlug?: string;
+  onBoardEntryReady?: (node: HTMLDivElement | null) => void;
   projects: WorkProject[];
   rememberState?: boolean;
 };
@@ -44,8 +45,8 @@ function getVideoSource(project: WorkProject) {
 
 export function CgiTileBrowser({
   initialProjectSlug,
+  onBoardEntryReady,
   projects,
-  rememberState = true,
 }: CgiTileBrowserProps) {
   const defaultProjectSlug = projects[0]?.slug ?? null;
   const initialActiveSlug = useMemo(
@@ -59,6 +60,7 @@ export function CgiTileBrowser({
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const lastScrollYRef = useRef(0);
+  const boardEntryRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
   const tileRefs = useRef(new Map<string, HTMLElement>());
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -80,29 +82,14 @@ export function CgiTileBrowser({
   }, [defaultProjectSlug, projects]);
 
   useEffect(() => {
-    if (!rememberState || initialProjectSlug) {
+    if (!initialProjectSlug) {
       return;
     }
 
-    const storedScrollY = Number(window.sessionStorage.getItem("ak-work-scroll:cgi"));
-    const storedSlug = window.sessionStorage.getItem("ak-work-position:cgi");
-    const restoredSlug = storedSlug && projects.some((project) => project.slug === storedSlug) ? storedSlug : null;
-
     window.requestAnimationFrame(() => {
-      if (restoredSlug) {
-        setActiveSlug(restoredSlug);
-      }
-
-      if (Number.isFinite(storedScrollY) && storedScrollY > 0) {
-        window.scrollTo({ top: storedScrollY, behavior: "auto" });
-        return;
-      }
-
-      if (restoredSlug) {
-        tileRefs.current.get(restoredSlug)?.scrollIntoView({ block: "center", behavior: "auto" });
-      }
+      playerRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
     });
-  }, [initialProjectSlug, projects, rememberState]);
+  }, [initialProjectSlug]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -128,15 +115,13 @@ export function CgiTileBrowser({
     window.history.pushState({ akWorkMode: "cgi", akCgiProject: project.slug }, "", `/work?mode=cgi&project=${project.slug}`);
 
     window.requestAnimationFrame(() => {
-      const playerBox = playerRef.current?.getBoundingClientRect();
-
-      if (!playerBox) {
+      const player = playerRef.current;
+      if (!player) {
         return;
       }
 
-      if (playerBox.bottom < 120 || playerBox.top > window.innerHeight - 160) {
-        playerRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      }
+      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      player.scrollIntoView({ block: "start", behavior });
     });
   };
 
@@ -191,15 +176,11 @@ export function CgiTileBrowser({
       data-selection={hasIntentionalSelection ? "true" : "false"}
       aria-label="CGI project browser"
     >
-      <div className="cgi-tile-browser__intro">
-        <p className="site-technical-label">CGI / Project Field</p>
-        <h2>Motion, renders and technical image studies.</h2>
-      </div>
-
       {activeProject ? (
         <section
           ref={playerRef}
           className="cgi-expanded-player cgi-featured-player"
+          aria-hidden={hasIntentionalSelection ? undefined : true}
           aria-label={`${activeProject.title} featured player`}
         >
           <div className="cgi-expanded-player__header">
@@ -299,6 +280,16 @@ export function CgiTileBrowser({
           </dl>
         </section>
       ) : null}
+
+      <div
+        className="cgi-tile-browser__intro"
+        ref={(node) => {
+          boardEntryRef.current = node;
+          onBoardEntryReady?.(node);
+        }}
+      >
+        <p className="site-technical-label">CGI / Project Field</p>
+      </div>
 
       <div className="cgi-tile-field" aria-label="CGI projects">
         {projects.map((project) => {
