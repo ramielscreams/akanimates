@@ -22,24 +22,29 @@ export function WorkBrowser() {
   const [isModeChanging, setIsModeChanging] = useState(false);
   const stillsTopRef = useRef<HTMLElement>(null);
   const cgiBoardRef = useRef<HTMLDivElement | null>(null);
+  const previousQueryProjectRef = useRef(queryProject);
   const entryTargetRef = useRef<WorkMode | null>(
-    queryWorkMode === "stills" || (queryWorkMode === "cgi" && !queryProject)
+    queryWorkMode === "stills" || queryWorkMode === "cgi"
       ? queryWorkMode
       : null,
   );
 
   useEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
+  useEffect(() => {
     const restoreTimer = window.setTimeout(() => {
       const storedMode = window.sessionStorage.getItem("ak-work-mode");
-      const storedStillsProject = window.sessionStorage.getItem("ak-work-position:stills") ?? undefined;
-
       if (storedMode === "cgi" || storedMode === "stills") {
         setSessionMode(storedMode);
       }
 
-      setSessionProjectByMode({
-        stills: storedStillsProject,
-      });
       setHasRestoredSession(true);
     }, 0);
 
@@ -48,7 +53,7 @@ export function WorkBrowser() {
 
   const mode: WorkMode = queryWorkMode ?? historyMode ?? sessionMode;
   const projects = useMemo(() => getProjects(mode), [mode]);
-  const rememberedProjectSlug = mode === "stills" ? sessionProjectByMode.stills : undefined;
+  const rememberedProjectSlug = mode === "cgi" ? sessionProjectByMode.cgi : undefined;
   const initialProjectSlug = queryProject ?? rememberedProjectSlug;
 
   useEffect(() => {
@@ -97,6 +102,17 @@ export function WorkBrowser() {
     entryTargetRef.current = null;
   }, [mode]);
 
+  useLayoutEffect(() => {
+    const previousQueryProject = previousQueryProjectRef.current;
+    previousQueryProjectRef.current = queryProject;
+
+    if (mode !== "cgi" || !previousQueryProject || queryProject) {
+      return;
+    }
+
+    cgiBoardRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+  }, [mode, queryProject]);
+
   return (
     <main
       className={`section-work section-${mode === "stills" ? "photography" : "cgi"}`}
@@ -117,6 +133,10 @@ export function WorkBrowser() {
             window.setTimeout(() => setIsModeChanging(false), 360);
             window.sessionStorage.setItem("ak-work-mode", nextMode);
             window.sessionStorage.removeItem("ak-work-scroll:cgi");
+            if (nextMode === "stills") {
+              window.sessionStorage.removeItem("ak-work-position:stills");
+              setSessionProjectByMode((current) => ({ ...current, stills: undefined }));
+            }
             setSessionMode(nextMode);
             setHistoryMode(nextMode);
             window.history.pushState({ akWorkMode: nextMode }, "", workHref(nextMode));
@@ -138,7 +158,7 @@ export function WorkBrowser() {
         </>
       ) : (
         <CgiTileBrowser
-          key={`${mode}:${initialProjectSlug ?? ""}`}
+          key={mode}
           initialProjectSlug={initialProjectSlug}
           onBoardEntryReady={(node) => {
             cgiBoardRef.current = node;

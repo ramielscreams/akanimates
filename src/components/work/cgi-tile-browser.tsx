@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   type CSSProperties,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -29,6 +30,10 @@ function formatTime(value: number) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
+function getSafeMediaTime(value: number) {
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
 function getVideoSource(project: WorkProject) {
   if (project.hero.type === "video" && project.hero.src) {
     return project.hero.src;
@@ -43,22 +48,34 @@ function getVideoSource(project: WorkProject) {
   return undefined;
 }
 
+function getHeaderOffset() {
+  const rawOffset = window.getComputedStyle(document.documentElement).getPropertyValue("--header-block-offset").trim();
+  const parsedOffset = Number.parseFloat(rawOffset);
+
+  return Number.isFinite(parsedOffset) ? parsedOffset : 0;
+}
+
 export function CgiTileBrowser({
   initialProjectSlug,
   onBoardEntryReady,
   projects,
 }: CgiTileBrowserProps) {
+  const timelineId = useId();
   const defaultProjectSlug = projects[0]?.slug ?? null;
   const initialActiveSlug = useMemo(
     () => projects.some((project) => project.slug === initialProjectSlug) ? initialProjectSlug ?? null : defaultProjectSlug,
     [defaultProjectSlug, initialProjectSlug, projects],
   );
+  const initialSelectedSlug = projects.some((project) => project.slug === initialProjectSlug) ? initialProjectSlug ?? null : null;
   const [activeSlug, setActiveSlug] = useState<string | null>(initialActiveSlug);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(initialSelectedSlug);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [hasMediaError, setHasMediaError] = useState(false);
+  const [canFullscreen, setCanFullscreen] = useState(false);
   const lastScrollYRef = useRef(0);
   const boardEntryRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
@@ -66,14 +83,19 @@ export function CgiTileBrowser({
   const videoRef = useRef<HTMLVideoElement>(null);
   const activeProject = projects.find((project) => project.slug === activeSlug) ?? projects[0];
   const activeVideoSource = activeProject ? getVideoSource(activeProject) : undefined;
-  const hasIntentionalSelection = Boolean(activeProject && activeProject.slug !== defaultProjectSlug);
+  const activePoster = activeProject?.cover.src;
+  const hasIntentionalSelection = Boolean(selectedSlug && activeProject);
+  const safeDuration = getSafeMediaTime(duration);
+  const safeCurrentTime = Math.min(getSafeMediaTime(currentTime), safeDuration || getSafeMediaTime(currentTime));
 
   useEffect(() => {
     const readProjectFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
       const projectSlug = params.get("project");
+      const nextSlug = projects.some((project) => project.slug === projectSlug) ? projectSlug : null;
 
-      setActiveSlug(projects.some((project) => project.slug === projectSlug) ? projectSlug : defaultProjectSlug);
+      setSelectedSlug(nextSlug);
+      setActiveSlug(nextSlug ?? defaultProjectSlug);
     };
 
     window.addEventListener("popstate", readProjectFromUrl);
@@ -82,46 +104,67 @@ export function CgiTileBrowser({
   }, [defaultProjectSlug, projects]);
 
   useEffect(() => {
-    if (!initialProjectSlug) {
-      return;
-    }
-
-    window.requestAnimationFrame(() => {
-      playerRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
-    });
-  }, [initialProjectSlug]);
-
-  useEffect(() => {
     const video = videoRef.current;
 
     if (!video) {
       setIsPlaying(false);
       setDuration(0);
       setCurrentTime(0);
+      setHasMediaError(false);
       return;
     }
 
-    video.muted = isMuted;
-  }, [activeSlug, isMuted]);
+    video.pause();
+    video.currentTime = 0;
+    video.load();
+    setIsPlaying(false);
+    setDuration(0);
+    setCurrentTime(0);
+    setHasMediaError(false);
+  }, [activeVideoSource]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (video) {
+      video.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  useEffect(() => {
+    setCanFullscreen(Boolean(playerRef.current?.requestFullscreen));
+  }, []);
+
+  const scrollPlayerIntoView = () => {
+    const player = playerRef.current;
+
+    if (!player) {
+      return;
+    }
+
+    const playerTop = player.getBoundingClientRect().top + window.scrollY;
+    const targetTop = Math.max(0, playerTop - getHeaderOffset() - 24);
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+    window.scrollTo({ top: targetTop, behavior });
+  };
 
   const selectProject = (project: WorkProject) => {
+    videoRef.current?.pause();
     lastScrollYRef.current = window.scrollY;
     setActiveSlug(project.slug);
+    setSelectedSlug(project.slug);
     setIsPlaying(false);
+    setDuration(0);
     setCurrentTime(0);
+    setHasMediaError(false);
     window.sessionStorage.setItem("ak-work-mode", "cgi");
     window.sessionStorage.setItem("ak-work-position:cgi", project.slug);
     window.sessionStorage.setItem("ak-work-scroll:cgi", String(lastScrollYRef.current));
     window.history.pushState({ akWorkMode: "cgi", akCgiProject: project.slug }, "", `/work?mode=cgi&project=${project.slug}`);
 
     window.requestAnimationFrame(() => {
-      const player = playerRef.current;
-      if (!player) {
-        return;
-      }
-
-      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-      player.scrollIntoView({ block: "start", behavior });
+      window.requestAnimationFrame(scrollPlayerIntoView);
     });
   };
 
@@ -136,7 +179,11 @@ export function CgiTileBrowser({
 
       video?.pause();
       setIsPlaying(false);
+      setSelectedSlug(null);
       setActiveSlug(defaultProjectSlug);
+      setDuration(0);
+      setCurrentTime(0);
+      setHasMediaError(false);
       window.history.replaceState({ akWorkMode: "cgi" }, "", "/work?mode=cgi");
     };
 
@@ -153,20 +200,33 @@ export function CgiTileBrowser({
     }
 
     if (video.paused) {
-      await video.play();
-      setIsPlaying(true);
+      try {
+        await video.play();
+      } catch {
+        setIsPlaying(false);
+      }
     } else {
       video.pause();
-      setIsPlaying(false);
     }
   };
 
   const toggleMute = () => {
-    setIsMuted((muted) => !muted);
+    const video = videoRef.current;
+    const nextMuted = video ? !video.muted : !isMuted;
+
+    if (video) {
+      video.muted = nextMuted;
+    }
+
+    setIsMuted(nextMuted);
   };
 
   const enterFullscreen = async () => {
-    await playerRef.current?.requestFullscreen?.();
+    try {
+      await playerRef.current?.requestFullscreen?.();
+    } catch {
+      // Fullscreen can be rejected by browser policy; keep playback state intact.
+    }
   };
 
   return (
@@ -196,16 +256,32 @@ export function CgiTileBrowser({
           <div className="cgi-expanded-player__stage">
             {activeVideoSource ? (
               <video
+                key={activeVideoSource}
                 ref={videoRef}
                 className="cgi-expanded-player__media"
                 src={activeVideoSource}
                 muted={isMuted}
+                poster={activePoster}
                 playsInline
                 preload="metadata"
-                onDurationChange={(event) => setDuration(event.currentTarget.duration)}
+                onDurationChange={(event) => setDuration(getSafeMediaTime(event.currentTarget.duration))}
+                onEnded={(event) => {
+                  setIsPlaying(false);
+                  setCurrentTime(getSafeMediaTime(event.currentTarget.currentTime));
+                }}
+                onError={() => {
+                  setIsPlaying(false);
+                  setHasMediaError(true);
+                }}
+                onLoadedMetadata={(event) => {
+                  setDuration(getSafeMediaTime(event.currentTarget.duration));
+                  setCurrentTime(getSafeMediaTime(event.currentTarget.currentTime));
+                  setHasMediaError(false);
+                }}
                 onPause={() => setIsPlaying(false)}
                 onPlay={() => setIsPlaying(true)}
-                onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+                onTimeUpdate={(event) => setCurrentTime(getSafeMediaTime(event.currentTarget.currentTime))}
+                onVolumeChange={(event) => setIsMuted(event.currentTarget.muted)}
               />
             ) : activeProject.cover.src ? (
               <Image
@@ -223,20 +299,26 @@ export function CgiTileBrowser({
           </div>
 
           <div className="cgi-player-controls" aria-label={`${activeProject.title} playback controls`}>
-            <button type="button" onClick={togglePlayback} disabled={!activeVideoSource}>
+            <button
+              type="button"
+              onClick={togglePlayback}
+              disabled={!activeVideoSource || hasMediaError}
+              aria-label={isPlaying ? `Pause ${activeProject.title}` : `Play ${activeProject.title}`}
+            >
               {isPlaying ? "Pause" : "Play"}
             </button>
-            <label className="cgi-player-timeline">
-              <span className="sr-only">Playback timeline</span>
+            <label className="cgi-player-timeline" htmlFor={timelineId}>
+              <span className="sr-only">Playback timeline for {activeProject.title}</span>
               <input
+                id={timelineId}
                 type="range"
                 min="0"
-                max={duration || 0}
+                max={safeDuration}
                 step="0.01"
-                value={currentTime}
-                disabled={!activeVideoSource}
+                value={safeCurrentTime}
+                disabled={!activeVideoSource || hasMediaError}
                 onChange={(event) => {
-                  const nextTime = Number(event.currentTarget.value);
+                  const nextTime = Math.min(getSafeMediaTime(Number(event.currentTarget.value)), safeDuration);
                   setCurrentTime(nextTime);
                   if (videoRef.current) {
                     videoRef.current.currentTime = nextTime;
@@ -244,11 +326,21 @@ export function CgiTileBrowser({
                 }}
               />
             </label>
-            <span className="cgi-player-time">{formatTime(currentTime)} / {formatTime(duration)}</span>
-            <button type="button" onClick={toggleMute} disabled={!activeVideoSource}>
+            <span className="cgi-player-time" aria-live="off">{formatTime(safeCurrentTime)} / {formatTime(safeDuration)}</span>
+            <button
+              type="button"
+              onClick={toggleMute}
+              disabled={!activeVideoSource || hasMediaError}
+              aria-label={isMuted ? `Unmute ${activeProject.title}` : `Mute ${activeProject.title}`}
+            >
               {isMuted ? "Muted" : "Mute"}
             </button>
-            <button type="button" onClick={enterFullscreen}>
+            <button
+              type="button"
+              onClick={enterFullscreen}
+              disabled={!canFullscreen}
+              aria-label={`Open ${activeProject.title} player fullscreen`}
+            >
               Fullscreen
             </button>
             <Link
@@ -260,7 +352,7 @@ export function CgiTileBrowser({
                 window.sessionStorage.setItem("ak-work-scroll:cgi", String(lastScrollYRef.current));
               }}
             >
-              View Full Project -&gt;
+              View Full Project
             </Link>
           </div>
 
