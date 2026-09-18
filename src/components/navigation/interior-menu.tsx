@@ -90,7 +90,9 @@ export function InteriorMenu() {
         event.preventDefault();
         if (isContactOpenRef.current) {
           setIsContactOpen(false);
-          contactTriggerRef.current?.focus({ preventScroll: true });
+          window.setTimeout(() => {
+            contactTriggerRef.current?.focus({ preventScroll: true });
+          }, 0);
           return;
         }
 

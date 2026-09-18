@@ -103,7 +103,7 @@ export default function AboutPage() {
             id="contact-heading"
             className="section-heading text-text-primary"
           >
-            LET&apos;S WORK TOGETHER
+            REACH ME
           </h2>
           <ContactLayer />
         </div>

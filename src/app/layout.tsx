@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   Abril_Fatface,
   Barlow_Condensed,
@@ -55,6 +56,11 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-bg text-text-primary">
         {children}
+        <footer aria-label="Privacy information">
+          <Link className="privacy-utility-link" href="/privacy">
+            Privacy
+          </Link>
+        </footer>
       </body>
     </html>
   );
