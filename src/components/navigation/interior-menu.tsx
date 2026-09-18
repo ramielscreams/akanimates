@@ -20,16 +20,32 @@ function ContactGlyph({ type }: { type: ContactMethodKey }) {
   if (type === "email") {
     return (
       <svg aria-hidden="true" className="contact-tray__svg" viewBox="0 0 24 24">
-        <path d="M4.75 6.75h14.5v10.5H4.75z" />
-        <path d="m5.25 7.25 6.75 5.5 6.75-5.5" />
+        <path d="M4.5 6.75h15v10.5h-15z" />
+        <path d="m5.25 7.5 6.75 5.15 6.75-5.15" />
+      </svg>
+    );
+  }
+
+  if (type === "instagram") {
+    return (
+      <svg aria-hidden="true" className="contact-tray__svg" viewBox="0 0 24 24">
+        <rect height="14.5" rx="4" width="14.5" x="4.75" y="4.75" />
+        <circle cx="12" cy="12" r="3.05" />
+        <circle cx="16.2" cy="7.8" r="0.8" />
       </svg>
     );
   }
 
   return (
-    <span aria-hidden="true" className="contact-tray__text-glyph">
-      {type === "instagram" ? "IG" : "in"}
-    </span>
+    <svg
+      aria-hidden="true"
+      className="contact-tray__svg contact-tray__svg--fill"
+      viewBox="0 0 24 24"
+    >
+      <path d="M5.75 9.85h3.15v8.4H5.75z" />
+      <path d="M5.75 5.95h3.15v2.65H5.75z" />
+      <path d="M11.05 9.85h3v1.2c0.52-0.82 1.38-1.42 2.72-1.42 2.05 0 3.48 1.32 3.48 4.12v4.5h-3.15v-4.08c0-1.14-0.4-1.86-1.34-1.86-1 0-1.56 0.72-1.56 1.86v4.08h-3.15z" />
+    </svg>
   );
 }
 
@@ -298,40 +314,24 @@ export function InteriorMenu() {
                       data-open={isContactOpen ? "true" : "false"}
                       role="menu"
                     >
-                      {contactMethods.map((method) =>
-                        method.href ? (
-                          <a
-                            aria-label={method.label}
-                            className="contact-tray__item"
-                            href={method.href}
-                            key={method.key}
-                            rel={method.external ? "noreferrer" : undefined}
-                            role="menuitem"
-                            target={method.external ? "_blank" : undefined}
-                            tabIndex={isContactOpen && isOpen ? 0 : -1}
-                            onClick={() => {
-                              setIsContactOpen(false);
-                              setIsOpen(false);
-                            }}
-                          >
-                            <ContactGlyph type={method.key} />
-                            <span>{method.label}</span>
-                          </a>
-                        ) : (
-                          <button
-                            aria-disabled="true"
-                            aria-label={method.unavailableLabel}
-                            className="contact-tray__item contact-tray__item--disabled"
-                            key={method.key}
-                            role="menuitem"
-                            tabIndex={isContactOpen && isOpen ? 0 : -1}
-                            type="button"
-                          >
-                            <ContactGlyph type={method.key} />
-                            <span>{method.label}</span>
-                          </button>
-                        ),
-                      )}
+                      {contactMethods.map((method) => (
+                        <a
+                          aria-label={method.label}
+                          className="contact-tray__item"
+                          href={method.href}
+                          key={method.key}
+                          rel={method.external ? "noopener noreferrer" : undefined}
+                          role="menuitem"
+                          target={method.external ? "_blank" : undefined}
+                          tabIndex={isContactOpen && isOpen ? 0 : -1}
+                          onClick={() => {
+                            setIsContactOpen(false);
+                            setIsOpen(false);
+                          }}
+                        >
+                          <ContactGlyph type={method.key} />
+                        </a>
+                      ))}
                     </div>
                   </div>
                 )}

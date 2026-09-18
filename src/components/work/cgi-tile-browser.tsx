@@ -143,7 +143,7 @@ export function CgiTileBrowser({
     }
 
     const playerTop = player.getBoundingClientRect().top + window.scrollY;
-    const targetTop = Math.max(0, playerTop - getHeaderOffset() - 24);
+    const targetTop = Math.max(0, playerTop - getHeaderOffset() - 128);
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 
     window.scrollTo({ top: targetTop, behavior });

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
-import { KineticPanelTypography } from "@/components/home/kinetic-panel-typography";
+
 export default function Home() {
   return (
     <main className="home-entry min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
-      <div className="home-entry__background" aria-hidden="true"><KineticPanelTypography word="AK" /></div>
+      <div className="home-entry__background" aria-hidden="true" />
       <div className="home-entry__content site-safe-x">
         <h1 className="sr-only">AK automotive photography and CGI portfolio</h1>
         <nav aria-label="Primary destinations" className="home-entry__destinations">

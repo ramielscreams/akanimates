@@ -4,33 +4,35 @@ export type ContactMethod = {
   key: ContactMethodKey;
   label: string;
   value: string;
-  href: string | null;
+  href: string;
   external?: boolean;
-  unavailableLabel: string;
 };
 
-export const contactMethods: ContactMethod[] = [
-  {
+export const contactLinks = {
+  email: {
     key: "email",
     label: "Email",
-    value: "Email details pending",
-    href: null,
-    unavailableLabel: "Email address is pending",
+    value: "info@akanimates.com",
+    href: "mailto:info@akanimates.com",
   },
-  {
+  instagram: {
     key: "instagram",
     label: "Instagram",
-    value: "Instagram profile pending",
-    href: null,
+    value: "@ak.animates",
+    href: "https://www.instagram.com/ak.animates/",
     external: true,
-    unavailableLabel: "Instagram profile is pending",
   },
-  {
+  linkedin: {
     key: "linkedin",
     label: "LinkedIn",
-    value: "LinkedIn profile pending",
-    href: null,
+    value: "Aditya Kumar",
+    href: "https://www.linkedin.com/in/aditya-kumar-91945454226/",
     external: true,
-    unavailableLabel: "LinkedIn profile is pending",
   },
+} satisfies Record<ContactMethodKey, ContactMethod>;
+
+export const contactMethods: ContactMethod[] = [
+  contactLinks.email,
+  contactLinks.instagram,
+  contactLinks.linkedin,
 ];

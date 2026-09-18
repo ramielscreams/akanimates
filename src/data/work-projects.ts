@@ -38,16 +38,20 @@ export type StillsYearGroup = {
 };
 
 type StillsCuratedReference = {
-  caption: string;
   id: string;
-  objectPosition?: string;
-  projectSlug: string;
+  order: number;
+  projectSlug?: string;
+  slug: string;
+  thumbnail?: ProjectHero | NonNullable<WorkProject["media"][number]>;
+  thumbnailAlt?: string;
+  thumbnailPosition?: string;
+  title: string;
   tone: "track" | "paddock" | "night" | "detail";
+  year: string | null;
 };
 
 export type StillsCuratedItem = StillsCuratedReference & {
-  image: ProjectHero | NonNullable<WorkProject["media"][number]>;
-  project: StillsCollection;
+  project?: StillsCollection;
 };
 
 export const projects: WorkProject[] = [
@@ -98,85 +102,113 @@ export const stillsYears: StillsYearGroup[] = Array.from(
 
 const curatedStillsReferences: StillsCuratedReference[] = [
   {
-    caption: "Hillclimb atmosphere",
-    id: "selection-goodwood-2026-a",
-    objectPosition: "center",
-    projectSlug: "goodwood-2026",
+    id: "selection-f40-2026",
+    order: 1,
+    slug: "f40-2026",
+    thumbnail: {
+      alt: "Black Ferrari F40 hood detail.",
+      layout: "full",
+      src: "/photos/stills-selection/f40-2026.jpg",
+      type: "image",
+    },
+    thumbnailAlt: "Black Ferrari F40 hood detail.",
+    thumbnailPosition: "58% 58%",
+    title: "F40",
     tone: "track",
+    year: "2026",
   },
   {
-    caption: "Single-seater study",
-    id: "selection-formula-one-2026-a",
-    objectPosition: "center",
-    projectSlug: "formula-one-2026",
-    tone: "detail",
-  },
-  {
-    caption: "Night field",
-    id: "selection-ultrace-2026-a",
-    objectPosition: "center",
-    projectSlug: "ultrace-2026",
-    tone: "night",
-  },
-  {
-    caption: "Festival archive",
-    id: "selection-goodwood-2025-a",
-    objectPosition: "center",
-    projectSlug: "goodwood-2025",
+    id: "selection-mercedes-benz-ultrace",
+    order: 2,
+    slug: "mercedes-benz-ultrace",
+    thumbnail: {
+      alt: "Mercedes-Benz race car windscreen and bodywork detail.",
+      layout: "full",
+      src: "/photos/stills-selection/mercedes-benz-ultrace.jpg",
+      type: "image",
+    },
+    thumbnailAlt: "Mercedes-Benz race car windscreen and bodywork detail.",
+    thumbnailPosition: "65% 32%",
+    title: "Mercedes-Benz Ultrace",
     tone: "paddock",
+    year: null,
   },
   {
-    caption: "Paddock sequence",
-    id: "selection-formula-one-2025-a",
-    objectPosition: "center",
-    projectSlug: "formula-one-2025",
-    tone: "track",
-  },
-  {
-    caption: "Street arrival",
-    id: "selection-ultrace-2025-a",
-    objectPosition: "center",
-    projectSlug: "ultrace-2025",
+    id: "selection-clk-gtr",
+    order: 3,
+    slug: "clk-gtr",
+    thumbnail: {
+      alt: "Mercedes-Benz CLK GTR side and windscreen detail.",
+      layout: "full",
+      src: "/photos/stills-selection/clk-gtr.jpg",
+      type: "image",
+    },
+    thumbnailAlt: "Mercedes-Benz CLK GTR side and windscreen detail.",
+    thumbnailPosition: "58% 44%",
+    title: "CLK GTR",
     tone: "detail",
+    year: null,
   },
   {
-    caption: "Road-side colour",
-    id: "selection-goodwood-2024-a",
-    objectPosition: "center",
-    projectSlug: "goodwood-2024",
-    tone: "paddock",
-  },
-  {
-    caption: "Show field detail",
-    id: "selection-ultrace-2024-a",
-    objectPosition: "center",
-    projectSlug: "ultrace-2024",
+    id: "selection-993",
+    order: 4,
+    slug: "993",
+    thumbnail: {
+      alt: "Red Porsche 993 headlight with flowers.",
+      layout: "full",
+      src: "/photos/stills-selection/993.jpg",
+      type: "image",
+    },
+    thumbnailAlt: "Red Porsche 993 headlight with flowers.",
+    thumbnailPosition: "56% 45%",
+    title: "993",
     tone: "night",
+    year: null,
   },
   {
-    caption: "Festival motion",
-    id: "selection-goodwood-2026-b",
-    objectPosition: "center",
-    projectSlug: "goodwood-2026",
+    id: "selection-f40-2025",
+    order: 5,
+    slug: "f40-2025",
+    thumbnail: {
+      alt: "Red Ferrari F40 beside a swimming pool.",
+      layout: "full",
+      src: "/photos/stills-selection/f40-2025.jpg",
+      type: "image",
+    },
+    thumbnailAlt: "Red Ferrari F40 beside a swimming pool.",
+    thumbnailPosition: "58% 42%",
+    title: "F40",
     tone: "track",
+    year: "2025",
+  },
+  {
+    id: "selection-tailshots",
+    order: 6,
+    slug: "tailshots",
+    thumbnailPosition: "center",
+    title: "Tailshots",
+    tone: "detail",
+    year: null,
+  },
+  {
+    id: "selection-sf90xx",
+    order: 7,
+    slug: "sf90xx",
+    thumbnailPosition: "center",
+    title: "SF90XX",
+    tone: "paddock",
+    year: null,
   },
 ];
 
-export const curatedStills: StillsCuratedItem[] = curatedStillsReferences.flatMap((reference) => {
-  const project = stillsProjects.find((item) => item.slug === reference.projectSlug) as StillsCollection | undefined;
-
-  if (!project) {
-    return [];
-  }
-
-  return [
-    {
-      ...reference,
-      image: project.cover,
-      project,
-    },
-  ];
-});
+export const curatedStills: StillsCuratedItem[] = curatedStillsReferences
+  .map((reference) => ({
+    ...reference,
+    project: reference.projectSlug
+      ? stillsProjects.find((item) => item.slug === reference.projectSlug) as StillsCollection | undefined
+      : undefined,
+  }))
+  .sort((a, b) => a.order - b.order);
 
 export function getProjects(mode: WorkMode) {
   return mode === "cgi" ? cgiProjects : stillsProjects;

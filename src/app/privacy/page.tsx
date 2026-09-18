@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { InteriorMenu } from "@/components/navigation/interior-menu";
+import { contactLinks } from "@/data/contact";
 
 export const metadata: Metadata = {
   title: "Privacy | AK",
@@ -29,7 +30,7 @@ const privacySections = [
   },
   {
     title: "Contact",
-    body: "If you contact AK through an email or social link after final contact details are added, the information you send is handled by the relevant email or social platform and by AK for the purpose of responding to you.",
+    body: `If you contact AK at ${contactLinks.email.value} or through a social link, the information you send is handled by the relevant email or social platform and by AK for the purpose of responding to you.`,
   },
   {
     title: "Updates",

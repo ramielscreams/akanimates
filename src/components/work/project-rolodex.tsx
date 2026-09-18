@@ -2,6 +2,7 @@
 
 import {
   type CSSProperties,
+  type KeyboardEvent as ReactKeyboardEvent,
   useEffect,
   useMemo,
   useRef,
@@ -319,7 +320,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
   const springLastTimestampRef = useRef<number | null>(null);
   const springStartedAtRef = useRef<number | null>(null);
   const targetPositionRef = useRef(initialIndex);
-  const triggerNavigationRef = useRef<(direction: Direction, distance?: number) => void>(
+  const triggerNavigationRef = useRef<(direction: Direction, distance?: number, inputIntensity?: number) => void>(
     () => {},
   );
   const velocityRef = useRef(0);
@@ -931,13 +932,45 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     window.sessionStorage.setItem(`ak-work-position:${mode}`, activeProject.slug);
   };
 
+  const onShellKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (
+      event.key !== "ArrowDown" &&
+      event.key !== "ArrowRight" &&
+      event.key !== "ArrowUp" &&
+      event.key !== "ArrowLeft"
+    ) {
+      return;
+    }
+
+    if (
+      event.repeat ||
+      (event.target instanceof Element &&
+        event.target.closest('button, a, input, textarea, [role="dialog"]'))
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    triggerNavigationRef.current(
+      event.key === "ArrowDown" || event.key === "ArrowRight"
+        ? "next"
+        : "previous",
+      1,
+      0.2,
+    );
+  };
+
   return (
     <section
       id="stills-rolodex"
       ref={shellRef}
       className="rolodex-shell"
       data-explored={hasExplored ? "true" : "false"}
-      aria-label="Project browsing"
+      aria-label="Stills archive year browser"
+      aria-roledescription="rotary year selector"
+      onKeyDown={onShellKeyDown}
+      tabIndex={0}
     >
       <RolodexNav
         activeIndex={activeIndex}
