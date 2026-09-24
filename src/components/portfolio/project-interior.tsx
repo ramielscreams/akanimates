@@ -7,6 +7,11 @@ import { ProjectLocalNav } from "@/components/portfolio/project-local-nav";
 import { ProjectMedia } from "@/components/portfolio/project-media";
 import { ProjectMeta, type ProjectMetaEntry } from "@/components/portfolio/project-meta";
 import { getNextProject, getProjectProgress, projectHref, type WorkProject } from "@/data/work-projects";
+
+function isString(value: string | undefined): value is string {
+  return Boolean(value);
+}
+
 export function ProjectInterior({ project }: { project: WorkProject }) {
   const stills = project.discipline === "stills";
   const label = stills ? "Stills" : "CGI";
@@ -41,8 +46,8 @@ export function ProjectInterior({ project }: { project: WorkProject }) {
       />
       <article>
         <ProjectHero discipline={label} meta={stills
-          ? [project.manufacturer ?? project.client, project.location ?? "", project.year]
-          : [project.client, project.category, project.year]} progress={progress} project={project} />
+          ? [project.manufacturer ?? project.client, project.location, project.year].filter(isString)
+          : [project.client, project.category, project.year].filter(isString)} progress={progress} project={project} />
         <section className="project-overview site-safe-x">
           <div className="project-overview__context">
             <p className="site-technical-label">{label} / Overview</p>

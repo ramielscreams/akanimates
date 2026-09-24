@@ -64,8 +64,9 @@ export function NextProject({
               ) : (
                 <Image src={project.cover.src} alt="" fill sizes="(max-width: 768px) 100vw, 44vw" />
               )
-            ) : null}
-            <div className="next-project-card__placeholder" />
+            ) : (
+              <div className="next-project-card__placeholder" />
+            )}
           </div>
         </Link>
       ) : (

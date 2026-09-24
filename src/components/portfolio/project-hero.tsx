@@ -48,6 +48,7 @@ export function ProjectHero({ discipline, meta, progress, project }: ProjectHero
           {project.hero.src ? (
             project.hero.type === "video" ? (
               <video
+                aria-label={project.hero.alt}
                 className="project-hero__asset"
                 src={project.hero.src}
                 muted
@@ -63,6 +64,7 @@ export function ProjectHero({ discipline, meta, progress, project }: ProjectHero
                 fill
                 priority
                 sizes="(min-width: 1024px) 58vw, 100vw"
+                style={project.hero.objectPosition ? { objectPosition: project.hero.objectPosition } : undefined}
               />
             )
           ) : (

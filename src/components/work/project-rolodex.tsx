@@ -272,7 +272,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
             label: collection.displayLabel.toUpperCase(),
             slug: collection.slug,
             title: collection.title,
-            year: collection.year,
+            year: collection.year ?? group.year,
           })),
         };
       });

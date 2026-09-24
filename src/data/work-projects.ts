@@ -1,5 +1,5 @@
 import { photographyProjects } from "@/data/photography-projects";
-import { cgiProjects as cgiRecords, type CgiTileLayout } from "@/data/cgi-projects";
+import { cgiProjects as cgiRecords } from "@/data/cgi-projects";
 import type { PortfolioCaseStudyProject, ProjectHero } from "@/data/portfolio-projects";
 
 export type WorkMode = "stills" | "cgi";
@@ -10,14 +10,15 @@ export type WorkProject = PortfolioCaseStudyProject & {
   order: number;
   cover: ProjectHero;
   coverPosition?: string;
-  client: string;
-  year: string;
+  client?: string;
+  year?: string;
   category: string;
   location?: string;
   manufacturer?: string;
   event?: string;
   mediaType?: string;
-  tile?: CgiTileLayout;
+  videoFit?: "contain" | "cover";
+  videoRotation?: -90 | 0 | 90;
 };
 
 export type ProjectProgress = {
@@ -55,13 +56,15 @@ export type StillsCuratedItem = StillsCuratedReference & {
 };
 
 export const projects: WorkProject[] = [
-  ...photographyProjects.map((project) => ({
-    ...project,
-    category: project.discipline,
-    discipline: "stills" as const,
-    order: Number(project.index),
-    cover: project.hero,
-  })),
+  ...photographyProjects
+    .filter((project) => project.status !== "awaiting-media")
+    .map((project) => ({
+      ...project,
+      category: project.discipline,
+      discipline: "stills" as const,
+      order: Number(project.index),
+      cover: project.hero,
+    })),
   ...cgiRecords.map((project) => {
     const hero: ProjectHero = project.hero ?? {
       type: "image", layout: "contained", alt: `${project.title} / ${project.mediaType}`,
@@ -83,7 +86,7 @@ export const stillsProjects = projects.filter((project) => project.discipline ==
 export const cgiProjects = projects.filter((project) => project.discipline === "cgi");
 export const stillsYears: StillsYearGroup[] = Array.from(
   stillsProjects.reduce((groups, project) => {
-    if (!project.collectionSlug || !project.displayLabel) {
+    if (!project.collectionSlug || !project.displayLabel || !project.year) {
       return groups;
     }
 
@@ -104,6 +107,7 @@ const curatedStillsReferences: StillsCuratedReference[] = [
   {
     id: "selection-f40-2026",
     order: 1,
+    projectSlug: "f40-2026",
     slug: "f40-2026",
     thumbnail: {
       alt: "Black Ferrari F40 hood detail.",
@@ -118,24 +122,26 @@ const curatedStillsReferences: StillsCuratedReference[] = [
     year: "2026",
   },
   {
-    id: "selection-mercedes-benz-ultrace",
+    id: "selection-sf90xx",
     order: 2,
-    slug: "mercedes-benz-ultrace",
+    projectSlug: "sf90xx",
+    slug: "sf90xx",
     thumbnail: {
-      alt: "Mercedes-Benz race car windscreen and bodywork detail.",
+      alt: "SF90XX photograph.",
       layout: "full",
-      src: "/photos/stills-selection/mercedes-benz-ultrace.jpg",
+      src: "/work/stills/sf90xx/sf90xx-03.jpg",
       type: "image",
     },
-    thumbnailAlt: "Mercedes-Benz race car windscreen and bodywork detail.",
-    thumbnailPosition: "65% 32%",
-    title: "Mercedes-Benz Ultrace",
+    thumbnailAlt: "SF90XX photograph.",
+    thumbnailPosition: "50% 54%",
+    title: "SF90XX",
     tone: "paddock",
     year: null,
   },
   {
     id: "selection-clk-gtr",
     order: 3,
+    projectSlug: "clk-gtr",
     slug: "clk-gtr",
     thumbnail: {
       alt: "Mercedes-Benz CLK GTR side and windscreen detail.",
@@ -152,6 +158,7 @@ const curatedStillsReferences: StillsCuratedReference[] = [
   {
     id: "selection-993",
     order: 4,
+    projectSlug: "993",
     slug: "993",
     thumbnail: {
       alt: "Red Porsche 993 headlight with flowers.",
@@ -168,6 +175,7 @@ const curatedStillsReferences: StillsCuratedReference[] = [
   {
     id: "selection-f40-2025",
     order: 5,
+    projectSlug: "f40-2025",
     slug: "f40-2025",
     thumbnail: {
       alt: "Red Ferrari F40 beside a swimming pool.",
@@ -184,19 +192,18 @@ const curatedStillsReferences: StillsCuratedReference[] = [
   {
     id: "selection-tailshots",
     order: 6,
+    projectSlug: "tailshots",
     slug: "tailshots",
-    thumbnailPosition: "center",
+    thumbnail: {
+      alt: "Tailshots collection photograph.",
+      layout: "full",
+      src: "/work/stills/tailshots/tailshots-07.jpg",
+      type: "image",
+    },
+    thumbnailAlt: "Tailshots collection photograph.",
+    thumbnailPosition: "50% 58%",
     title: "Tailshots",
     tone: "detail",
-    year: null,
-  },
-  {
-    id: "selection-sf90xx",
-    order: 7,
-    slug: "sf90xx",
-    thumbnailPosition: "center",
-    title: "SF90XX",
-    tone: "paddock",
     year: null,
   },
 ];
@@ -236,10 +243,18 @@ export function getNextProject(project: WorkProject) {
 }
 export function projectHref(project: WorkProject) {
   if (project.discipline === "stills" && project.collectionSlug) {
+    if (!project.year) {
+      return `/photography/${project.slug}`;
+    }
+
     return `/work/stills/${project.year}/${project.collectionSlug}`;
   }
 
-  return `/${project.discipline === "stills" ? "photography" : "cgi"}/${project.slug}`;
+  if (project.discipline === "cgi") {
+    return workHref("cgi", project.slug);
+  }
+
+  return `/photography/${project.slug}`;
 }
 export function workHref(mode: WorkMode, projectSlug?: string) {
   const params = new URLSearchParams({ mode });

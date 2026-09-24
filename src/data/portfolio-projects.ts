@@ -1,6 +1,9 @@
 export type ProjectMediaAsset = {
   alt: string;
+  height?: number;
+  objectPosition?: string;
   src?: string;
+  width?: number;
 };
 
 export type ProjectMediaItem =
@@ -45,6 +48,8 @@ export type BasePortfolioProject = {
   role?: string;
   slug: string;
   title: string;
+  videoFit?: "contain" | "cover";
+  videoRotation?: -90 | 0 | 90;
   year?: string;
 };
 

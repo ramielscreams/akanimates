@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import type {
   ProjectMediaAsset,
   ProjectMediaItem,
@@ -42,6 +43,22 @@ function MediaPlaceholder({
   );
 }
 
+function mediaFrameStyle(asset: ProjectMediaAsset): CSSProperties | undefined {
+  if (!asset.width || !asset.height) {
+    return undefined;
+  }
+
+  return { aspectRatio: `${asset.width} / ${asset.height}` };
+}
+
+function mediaImageStyle(asset: ProjectMediaAsset): CSSProperties | undefined {
+  if (!asset.objectPosition) {
+    return undefined;
+  }
+
+  return { objectPosition: asset.objectPosition };
+}
+
 function MediaAsset({
   asset,
   sizes = "(min-width: 1024px) 78vw, 100vw",
@@ -61,6 +78,7 @@ function MediaAsset({
         alt={asset.alt}
         fill
         sizes={sizes}
+        style={mediaImageStyle(asset)}
       />
     </div>
   );
@@ -97,6 +115,7 @@ export function ProjectMedia({ media }: ProjectMediaProps) {
                   <div
                     key={`${asset.alt}-${assetIndex}`}
                     className="aspect-[4/3]"
+                    style={mediaFrameStyle(asset)}
                   >
                     <MediaAsset
                       asset={asset}
@@ -116,9 +135,10 @@ export function ProjectMedia({ media }: ProjectMediaProps) {
               key={`${item.type}-${index}`}
               className="project-media-figure project-media-figure--video site-safe-x"
             >
-              <div className="mx-auto aspect-[16/9] max-w-[78rem]">
+              <div className="mx-auto aspect-[16/9] max-w-[78rem]" style={mediaFrameStyle(item)}>
                 {item.src ? (
                   <video
+                    aria-label={item.alt}
                     className="project-media__asset"
                     src={item.src}
                     poster={item.poster}
@@ -142,7 +162,7 @@ export function ProjectMedia({ media }: ProjectMediaProps) {
               item.type === "full" ? "" : "site-safe-x"
             }`}
           >
-            <div className={layoutClasses[item.type]}>
+            <div className={layoutClasses[item.type]} style={mediaFrameStyle(item)}>
               <MediaAsset
                 asset={item}
                 sizes={item.type === "full" ? "100vw" : "(min-width: 1024px) 78vw, 100vw"}

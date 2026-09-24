@@ -1,160 +1,121 @@
 import type { BasePortfolioProject } from "@/data/portfolio-projects";
 
 export type CgiProjectLayout = "standard" | "wide" | "cinematic" | "offset";
-export type CgiTileAspect = "16/9" | "21/9" | "3/2" | "4/5" | "4/3" | "2/3";
-export type CgiTileSize = "hero" | "large" | "medium" | "small";
 
-export type CgiTileLayout = {
-  aspectRatio: CgiTileAspect;
-  captionPosition?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
-  columnEnd?: number;
-  columnStart: number;
-  offset?: "none" | "low" | "lower" | "high";
-  rowSpan?: number;
-  size: CgiTileSize;
+type CgiVideoProjectSeed = {
+  filename: string;
+  fit?: "contain" | "cover";
+  index: string;
+  rotation: -90 | 0 | 90;
+  title: string;
 };
 
 export type CgiProject = BasePortfolioProject & {
   category: string;
-  client: string;
+  client?: string;
   layout: CgiProjectLayout;
   mediaType: string;
-  tile: CgiTileLayout;
-  year: string;
+  year?: string;
 };
 
-export const cgiProjects: CgiProject[] = [
+const cgiVideoProjects: CgiVideoProjectSeed[] = [
   {
-    category: "Automotive CGI",
-    client: "Independent",
-    credits: [
-      { label: "Deliverables", value: "Hero render / motion frame study" },
-      { label: "Pipeline", value: "CGI look development" },
-    ],
-    hero: {
-      alt: "Future hero render for the first CGI project.",
-      layout: "contained",
-      type: "image",
-    },
+    filename: "3rslaststand.mp4",
     index: "01",
-    intro: [
-      "A controlled automotive CGI study prepared as a launch-style visual sequence, with space for future still renders, motion frames and material studies.",
-      "The temporary case-study data proves the shared second-layer architecture while keeping the CGI story driven by render staging rather than interface chrome.",
-    ],
-    layout: "standard",
-    media: [
-      {
-        alt: "Future wide CGI render for Project One.",
-        caption: "Studio render",
-        type: "wide",
-      },
-      {
-        alt: "Future contained material study for Project One.",
-        caption: "Material study",
-        type: "contained",
-      },
-      {
-        caption: "Render and process",
-        items: [
-          {
-            alt: "Future paired CGI process frame for Project One.",
-          },
-          {
-            alt: "Future paired final CGI frame for Project One.",
-          },
-        ],
-        type: "pair",
-      },
-      {
-        alt: "Future animation or turntable placeholder for Project One.",
-        type: "video",
-      },
-    ],
-    mediaType: "render",
-    role: "CGI / Visualization",
-    slug: "project-one",
-    tile: {
-      aspectRatio: "16/9",
-      columnEnd: 6,
-      columnStart: 1,
-      offset: "none",
-      rowSpan: 14,
-      size: "hero",
-    },
-    title: "Project One",
-    year: "2026",
+    rotation: -90,
+    title: "THE LAST STAND",
   },
   {
-    category: "Animation",
-    client: "Independent",
+    filename: "f1.mp4",
     index: "02",
-    layout: "cinematic",
-    mediaType: "motion frame",
-    slug: "project-two",
-    tile: {
-      aspectRatio: "4/5",
-      captionPosition: "bottom-right",
-      columnEnd: 9,
-      columnStart: 6,
-      offset: "low",
-      rowSpan: 18,
-      size: "medium",
-    },
-    title: "Project Two",
-    year: "2026",
+    rotation: -90,
+    title: "THE FORMULA FOR SPEED",
   },
   {
-    category: "Visualization",
-    client: "Independent",
+    filename: "projecteva.mp4",
     index: "03",
-    layout: "offset",
-    mediaType: "render study",
-    slug: "project-three",
-    tile: {
-      aspectRatio: "3/2",
-      columnEnd: 13,
-      columnStart: 9,
-      offset: "lower",
-      rowSpan: 11,
-      size: "small",
-    },
-    title: "Project Three",
-    year: "2025",
+    rotation: -90,
+    title: "PROJECT: EVANGELION",
   },
   {
-    category: "Look Development",
-    client: "Independent",
+    filename: "rsr.mp4",
     index: "04",
-    layout: "standard",
-    mediaType: "material study",
-    slug: "project-four",
-    tile: {
-      aspectRatio: "21/9",
-      columnEnd: 13,
-      columnStart: 5,
-      offset: "none",
-      rowSpan: 11,
-      size: "large",
-    },
-    title: "Project Four",
-    year: "2025",
+    rotation: -90,
+    title: "RS-FKN-R",
   },
   {
-    category: "Product Visualization",
-    client: "Independent",
+    filename: "senna.mp4",
     index: "05",
-    layout: "wide",
-    mediaType: "studio render",
-    slug: "project-five",
-    tile: {
-      aspectRatio: "2/3",
-      columnEnd: 5,
-      columnStart: 1,
-      offset: "low",
-      rowSpan: 18,
-      size: "medium",
-    },
-    title: "Project Five",
-    year: "2024",
+    rotation: -90,
+    title: "REGENMEISTER",
+  },
+  {
+    filename: "valour.mp4",
+    index: "06",
+    rotation: -90,
+    title: "TAME THE UNTAMABLE",
+  },
+  {
+    filename: "venomf5revo.mp4",
+    index: "07",
+    rotation: -90,
+    title: "THE REVOLUTION",
+  },
+  {
+    filename: "mfghost.mp4",
+    index: "08",
+    rotation: -90,
+    title: "MF GHOST",
+  },
+  {
+    filename: "3rstrack.mp4",
+    index: "09",
+    rotation: -90,
+    title: "TRACKDAY",
+  },
+  {
+    filename: "turbo.mp4",
+    index: "10",
+    rotation: -90,
+    title: "TURBO",
   },
 ];
+
+function titleFromFilename(filename: string) {
+  return filename.replace(/\.[^.]+$/, "");
+}
+
+function slugFromTitle(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export const cgiProjects: CgiProject[] = cgiVideoProjects.map((project) => {
+  const slug = slugFromTitle(titleFromFilename(project.filename));
+  const src = `/work/cgi/${project.filename}`;
+
+  return {
+    category: "Animation",
+    credits: [],
+    hero: {
+      alt: `${project.title} animation.`,
+      height: 1280,
+      layout: "contained",
+      src,
+      type: "video",
+      width: 720,
+    },
+    index: project.index,
+    intro: [],
+    layout: "standard",
+    media: [],
+    mediaType: "animation",
+    role: "CGI / Animation",
+    slug,
+    title: project.title,
+    videoFit: project.fit ?? "contain",
+    videoRotation: project.rotation,
+  };
+});
