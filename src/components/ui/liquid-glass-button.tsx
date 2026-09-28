@@ -9,13 +9,8 @@ import { cn } from "@/lib/utils";
 const liquidGlassButtonVariants = cva(
   [
     "liquid-glass-button group/liquid relative isolate inline-flex w-fit max-w-full shrink-0 items-center justify-center overflow-hidden text-center",
-    "rounded-[var(--radius-button)] border border-border bg-surface text-text-primary",
-    "transition-[background-color,border-color,color,opacity,transform] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)]",
-    "hover:border-brand-interactive/70 hover:text-text-highlight",
-    "active:scale-[0.98] active:border-brand-interactive/80 active:bg-brand/30 active:text-text-highlight",
-    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive",
+    "text-text-primary",
     "disabled:pointer-events-none disabled:opacity-45",
-    "motion-reduce:transition-none",
   ],
   {
     defaultVariants: {
@@ -33,10 +28,8 @@ const liquidGlassButtonVariants = cva(
       },
       variant: {
         default: "",
-        quiet:
-          "border-border/80 bg-bg text-text-primary/92 hover:border-brand-interactive/55 hover:bg-surface",
-        technical:
-          "border-border bg-surface text-text-primary hover:border-brand-interactive/70",
+        quiet: "liquid-glass-button--quiet",
+        technical: "liquid-glass-button--technical",
       },
     },
   },
@@ -106,10 +99,6 @@ export const LiquidGlassButton = forwardRef<
       >
         <span
           className="liquid-glass-button__field"
-          aria-hidden="true"
-        />
-        <span
-          className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(var(--text-highlight-rgb)_/_0.045),transparent_52%)] opacity-75"
           aria-hidden="true"
         />
         <Slottable>{children}</Slottable>
