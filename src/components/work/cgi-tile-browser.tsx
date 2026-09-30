@@ -465,6 +465,7 @@ export function CgiTileBrowser({
           className="cgi-expanded-player cgi-featured-player"
           aria-hidden={hasIntentionalSelection ? undefined : true}
           aria-label={`${activeProject.title} featured player`}
+          inert={hasIntentionalSelection ? undefined : true}
         >
           <div className="cgi-expanded-player__header">
             <div>

@@ -279,7 +279,7 @@ export function InteriorMenu() {
                       setIsOpen(false);
                     }}
                   >
-                    <span className="font-meta text-[0.32em] font-medium tracking-[clamp(0.12em,0.36vw,0.22em)]">
+                    <span className="interior-menu__index font-meta font-medium">
                       {item.index} /
                     </span>
                     <span className="type-display tracking-[0.02em]">
@@ -298,7 +298,7 @@ export function InteriorMenu() {
                       className="type-nowrap group flex max-w-[calc(100vw-2.5rem)] cursor-pointer items-baseline justify-center gap-[0.26em] border-0 bg-transparent py-2 text-center text-[length:var(--type-menu-item)] lowercase leading-[1.02] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
                       onClick={() => setIsContactOpen((current) => !current)}
                     >
-                      <span className="font-meta text-[0.32em] font-medium tracking-[clamp(0.12em,0.36vw,0.22em)]">
+                      <span className="interior-menu__index font-meta font-medium">
                         {item.index} /
                       </span>
                       <span className="type-display tracking-[0.02em]">
@@ -316,7 +316,7 @@ export function InteriorMenu() {
                     >
                       {contactMethods.map((method) => (
                         <a
-                          aria-label={method.label}
+                          aria-label={`${method.label}: ${method.value}`}
                           className="contact-tray__item"
                           href={method.href}
                           key={method.key}

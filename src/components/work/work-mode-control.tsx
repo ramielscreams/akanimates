@@ -10,7 +10,7 @@ export function WorkModeControl({ mode, onChange }: { mode: WorkMode; onChange: 
         <span className="work-mode-control__thumb" aria-hidden="true" />
         {(["stills", "cgi"] as const).map((value, index) => (
           <button key={value} ref={(node) => { buttons.current[index] = node; }} type="button" role="radio"
-            className="work-mode-control__option" aria-checked={mode === value} tabIndex={mode === value ? 0 : -1}
+            className="work-mode-control__option" aria-checked={mode === value} aria-label={value === "stills" ? "Photography mode" : "Visualization mode"} tabIndex={mode === value ? 0 : -1}
             onClick={() => onChange(value)}
             onKeyDown={(event) => {
               if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
