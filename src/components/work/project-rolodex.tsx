@@ -325,6 +325,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
   );
   const velocityRef = useRef(0);
   const wheelQuietTimeoutRef = useRef<number | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [hasExplored, setHasExplored] = useState(false);
@@ -735,18 +736,20 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     let engaged = false;
     let released = false;
     let reverseGestures = 0;
-    let approachWheelAt = -Infinity;
     const overlayOpen = () => Boolean(document.querySelector('[role="dialog"][aria-modal="true"]'));
     const releaseInput = () => { released = true; setEngaged(false); };
     const onWheel = (event: WheelEvent) => {
-      if (!engaged || overlayOpen()) return;
-      const now = performance.now();
-      if (now - approachWheelAt < WHEEL_GESTURE_QUIET_MS) { approachWheelAt = now; return; }
-      if (event.ctrlKey) {
+      if (overlayOpen() || event.ctrlKey) {
         return;
       }
 
-      const normalizedDelta = normalizeWheelDelta(event);
+      const primaryDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
+        ? event.deltaX
+        : event.deltaY;
+      const normalizedDelta = normalizeWheelDelta({
+        deltaMode: event.deltaMode,
+        deltaY: primaryDelta,
+      } as WheelEvent);
 
       if (Math.abs(normalizedDelta) < WHEEL_NOISE_FLOOR) {
         return;
@@ -797,31 +800,40 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       }
     };
     const onTouchStart = (event: TouchEvent) => {
-      if (!engaged || overlayOpen()) return;
+      if (overlayOpen()) return;
+      touchStartXRef.current = event.touches[0]?.clientX ?? null;
       touchStartYRef.current = event.touches[0]?.clientY ?? null;
     };
     const onTouchMove = (event: TouchEvent) => {
-      if (!engaged || overlayOpen() || touchStartYRef.current === null) {
+      if (
+        overlayOpen() ||
+        touchStartXRef.current === null ||
+        touchStartYRef.current === null
+      ) {
         return;
       }
 
+      const currentX = event.touches[0]?.clientX;
       const currentY = event.touches[0]?.clientY;
 
-      if (currentY === undefined) {
+      if (currentX === undefined || currentY === undefined) {
         return;
       }
 
-      const delta = touchStartYRef.current - currentY;
+      const deltaX = touchStartXRef.current - currentX;
+      const deltaY = touchStartYRef.current - currentY;
 
-      if (Math.abs(delta) < TOUCH_TRIGGER_THRESHOLD) {
+      if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < TOUCH_TRIGGER_THRESHOLD) {
         return;
       }
 
       event.preventDefault();
+      touchStartXRef.current = null;
       touchStartYRef.current = null;
-      triggerNavigation(delta > 0 ? "next" : "previous", 1, clamp(Math.abs(delta) / 180, 0, 1));
+      triggerNavigation(deltaX > 0 ? "next" : "previous", 1, clamp(Math.abs(deltaX) / 180, 0, 1));
     };
     const onTouchEnd = () => {
+      touchStartXRef.current = null;
       touchStartYRef.current = null;
     };
 
@@ -830,17 +842,10 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       engaged = next;
       shell!.dataset.engaged = String(next);
       if (next) {
-        window.addEventListener("wheel", onWheel, { passive: false });
         window.addEventListener("keydown", onKeyDown);
-        window.addEventListener("touchstart", onTouchStart, { passive: true });
-        window.addEventListener("touchmove", onTouchMove, { passive: false });
-        window.addEventListener("touchend", onTouchEnd);
       } else {
-        window.removeEventListener("wheel", onWheel);
         window.removeEventListener("keydown", onKeyDown);
-        window.removeEventListener("touchstart", onTouchStart);
-        window.removeEventListener("touchmove", onTouchMove);
-        window.removeEventListener("touchend", onTouchEnd);
+        touchStartXRef.current = null;
         touchStartYRef.current = null;
       }
     }
@@ -852,8 +857,6 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       if (!arrived) { released = false; reverseGestures = 0; }
       setEngaged(arrived && !released);
     };
-    const observeApproachWheel = () => { if (!engaged) approachWheelAt = performance.now(); };
-
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const updateReducedMotion = () => {
       reducedMotionRef.current = motionQuery.matches;
@@ -869,8 +872,11 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     applyPhysicalState();
 
     updateEngagement();
+    shell.addEventListener("wheel", onWheel, { passive: false });
+    shell.addEventListener("touchstart", onTouchStart, { passive: true });
+    shell.addEventListener("touchmove", onTouchMove, { passive: false });
+    shell.addEventListener("touchend", onTouchEnd);
     window.addEventListener("scroll", updateEngagement, { passive: true });
-    window.addEventListener("wheel", observeApproachWheel, { passive: true });
     window.addEventListener("resize", onResize);
     motionQuery.addEventListener("change", updateReducedMotion);
 
@@ -883,8 +889,11 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         springFrameRef.current = null;
       }
       setEngaged(false);
+      shell.removeEventListener("wheel", onWheel);
+      shell.removeEventListener("touchstart", onTouchStart);
+      shell.removeEventListener("touchmove", onTouchMove);
+      shell.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("scroll", updateEngagement);
-      window.removeEventListener("wheel", observeApproachWheel);
       window.removeEventListener("resize", onResize);
       motionQuery.removeEventListener("change", updateReducedMotion);
     };

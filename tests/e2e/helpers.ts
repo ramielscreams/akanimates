@@ -1,4 +1,13 @@
+import { readFile } from "node:fs/promises";
+
 import { expect, type Locator, type Page } from "@playwright/test";
+
+let axeSource: string | undefined;
+
+export const modeRadioNames = {
+  cgi: "CGI",
+  stills: "Stills",
+} as const;
 
 export const desktopViewports = [
   { width: 1920, height: 1080 },
@@ -36,6 +45,81 @@ export async function expectNoHorizontalOverflow(page: Page) {
   );
 
   expect(overflow).toBeLessThanOrEqual(2);
+}
+
+export async function expectNoSeriousAccessibilityViolations(
+  page: Page,
+  label: string,
+) {
+  // Playwright transpiles these tests through CommonJS; require.resolve keeps axe loading stable there.
+  axeSource ??= await readFile(require.resolve("axe-core/axe.min.js"), "utf8");
+  await page.addScriptTag({ content: axeSource });
+
+  const results = await page.evaluate(async () => {
+    const axe = (window as unknown as {
+      axe: {
+        run: (
+          context: Document,
+          options: Record<string, unknown>,
+        ) => Promise<{
+          violations: Array<{
+            id: string;
+            impact?: string;
+            help: string;
+            nodes: Array<{ target: string[]; failureSummary?: string }>;
+          }>;
+        }>;
+      };
+    }).axe;
+
+    return axe.run(document, {
+      resultTypes: ["violations"],
+      runOnly: {
+        type: "tag",
+        values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"],
+      },
+    });
+  });
+
+  const serious = results.violations.filter((violation) =>
+    violation.impact === "critical" || violation.impact === "serious"
+  );
+  const summary = serious.map((violation) => ({
+    help: violation.help,
+    id: violation.id,
+    impact: violation.impact,
+    nodes: violation.nodes.slice(0, 3).map((node) => ({
+      failureSummary: node.failureSummary,
+      target: node.target,
+    })),
+  }));
+
+  expect(summary, `${label} should not have serious or critical axe violations`).toEqual([]);
+}
+
+export async function expectWorkModeLabelsDoNotWrap(page: Page) {
+  const metrics = await page.locator(".work-mode-control__option").evaluateAll((options) =>
+    options.map((option) => {
+      const style = getComputedStyle(option);
+
+      return {
+        clientWidth: (option as HTMLElement).clientWidth,
+        scrollWidth: (option as HTMLElement).scrollWidth,
+        text: option.textContent?.trim(),
+        whiteSpace: style.whiteSpace,
+      };
+    }),
+  );
+
+  expect(metrics, "Work mode options should be present").toHaveLength(2);
+
+  for (const metric of metrics) {
+    expect(metric.whiteSpace, `${metric.text} should not wrap`).toBe("nowrap");
+    expect(
+      metric.scrollWidth,
+      `${metric.text} label should not clip at current viewport`,
+    ).toBeLessThanOrEqual(metric.clientWidth + 1);
+  }
 }
 
 export async function expectElementInsideViewport(
@@ -109,6 +193,7 @@ export async function expectNoConsoleFailures(page: Page) {
     if (
       errorText.includes("ERR_ABORTED") ||
       errorText.includes("NS_BINDING_ABORTED") ||
+      errorText.includes("NS_ERROR_PARSED_DATA_CACHED") ||
       (errorText.includes("access control checks") &&
         request.url().includes("_rsc=")) ||
       (errorText.includes("Load request cancelled") &&

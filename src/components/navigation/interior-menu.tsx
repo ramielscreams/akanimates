@@ -4,341 +4,103 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { contactMethods, type ContactMethodKey } from "@/data/contact";
-
-type NavigationItem =
-  | { index: string; label: string; href: string }
-  | { action: "contact"; index: string; label: string };
-
-const navigationItems: NavigationItem[] = [
-  { index: "01", label: "about", href: "/about" },
-  { index: "02", label: "work", href: "/work" },
-  { index: "03", label: "contact", action: "contact" },
-];
-
-function ContactGlyph({ type }: { type: ContactMethodKey }) {
-  if (type === "email") {
-    return (
-      <svg aria-hidden="true" className="contact-tray__svg" viewBox="0 0 24 24">
-        <path d="M4.5 6.75h15v10.5h-15z" />
-        <path d="m5.25 7.5 6.75 5.15 6.75-5.15" />
-      </svg>
-    );
-  }
-
-  if (type === "instagram") {
-    return (
-      <svg aria-hidden="true" className="contact-tray__svg" viewBox="0 0 24 24">
-        <rect height="14.5" rx="4" width="14.5" x="4.75" y="4.75" />
-        <circle cx="12" cy="12" r="3.05" />
-        <circle cx="16.2" cy="7.8" r="0.8" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg
-      aria-hidden="true"
-      className="contact-tray__svg contact-tray__svg--fill"
-      viewBox="0 0 24 24"
-    >
-      <path d="M5.75 9.85h3.15v8.4H5.75z" />
-      <path d="M5.75 5.95h3.15v2.65H5.75z" />
-      <path d="M11.05 9.85h3v1.2c0.52-0.82 1.38-1.42 2.72-1.42 2.05 0 3.48 1.32 3.48 4.12v4.5h-3.15v-4.08c0-1.14-0.4-1.86-1.34-1.86-1 0-1.56 0.72-1.56 1.86v4.08h-3.15z" />
-    </svg>
-  );
-}
+import { contactMethods } from "@/data/contact";
 
 export function InteriorMenu() {
   const pathname = usePathname();
   const menuId = useId();
-  const contactTrayId = useId();
-  const firstMenuLinkRef = useRef<HTMLAnchorElement | null>(null);
-  const contactTrayRef = useRef<HTMLDivElement | null>(null);
-  const contactTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const isContactOpenRef = useRef(false);
-  const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const menuPanelRef = useRef<HTMLDivElement | null>(null);
-  const [isContactOpen, setIsContactOpen] = useState(false);
+  const contactId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
+  const contactButtonRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [currentHash, setCurrentHash] = useState("");
+  const [contactOpen, setContactOpen] = useState(false);
 
   useEffect(() => {
-    menuTriggerRef.current?.setAttribute("data-ready", "true");
-  }, []);
-
-  const visibleItems = navigationItems;
-  const isCurrent = (href: string) => {
-    const [route, hash] = href.split("#");
-    const routeMatches = pathname === route || pathname.startsWith(`${route}/`);
-
-    if (hash) {
-      return routeMatches && currentHash === `#${hash}`;
-    }
-
-    return routeMatches && !currentHash;
-  };
-
-  useEffect(() => {
-    const readHash = () => setCurrentHash(window.location.hash);
-
-    readHash();
-    window.addEventListener("hashchange", readHash);
-
-    return () => window.removeEventListener("hashchange", readHash);
+    const timer = window.setTimeout(() => {
+      setIsOpen(false);
+      setContactOpen(false);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [pathname]);
 
   useEffect(() => {
-    isContactOpenRef.current = isContactOpen;
-  }, [isContactOpen]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    const focusTimer = window.setTimeout(() => {
-      firstMenuLinkRef.current?.focus();
-    }, 0);
+    if (!isOpen) return;
+    firstLinkRef.current?.focus();
+    const close = () => {
+      setIsOpen(false);
+      setContactOpen(false);
+      window.setTimeout(() => triggerRef.current?.focus({ preventScroll: true }), 0);
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && !panelRef.current?.contains(event.target) && !triggerRef.current?.contains(event.target)) close();
+    };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        if (isContactOpenRef.current) {
-          setIsContactOpen(false);
-          window.setTimeout(() => {
-            contactTriggerRef.current?.focus({ preventScroll: true });
-          }, 0);
-          return;
-        }
-
-        menuTriggerRef.current?.focus({ preventScroll: true });
-        setIsOpen(false);
-        return;
+        if (contactOpen) {
+          setContactOpen(false);
+          contactButtonRef.current?.focus({ preventScroll: true });
+        } else close();
       }
-
-      if (event.key !== "Tab") {
-        return;
-      }
-
-      const focusableElements = Array.from(
-        menuPanelRef.current?.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ) ?? [],
-      ).filter((element) => !element.hasAttribute("aria-hidden"));
-
-      if (focusableElements.length === 0) {
+      if (event.key !== "Tab") return;
+      const focusable = Array.from(panelRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []).filter((element) => element.tabIndex >= 0 && element.getClientRects().length > 0);
+      if (!focusable.length) return;
+      if (event.shiftKey && document.activeElement === focusable[0]) {
         event.preventDefault();
-        return;
-      }
-
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-
-      if (event.shiftKey && document.activeElement === firstElement) {
+        focusable.at(-1)?.focus();
+      } else if (!event.shiftKey && document.activeElement === focusable.at(-1)) {
         event.preventDefault();
-        lastElement.focus();
-        return;
-      }
-
-      if (!event.shiftKey && document.activeElement === lastElement) {
-        event.preventDefault();
-        firstElement.focus();
+        focusable[0].focus();
       }
     };
-
-    document.body.style.overflow = "hidden";
+    window.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("keydown", onKeyDown);
-
     return () => {
-      window.clearTimeout(focusTimer);
-      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [isOpen]);
-
-  useEffect(() => {
-    const closeTimer = window.setTimeout(() => {
-      setIsOpen(false);
-      setIsContactOpen(false);
-    }, 0);
-
-    return () => {
-      window.clearTimeout(closeTimer);
-    };
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!isOpen || !isContactOpen) {
-      return;
-    }
-
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target;
-
-      if (
-        target instanceof Node &&
-        (contactTrayRef.current?.contains(target) || contactTriggerRef.current?.contains(target))
-      ) {
-        return;
-      }
-
-      setIsContactOpen(false);
-    };
-
-    window.addEventListener("pointerdown", onPointerDown);
-
-    return () => window.removeEventListener("pointerdown", onPointerDown);
-  }, [isContactOpen, isOpen]);
+  }, [isOpen, contactOpen]);
 
   return (
     <>
-      <Link
-        href="/"
-        aria-label="Home"
-        className={`ak-home-link fixed z-[230] opacity-90 transition-[left,opacity,top,transform,width] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] hover:opacity-100 active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive ${
-          isOpen
-            ? "ak-home-link--expanded left-1/2 top-[clamp(3.5rem,13vh,7.5rem)] -translate-x-1/2"
-            : "left-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)]"
-        }`}
-      >
-        <Image
-          src="/logo.svg"
-          alt=""
-          width={2000}
-          height={2000}
-          priority
-          className="h-auto w-full"
-        />
+      <Link href="/" aria-label="Home" className="ak-home-link site-brand-link">
+        <Image src="/logo.svg" alt="" width={2000} height={2000} priority className="h-auto w-full" />
       </Link>
       <button
-        ref={menuTriggerRef}
+        ref={triggerRef}
         type="button"
+        className="ui-floating-control site-menu-trigger"
         aria-controls={menuId}
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-        className="site-technical-label ui-floating-control fixed right-[clamp(1.25rem,6vw,4.5rem)] top-[clamp(1.25rem,4vh,2rem)] z-[230] min-h-11 cursor-pointer text-text-primary opacity-90 transition-[background-color,border-color,opacity,transform] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:opacity-100 active:scale-[0.98] active:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-        onClick={() => {
-          if (isOpen) {
-            setIsContactOpen(false);
-          }
-
-          setIsOpen((current) => !current);
-        }}
-        onKeyDown={(event) => {
-          if (event.key !== "Enter" && event.key !== " ") {
-            return;
-          }
-
-          event.preventDefault();
-          if (isOpen) {
-            setIsContactOpen(false);
-          }
-
-          setIsOpen((current) => !current);
-        }}
+        onClick={() => { setIsOpen((open) => !open); setContactOpen(false); }}
       >
-        {isOpen ? "close" : "menu"}
+        {isOpen ? "Close" : "Menu"}
       </button>
-
       <div
-        ref={menuPanelRef}
+        ref={panelRef}
         id={menuId}
+        className="site-menu-surface"
         role="dialog"
-        aria-modal={isOpen ? "true" : undefined}
         aria-label="Site navigation"
+        aria-modal="false"
+        aria-hidden={!isOpen}
         inert={!isOpen}
-        className="fixed inset-0 z-[220] origin-top-right bg-bg text-text-primary transition-[opacity,transform] duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] data-[open=false]:pointer-events-none data-[open=false]:scale-[0.985] data-[open=false]:opacity-0 data-[open=true]:scale-100 data-[open=true]:opacity-100 motion-reduce:scale-100 motion-reduce:duration-[1ms]"
         data-open={isOpen ? "true" : "false"}
-        aria-hidden={isOpen ? undefined : "true"}
       >
-        <div
-          className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_76%_16%,rgb(var(--brand-interactive-rgb)_/_0.24),transparent_32rem),radial-gradient(circle_at_10%_70%,rgb(var(--brand-rgb)_/_0.22),transparent_34rem),var(--bg)]"
-          aria-hidden="true"
-        />
-        <nav
-          aria-label="Interior navigation"
-          className="site-safe-x flex min-h-dvh items-center justify-center py-[clamp(7.25rem,22vh,11rem)] text-center"
-        >
-          <ul className="flex list-none flex-col items-center gap-[clamp(1rem,3.2vh,2.5rem)] p-0">
-            {visibleItems.map((item, index) => (
-              <li
-                key={item.label}
-                className="transition duration-[var(--motion-ui-medium)] ease-[var(--ease-ui)] data-[open=false]:translate-y-2 data-[open=false]:opacity-0 data-[open=true]:translate-y-0 data-[open=true]:opacity-100 motion-reduce:transition-opacity"
-                data-open={isOpen ? "true" : "false"}
-              >
-                {"href" in item ? (
-                  <Link
-                    ref={index === 0 ? firstMenuLinkRef : undefined}
-                    href={item.href}
-                    aria-current={isCurrent(item.href) ? "page" : undefined}
-                    tabIndex={isOpen ? 0 : -1}
-                    className="type-nowrap group flex max-w-[calc(100vw-2.5rem)] items-baseline justify-center gap-[0.26em] py-2 text-center text-[length:var(--type-menu-item)] lowercase leading-[1.02] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-                    onClick={() => {
-                      setIsContactOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    <span className="interior-menu__index font-meta font-medium">
-                      {item.index} /
-                    </span>
-                    <span className="type-display tracking-[0.02em]">
-                      {item.label}
-                    </span>
-                  </Link>
-                ) : (
-                  <div className="contact-menu-item">
-                    <button
-                      ref={contactTriggerRef}
-                      type="button"
-                      aria-controls={contactTrayId}
-                      aria-expanded={isContactOpen}
-                      aria-haspopup="menu"
-                      tabIndex={isOpen ? 0 : -1}
-                      className="type-nowrap group flex max-w-[calc(100vw-2.5rem)] cursor-pointer items-baseline justify-center gap-[0.26em] border-0 bg-transparent py-2 text-center text-[length:var(--type-menu-item)] lowercase leading-[1.02] text-text-muted opacity-78 transition-[color,opacity] duration-[var(--motion-ui-fast)] ease-[var(--ease-ui)] hover:text-text-primary hover:opacity-100 active:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-interactive"
-                      onClick={() => setIsContactOpen((current) => !current)}
-                    >
-                      <span className="interior-menu__index font-meta font-medium">
-                        {item.index} /
-                      </span>
-                      <span className="type-display tracking-[0.02em]">
-                        {item.label}
-                      </span>
-                    </button>
-                    <div
-                      ref={contactTrayRef}
-                      id={contactTrayId}
-                      aria-label="Contact options"
-                      aria-hidden={isContactOpen ? undefined : "true"}
-                      className="contact-tray"
-                      data-open={isContactOpen ? "true" : "false"}
-                      role="menu"
-                    >
-                      {contactMethods.map((method) => (
-                        <a
-                          aria-label={`${method.label}: ${method.value}`}
-                          className="contact-tray__item"
-                          href={method.href}
-                          key={method.key}
-                          rel={method.external ? "noopener noreferrer" : undefined}
-                          role="menuitem"
-                          target={method.external ? "_blank" : undefined}
-                          tabIndex={isContactOpen && isOpen ? 0 : -1}
-                          onClick={() => {
-                            setIsContactOpen(false);
-                            setIsOpen(false);
-                          }}
-                        >
-                          <ContactGlyph type={method.key} />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
+        <nav aria-label="Interior navigation">
+          <Link ref={firstLinkRef} href="/about" aria-current={pathname === "/about" ? "page" : undefined} onClick={() => setIsOpen(false)}>About</Link>
+          <Link href="/work" aria-current={pathname.startsWith("/work") ? "page" : undefined} onClick={() => setIsOpen(false)}>Work</Link>
         </nav>
+        <div className="site-menu-divider" />
+        <button ref={contactButtonRef} type="button" className="site-menu-contact" aria-controls={contactId} aria-expanded={contactOpen} onClick={() => setContactOpen((open) => !open)}>
+          <span>Contact</span><span aria-hidden="true">{contactOpen ? "−" : "+"}</span>
+        </button>
+        <div id={contactId} className="site-menu-contact-list" hidden={!contactOpen}>
+          {contactMethods.map((method) => <a key={method.key} href={method.href} rel={method.external ? "noopener noreferrer" : undefined} target={method.external ? "_blank" : undefined}>{method.label}</a>)}
+        </div>
       </div>
     </>
   );

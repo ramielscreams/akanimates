@@ -3,11 +3,10 @@ import Link from "next/link";
 import {
   Abril_Fatface,
   Barlow_Condensed,
-  Inter,
   Roboto_Serif,
-  Tenor_Sans,
 } from "next/font/google";
 import "./globals.css";
+import "./design-system.css";
 
 const abrilFatface = Abril_Fatface({
   subsets: ["latin"],
@@ -28,17 +27,6 @@ const robotoSerif = Roboto_Serif({
   variable: "--font-roboto-serif",
 });
 
-const tenorSans = Tenor_Sans({
-  subsets: ["latin"],
-  variable: "--font-tenor-sans",
-  weight: "400",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
 export const metadata: Metadata = {
   title: "AK",
   description: "Automotive photography and CGI by AK.",
@@ -52,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${abrilFatface.variable} ${barlowCondensed.variable} ${tenorSans.variable} ${robotoSerif.variable} ${inter.variable} h-full antialiased`}
+      className={`${abrilFatface.variable} ${barlowCondensed.variable} ${robotoSerif.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-text-primary">
         {children}

@@ -24,6 +24,8 @@ type PlayerFeedback = "play" | "pause" | null;
 
 type PlayerIconName = "expand" | "mute" | "pause" | "play" | "volume";
 
+const TILE_PREVIEW_SECONDS = 5;
+
 function PlayerIcon({ name }: { name: PlayerIconName }) {
   if (name === "play") {
     return (
@@ -95,6 +97,82 @@ function getVideoSource(project: WorkProject) {
   return undefined;
 }
 
+function CgiTilePreviewVideo({
+  project,
+  shouldPlay,
+  source,
+}: {
+  project: WorkProject;
+  shouldPlay: boolean;
+  source: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const presentation = getVideoPresentation(project);
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video || !shouldPlay) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const stopAtPreviewEnd = () => {
+      const previewEnd = Number.isFinite(video.duration)
+        ? Math.min(TILE_PREVIEW_SECONDS, video.duration)
+        : TILE_PREVIEW_SECONDS;
+
+      if (video.currentTime >= previewEnd) {
+        video.currentTime = previewEnd;
+        video.pause();
+      }
+    };
+
+    const startPreview = async () => {
+      try {
+        video.currentTime = 0;
+        await video.play();
+      } catch {
+        if (!cancelled) {
+          video.pause();
+        }
+      }
+    };
+
+    video.addEventListener("timeupdate", stopAtPreviewEnd);
+    video.addEventListener("ended", stopAtPreviewEnd);
+    void startPreview();
+
+    return () => {
+      cancelled = true;
+      video.removeEventListener("timeupdate", stopAtPreviewEnd);
+      video.removeEventListener("ended", stopAtPreviewEnd);
+      video.pause();
+      video.currentTime = 0;
+    };
+  }, [shouldPlay]);
+
+  return (
+    <video
+      ref={videoRef}
+      aria-hidden="true"
+      className="cgi-project-tile__preview"
+      data-fit={presentation.fit}
+      data-ready="false"
+      data-rotation={presentation.rotation ? "rotated" : "none"}
+      muted
+      onLoadedData={(event) => {
+        event.currentTarget.dataset.ready = "true";
+      }}
+      playsInline
+      preload="metadata"
+      src={source}
+      tabIndex={-1}
+    />
+  );
+}
+
 function getHeaderOffset() {
   const workHeader = document.querySelector<HTMLElement>(".work-header");
 
@@ -145,6 +223,8 @@ export function CgiTileBrowser({
   const [activeSlug, setActiveSlug] = useState<string | null>(initialActiveSlug);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(initialSelectedSlug);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
+  const [activePreviewSlug, setActivePreviewSlug] = useState<string | null>(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isControlLayerActive, setIsControlLayerActive] = useState(true);
@@ -163,7 +243,9 @@ export function CgiTileBrowser({
   const tileRefs = useRef(new Map<string, HTMLElement>());
   const videoRef = useRef<HTMLVideoElement>(null);
   const activeProject = projects.find((project) => project.slug === activeSlug) ?? projects[0];
-  const activePoster = activeProject?.cover.type === "image" ? activeProject.cover.src : undefined;
+  const activePoster = activeProject?.cover.type === "image"
+    ? activeProject.cover.src
+    : activeProject ? `/work/cgi/posters/${activeProject.slug}.jpg` : undefined;
   const hasIntentionalSelection = Boolean(selectedSlug && activeProject);
   const activeVideoSource = hasIntentionalSelection && activeProject ? getVideoSource(activeProject) : undefined;
   const activeVideoPresentation = activeProject ? getVideoPresentation(activeProject) : undefined;
@@ -210,6 +292,22 @@ export function CgiTileBrowser({
       setPlayerFeedback(null);
       feedbackTimerRef.current = null;
     }, 620);
+  }, []);
+
+  useEffect(() => {
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotionPreference = () => {
+      setPrefersReducedMotion(motionQuery.matches);
+      if (motionQuery.matches) {
+        setHoveredSlug(null);
+        setActivePreviewSlug(null);
+      }
+    };
+
+    updateMotionPreference();
+    motionQuery.addEventListener("change", updateMotionPreference);
+
+    return () => motionQuery.removeEventListener("change", updateMotionPreference);
   }, []);
 
   useEffect(() => {
@@ -338,6 +436,20 @@ export function CgiTileBrowser({
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(scrollPlayerIntoView);
     });
+  };
+
+  const startTilePreview = (event: PointerEvent<HTMLButtonElement>, project: WorkProject) => {
+    if (prefersReducedMotion || event.pointerType === "touch") {
+      return;
+    }
+
+    setHoveredSlug(project.slug);
+    setActivePreviewSlug(project.slug);
+  };
+
+  const stopTilePreview = (project: WorkProject) => {
+    setHoveredSlug((slug) => slug === project.slug ? null : slug);
+    setActivePreviewSlug((slug) => slug === project.slug ? null : slug);
   };
 
   useEffect(() => {
@@ -664,18 +776,26 @@ export function CgiTileBrowser({
                 className="cgi-project-tile__button"
                 aria-label={`Open CGI project ${project.index}, ${project.title}`}
                 onClick={() => selectProject(project)}
-                onMouseEnter={() => setHoveredSlug(project.slug)}
-                onMouseLeave={() => setHoveredSlug((slug) => slug === project.slug ? null : slug)}
+                onPointerEnter={(event) => startTilePreview(event, project)}
+                onPointerLeave={() => stopTilePreview(project)}
+                onPointerCancel={() => stopTilePreview(project)}
               >
                 <span className="cgi-project-tile__media" aria-hidden="true">
+                  {activePreviewSlug === project.slug && getVideoSource(project) ? (
+                    <CgiTilePreviewVideo
+                      project={project}
+                      shouldPlay={activePreviewSlug === project.slug && !prefersReducedMotion}
+                      source={getVideoSource(project)!}
+                    />
+                  ) : null}
                   {project.cover.src && project.cover.type === "video" ? (
-                    <video
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
                       data-fit={videoPresentation.fit}
                       data-rotation={videoPresentation.rotation ? "rotated" : "none"}
-                      src={project.cover.src}
-                      muted
-                      playsInline
-                      preload="metadata"
+                      src={`/work/cgi/posters/${project.slug}.jpg`}
+                      alt=""
+                      loading="lazy"
                     />
                   ) : project.cover.src ? (
                     // eslint-disable-next-line @next/next/no-img-element

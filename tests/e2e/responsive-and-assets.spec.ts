@@ -1,12 +1,18 @@
 import { expect, type Page, test } from "@playwright/test";
+import { cgiProjects, projectHref } from "../../src/data/work-projects";
 
 import {
   buttonBox,
   expectElementInsideViewport,
   expectMinTapTarget,
   expectNoHorizontalOverflow,
+  expectWorkModeLabelsDoNotWrap,
+  modeRadioNames,
   responsiveViewports,
 } from "./helpers";
+
+const firstCgiProject = cgiProjects[0];
+const fifthCgiProject = cgiProjects[4];
 
 const primaryRoutes = [
   "/",
@@ -15,8 +21,8 @@ const primaryRoutes = [
   "/work?mode=cgi",
   "/work?mode=stills",
   "/work/stills/2024/goodwood",
-  "/cgi/project-one",
-  "/cgi/project-five",
+  projectHref(firstCgiProject),
+  projectHref(fifthCgiProject),
   "/definitely-not-a-real-route",
 ] as const;
 
@@ -64,13 +70,14 @@ test.describe("responsive layout, assets, and controls", () => {
         "Work mode switch",
       );
       await expectMinTapTarget(
-        page.getByRole("radio", { name: /^CGI$/ }),
+        page.getByRole("radio", { name: modeRadioNames.cgi }),
         "CGI mode option",
       );
       await expectMinTapTarget(
-        page.getByRole("radio", { name: "STILLS" }),
+        page.getByRole("radio", { name: modeRadioNames.stills }),
         "Stills mode option",
       );
+      await expectWorkModeLabelsDoNotWrap(page);
 
       await page.goto("/definitely-not-a-real-route");
       await expectElementInsideViewport(
@@ -134,8 +141,8 @@ test.describe("responsive layout, assets, and controls", () => {
       "/photography",
       "/work?mode=cgi",
       "/work/stills/2024/goodwood",
-      "/cgi/project-one",
-      "/cgi/project-five",
+      projectHref(firstCgiProject),
+      projectHref(fifthCgiProject),
     ] as const;
     const viewports = [
       { width: 1920, height: 1080 },
@@ -168,7 +175,7 @@ test.describe("responsive layout, assets, and controls", () => {
     page,
   }) => {
     await page.goto("/work?mode=cgi");
-    const tile = page.getByRole("button", { name: /open cgi project 01, project one/i });
+    const tile = page.getByRole("button", { name: new RegExp(`open cgi project ${firstCgiProject.index}, ${firstCgiProject.title}`, "i") });
     await expect(tile).toBeVisible();
     const tileBox = await tile.boundingBox();
 
@@ -179,14 +186,15 @@ test.describe("responsive layout, assets, and controls", () => {
     await expect(page.locator(".cgi-project-tile").first()).toHaveAttribute("data-hovered", "true");
 
     await tile.click();
-    await expect(page.getByRole("button", { name: /close cgi player/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /view full project/i })).toHaveAttribute("href", "/cgi/project-one");
+    await expect(page).toHaveURL(new RegExp(`/work\\?mode=cgi&project=${firstCgiProject.slug}$`));
+    await expect(page.getByRole("heading", { name: firstCgiProject.title, exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: new RegExp(`play ${firstCgiProject.title}`, "i") })).toBeVisible();
 
 
 
     await page.goto("/about");
     const contact = await buttonBox(page, /get in touch/i);
-    expect(contact.height).toBeGreaterThanOrEqual(56);
+    expect(contact.height).toBeGreaterThanOrEqual(44);
   });
 
 });

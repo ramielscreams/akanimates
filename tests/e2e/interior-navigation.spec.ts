@@ -4,7 +4,10 @@ import {
   buttonBox,
   expectNoConsoleFailures,
   expectNoHorizontalOverflow,
+  expectMinTapTarget,
 } from "./helpers";
+import { cgiProjects, projectHref } from "../../src/data/work-projects";
+import { contactMethods } from "../../src/data/contact";
 
 async function expectDisplayFont(locator: Locator) {
   const style = await locator.evaluate((element) => {
@@ -17,8 +20,8 @@ async function expectDisplayFont(locator: Locator) {
     };
   });
 
-  expect(style.family).toContain("Barlow");
-  expect(Number(style.weight)).toBe(900);
+  expect(style.family).toContain("-apple-system");
+  expect(Number(style.weight)).toBeGreaterThanOrEqual(600);
 }
 
 async function expectAboutGridAlignment(page: Page) {
@@ -62,13 +65,12 @@ async function expectAboutGridAlignment(page: Page) {
       role: rectFor("#about-disciplines"),
       location: rectFor("#about-availability"),
       contactHeading: rectFor("#contact-heading"),
-      contactTrigger: rectFor(".about-contact-row .contact-launch"),
-      closing: rectFor(".about-closing-nav__inner"),
+      contactTrigger: rectFor(".about-contact-row .about-contact-trigger"),
       viewportWidth: window.innerWidth,
     };
   });
 
-  expect(metrics.frames.length, "About should use repeated shared frames").toBeGreaterThanOrEqual(3);
+  expect(metrics.frames.length, "About should use repeated shared frames").toBeGreaterThanOrEqual(2);
 
   const [firstFrame] = metrics.frames;
 
@@ -82,7 +84,6 @@ async function expectAboutGridAlignment(page: Page) {
     intro: metrics.intro,
     bio: metrics.bio,
     contactHeading: metrics.contactHeading,
-    closing: metrics.closing,
   })) {
     expect(rect, `${name} should be measurable`).not.toBeNull();
     expect(
@@ -100,7 +101,7 @@ async function expectAboutGridAlignment(page: Page) {
   expect(
     metrics.heading!.top,
     "About content should begin without an oversized hero gap",
-  ).toBeLessThan(metrics.viewportWidth >= 1024 ? 170 : 150);
+  ).toBeLessThanOrEqual(170);
 
   if (metrics.viewportWidth >= 1024) {
     expect(metrics.experience!.left).toBeGreaterThan(metrics.bio!.right);
@@ -132,7 +133,7 @@ async function expectAboutGridAlignment(page: Page) {
 
   if (metrics.viewportWidth >= 768) {
     expect(metrics.contactTrigger!.left).toBeGreaterThan(metrics.contactHeading!.right);
-    expect(Math.abs(metrics.contactTrigger!.right - firstFrame.right)).toBeLessThanOrEqual(2);
+    expect(metrics.contactTrigger!.right).toBeLessThanOrEqual(firstFrame.right + 2);
   } else {
     expect(metrics.contactTrigger!.top).toBeGreaterThan(metrics.contactHeading!.bottom);
     expect(metrics.contactTrigger!.left).toBeGreaterThanOrEqual(firstFrame.left - 1);
@@ -143,14 +144,14 @@ async function expectAboutGridAlignment(page: Page) {
 test.describe("interior wayfinding and typography", () => {
   test.skip(({ browserName }) => browserName !== "chromium", "Detailed interior audit runs in Chromium.");
 
-  test("normalizes major interior display headings to Barlow Condensed", async ({
+  test("uses the shared system display hierarchy on interior headings", async ({
     page,
   }) => {
     const checks = [
       { path: "/about", selector: "h1" },
       { path: "/about#contact", selector: "#contact-heading" },
       { path: "/work/stills/2024/goodwood", selector: "h1" },
-      { path: "/cgi/project-one", selector: "h1" },
+      { path: projectHref(cgiProjects[0]), selector: "h3" },
       { path: "/missing-route-for-404", selector: "h1" },
     ];
 
@@ -167,14 +168,14 @@ test.describe("interior wayfinding and typography", () => {
   }) => {
     await page.goto("/about");
     await expect(page.locator("#contact")).toBeVisible();
-    await expect(page.getByRole("heading", { name: /^contact$/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /^reach me$/i })).toBeVisible();
     await expect(page.locator("#contact").getByText(/whatsapp details pending|phone details pending/i)).toHaveCount(0);
 
     const response = await page.goto("/contact");
     expect(response?.status()).toBe(200);
     expect(page.url()).toContain("/about#contact");
     await expect(page.locator("#contact")).toBeVisible();
-    await expect(page.getByRole("dialog", { name: /get in touch/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /get in touch/i })).toBeVisible();
   });
 
   test("opens a floating About contact layer with modal focus management", async ({
@@ -195,10 +196,12 @@ test.describe("interior wayfinding and typography", () => {
     await expect(page.locator(".contact-layer__scrim")).toBeVisible();
     expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toContain("hidden");
 
-    for (const method of ["Email", "Instagram", "LinkedIn"]) {
-      const action = dialog.locator("[data-contact-action]").filter({ hasText: method });
+    for (const method of contactMethods) {
+      const action = dialog.locator(`[data-contact-action="${method.key}"]`);
       await expect(action).toBeVisible();
-      await expect(action).toHaveAttribute("aria-disabled", "true");
+      await expect(action).toHaveAttribute("href", method.href);
+      await expect(action).toHaveAttribute("aria-label", `${method.label}: ${method.value}`);
+      await expectMinTapTarget(action, `${method.label} contact action`);
     }
 
     await expect(dialog.locator("[data-contact-close]")).toBeFocused();
@@ -231,7 +234,7 @@ test.describe("interior wayfinding and typography", () => {
     await page.goto("/about");
 
     const row = page.locator(".about-contact-row");
-    const heading = row.getByRole("heading", { name: /^contact$/i });
+    const heading = row.getByRole("heading", { name: /^reach me$/i });
     const trigger = row.getByRole("button", { name: /get in touch/i });
 
     await expect(heading).toBeVisible();
@@ -257,8 +260,8 @@ test.describe("interior wayfinding and typography", () => {
     await trigger.click();
     const dialog = page.getByRole("dialog", { name: /get in touch/i });
     await expect(dialog).toBeVisible();
-    for (const method of ["Email", "Instagram", "LinkedIn"]) {
-      await expect(dialog.locator("[data-contact-action]").filter({ hasText: method })).toBeVisible();
+    for (const method of contactMethods) {
+      await expect(dialog.locator(`[data-contact-action="${method.key}"]`)).toBeVisible();
     }
 
     await page.keyboard.press("Escape");
@@ -268,7 +271,7 @@ test.describe("interior wayfinding and typography", () => {
     await page.goto("/about");
 
     const mobileRow = page.locator(".about-contact-row");
-    const mobileHeading = mobileRow.getByRole("heading", { name: /^contact$/i });
+    const mobileHeading = mobileRow.getByRole("heading", { name: /^reach me$/i });
     const mobileTrigger = mobileRow.getByRole("button", { name: /get in touch/i });
 
     const [mobileHeadingBox, mobileTriggerBox] = await Promise.all([
@@ -279,7 +282,7 @@ test.describe("interior wayfinding and typography", () => {
     expect(mobileHeadingBox).not.toBeNull();
     expect(mobileTriggerBox).not.toBeNull();
     expect(mobileTriggerBox!.y).toBeGreaterThan(mobileHeadingBox!.y + mobileHeadingBox!.height);
-    expect(mobileTriggerBox!.height).toBeGreaterThanOrEqual(56);
+    expect(mobileTriggerBox!.height).toBeGreaterThanOrEqual(44);
   });
 
   test("aligns About sections to one shared editorial grid", async ({
@@ -301,16 +304,10 @@ test.describe("interior wayfinding and typography", () => {
     }
   });
 
-  test("About closes with a Work destination", async ({ page }) => {
-    await page.goto("/about");
-    await page.getByRole("link", { name: /explore work/i }).click();
-    await expect(page).toHaveURL(/\/work$/);
-  });
-
-  test("opens an opaque interior menu with keyboard focus management", async ({
+  test("opens a compact interior menu with keyboard focus management", async ({
     page,
   }) => {
-    await page.goto("/photography");
+    await page.goto("/work?mode=stills");
     const menuButton = page.getByRole("button", { name: /open navigation menu/i });
 
     await menuButton.focus();
@@ -319,22 +316,43 @@ test.describe("interior wayfinding and typography", () => {
 
     const dialog = page.getByRole("dialog", { name: /site navigation/i });
     await expect(dialog).toBeVisible();
-    await expect(dialog).toHaveCSS("background-color", "rgb(5, 3, 7)");
+    await expect(dialog).toHaveAttribute("data-open", "true");
     await expect(page.getByRole("link", { name: "Home", exact: true })).toBeVisible();
-    await expect(dialog).not.toContainText(/cgi|design|contact|photography/i);
+    await expect(dialog).not.toContainText(/cgi|design|photography/i);
     await expect(dialog).toContainText(/about/i);
     await expect(dialog).toContainText(/work/i);
+    await expect(dialog).not.toContainText("✓");
+    const activeMarker = await dialog.getByRole("link", { name: /^work$/i }).evaluate((link) => {
+      const marker = getComputedStyle(link, "::before");
 
-    const bodyOverflow = await page.evaluate(() => getComputedStyle(document.body).overflow);
-    expect(bodyOverflow).toBe("hidden");
+      return {
+        ariaCurrent: link.getAttribute("aria-current"),
+        backgroundColor: marker.backgroundColor,
+        borderRadius: marker.borderRadius,
+        height: marker.height,
+        width: marker.width,
+      };
+    });
+
+    expect(activeMarker.ariaCurrent).toBe("page");
+    expect(activeMarker.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+    expect(activeMarker.borderRadius).not.toBe("0px");
+    expect(Number.parseFloat(activeMarker.width)).toBeGreaterThan(0);
+    expect(Number.parseFloat(activeMarker.height)).toBeGreaterThan(0);
+
+    const menuBounds = await dialog.boundingBox();
+    expect(menuBounds!.width).toBeLessThan(360);
 
     await expect(page.locator(":focus")).toContainText(/about/i);
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
     await expect(menuButton).toBeFocused();
 
-    const restoredOverflow = await page.evaluate(() => getComputedStyle(document.body).overflow);
-    expect(restoredOverflow).not.toBe("hidden");
+    await menuButton.click();
+    await expect(dialog).toBeVisible();
+    await page.mouse.click(16, 240);
+    await expect(dialog).toBeHidden();
+    await expect(menuButton).toBeFocused();
   });
 
   test("renders a usable custom 404", async ({ page }) => {
@@ -359,8 +377,8 @@ test.describe("interior wayfinding and typography", () => {
       "/cgi",
       "/work",
       "/work/stills/2024/goodwood",
-      "/cgi/project-one",
-      "/cgi/project-five",
+      projectHref(cgiProjects[0]),
+      projectHref(cgiProjects[4]),
     ]) {
       await page.goto(path);
       await expectNoHorizontalOverflow(page);

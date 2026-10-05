@@ -2,7 +2,7 @@
 
 import { Slot, Slottable } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { forwardRef, type ButtonHTMLAttributes, type PointerEvent } from "react";
+import { forwardRef, type ButtonHTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -49,9 +49,6 @@ export const LiquidGlassButton = forwardRef<
       asChild = false,
       className,
       children,
-      onPointerEnter,
-      onPointerLeave,
-      onPointerMove,
       size,
       variant,
       style,
@@ -61,39 +58,10 @@ export const LiquidGlassButton = forwardRef<
   ) => {
     const Comp = asChild ? Slot : "button";
 
-    const updatePointerPosition = (event: PointerEvent<HTMLButtonElement>) => {
-      if (event.pointerType !== "mouse" && event.pointerType !== "pen") {
-        return;
-      }
-
-      const target = event.currentTarget;
-      const rect = target.getBoundingClientRect();
-
-      target.style.setProperty("--mouse-x", `${event.clientX - rect.left}px`);
-      target.style.setProperty("--mouse-y", `${event.clientY - rect.top}px`);
-    };
-
-    const handlePointerEnter = (event: PointerEvent<HTMLButtonElement>) => {
-      updatePointerPosition(event);
-      onPointerEnter?.(event);
-    };
-
-    const handlePointerMove = (event: PointerEvent<HTMLButtonElement>) => {
-      updatePointerPosition(event);
-      onPointerMove?.(event);
-    };
-
-    const handlePointerLeave = (event: PointerEvent<HTMLButtonElement>) => {
-      onPointerLeave?.(event);
-    };
-
     return (
       <Comp
         ref={ref}
         className={cn(liquidGlassButtonVariants({ size, variant }), className)}
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
-        onPointerMove={handlePointerMove}
         style={style}
         {...props}
       >
