@@ -1779,6 +1779,7 @@ body::-webkit-scrollbar {
   isolation: isolate;
   overflow: hidden;
   background: var(--bg);
+  min-height: 100dvh;
 }
 .home-entry__background {
   position: absolute;
@@ -1791,6 +1792,8 @@ body::-webkit-scrollbar {
     url("/photos/film-red/f40laf_mc.jpg") 58% 68% / cover no-repeat;
 }
 .home-entry__content { display: flex; min-height: 100dvh; flex-direction: column; justify-content: center; padding-block: 8rem 4rem; max-width: 100rem; margin: auto; }
+.home-entry + footer { position: fixed; inset-inline: 0; bottom: 0; z-index: 100; pointer-events: none; }
+.home-entry + footer .privacy-utility-link { pointer-events: auto; }
 .home-entry__destinations { margin-block: clamp(2rem, 5vh, 4rem); }
 .home-entry__destinations a { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1rem; align-items: baseline; border-bottom: 1px solid var(--border); padding-block: .16em; font-family: var(--font-display); font-size: clamp(4rem, 13vw, 13rem); font-weight: 900; line-height: 1.05; letter-spacing: .02em; transition: color var(--motion-ui-fast) var(--ease-ui); }
 .home-entry__destinations a:hover { color: var(--brand-soft); }

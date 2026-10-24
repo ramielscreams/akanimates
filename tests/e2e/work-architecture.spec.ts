@@ -168,13 +168,30 @@ test("cgi: pointer hover plays one lightweight five second tile preview", async 
   await page.mouse.move(firstBox!.x + firstBox!.width / 2, firstBox!.y + firstBox!.height / 2);
   await expect(page.locator(".cgi-project-tile").first()).toHaveAttribute("data-hovered", "true");
   await expect(page.locator(".cgi-project-tile__preview")).toHaveCount(1);
+  await expect(page.locator(".cgi-project-tile__preview")).toHaveAttribute("data-ready", "true");
   const initialPreviewTime = await page.locator(".cgi-project-tile__preview").first().evaluate((video) => (video as HTMLVideoElement).currentTime);
-  expect(initialPreviewTime).toBeLessThanOrEqual(0.25);
+  expect(initialPreviewTime).toBeGreaterThanOrEqual((firstCgiProject.previewStart ?? 0) - 0.35);
+  expect(initialPreviewTime).toBeLessThanOrEqual((firstCgiProject.previewStart ?? 0) + 1.2);
 
   await page.waitForTimeout(1400);
   const firstPreviewTime = await page.locator(".cgi-project-tile__preview").first().evaluate((video) => (video as HTMLVideoElement).currentTime);
-  expect(firstPreviewTime).toBeGreaterThan(0);
-  expect(firstPreviewTime).toBeLessThanOrEqual(5);
+  expect(firstPreviewTime).toBeGreaterThanOrEqual((firstCgiProject.previewStart ?? 0) - 0.35);
+  expect(firstPreviewTime).toBeLessThanOrEqual((firstCgiProject.previewStart ?? 0) + 2.5);
+
+  const firstTileBoxDuringPreview = await firstTile.boundingBox();
+  expect(firstTileBoxDuringPreview).not.toBeNull();
+  expect(Math.abs(firstTileBoxDuringPreview!.x - firstBox!.x)).toBeLessThan(0.5);
+  expect(Math.abs(firstTileBoxDuringPreview!.y - firstBox!.y)).toBeLessThan(0.5);
+  expect(Math.abs(firstTileBoxDuringPreview!.width - firstBox!.width)).toBeLessThan(0.5);
+  expect(Math.abs(firstTileBoxDuringPreview!.height - firstBox!.height)).toBeLessThan(0.5);
+  const previewTransform = await firstTile.evaluate((tile) => ({
+    tile: getComputedStyle(tile).transform,
+    media: getComputedStyle(tile.querySelector(".cgi-project-tile__media")!).transform,
+    preview: getComputedStyle(tile.querySelector(".cgi-project-tile__preview")!).transform,
+  }));
+  expect(previewTransform.tile).toBe("none");
+  expect(previewTransform.media).toBe("none");
+  expect(previewTransform.preview).toContain("matrix");
 
   await page.mouse.move(secondBox!.x + secondBox!.width / 2, secondBox!.y + secondBox!.height / 2);
   await expect(page.locator(".cgi-project-tile").nth(1)).toHaveAttribute("data-hovered", "true");
@@ -190,8 +207,11 @@ test("cgi: pointer hover plays one lightweight five second tile preview", async 
       paused: media.paused,
     };
   });
-  expect(heldPreview.currentTime).toBeLessThanOrEqual(5.05);
+  expect(heldPreview.currentTime).toBeLessThanOrEqual((secondCgiProject.previewStart ?? 0) + 5.05);
   expect(heldPreview.paused).toBe(true);
+
+  const secondPreviewTime = await page.locator(".cgi-project-tile__preview").first().evaluate((video) => (video as HTMLVideoElement).currentTime);
+  expect(secondPreviewTime).toBeGreaterThanOrEqual((secondCgiProject.previewStart ?? 0) - 0.35);
 
   await page.mouse.move(10, 10);
   await expect(page.locator(".cgi-project-tile__preview")).toHaveCount(0);
@@ -199,6 +219,32 @@ test("cgi: pointer hover plays one lightweight five second tile preview", async 
   await firstTile.click();
   await expect(page).toHaveURL(new RegExp(`/work\\?mode=cgi&project=${firstCgiProject.slug}$`));
   await checkErrors();
+});
+
+test("cgi: every configured project has a bounded hover preview start", async ({ page }) => {
+  await page.goto(workHref("cgi"));
+
+  for (const project of cgiItems) {
+    const tile = page.getByRole("button", { name: new RegExp(`open cgi project ${project.index}, ${project.title}`, "i") });
+    await tile.scrollIntoViewIfNeeded();
+    const box = await tile.boundingBox();
+
+    expect(box).not.toBeNull();
+    await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+    const preview = page.locator(".cgi-project-tile__preview");
+    await expect(preview).toHaveCount(1);
+    await expect(preview).toHaveAttribute("data-ready", "true");
+    const state = await preview.evaluate((video) => {
+      const media = video as HTMLVideoElement;
+      return { currentTime: media.currentTime, paused: media.paused };
+    });
+
+    expect(state.currentTime).toBeGreaterThanOrEqual((project.previewStart ?? 0) - 0.35);
+    expect(state.currentTime).toBeLessThanOrEqual((project.previewStart ?? 0) + 1.2);
+    expect(state.paused).toBe(false);
+    await page.mouse.move(10, 10);
+    await expect(preview).toHaveCount(0);
+  }
 });
 
 test("cgi: reduced motion keeps tile previews static", async ({ page }) => {

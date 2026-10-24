@@ -6,6 +6,7 @@ type CgiVideoProjectSeed = {
   filename: string;
   fit?: "contain" | "cover";
   index: string;
+  previewStart: number;
   rotation: -90 | 0 | 90;
   title: string;
 };
@@ -22,60 +23,70 @@ const cgiVideoProjects: CgiVideoProjectSeed[] = [
   {
     filename: "3rslaststand.mp4",
     index: "01",
+    previewStart: 15,
     rotation: -90,
     title: "THE LAST STAND",
   },
   {
     filename: "f1.mp4",
     index: "02",
+    previewStart: 15,
     rotation: -90,
     title: "THE FORMULA FOR SPEED",
   },
   {
     filename: "projecteva.mp4",
     index: "03",
+    previewStart: 5,
     rotation: -90,
     title: "PROJECT: EVANGELION",
   },
   {
     filename: "rsr.mp4",
     index: "04",
+    previewStart: 10,
     rotation: -90,
     title: "RS-FKN-R",
   },
   {
     filename: "senna.mp4",
     index: "05",
+    previewStart: 15,
     rotation: -90,
     title: "REGENMEISTER",
   },
   {
     filename: "valour.mp4",
     index: "06",
+    previewStart: 15,
     rotation: -90,
     title: "TAME THE UNTAMABLE",
   },
   {
     filename: "venomf5revo.mp4",
     index: "07",
+    previewStart: 10,
     rotation: -90,
     title: "THE REVOLUTION",
   },
   {
     filename: "mfghost.mp4",
     index: "08",
+    previewStart: 5,
     rotation: -90,
     title: "MF GHOST",
   },
   {
     filename: "3rstrack.mp4",
     index: "09",
+    previewStart: 5,
     rotation: -90,
     title: "TRACKDAY",
   },
   {
     filename: "turbo.mp4",
     index: "10",
+    previewStart: 41.8,
     rotation: -90,
     title: "TURBO",
   },
@@ -112,6 +123,7 @@ export const cgiProjects: CgiProject[] = cgiVideoProjects.map((project) => {
     layout: "standard",
     media: [],
     mediaType: "animation",
+    previewStart: project.previewStart,
     role: "CGI / Animation",
     slug,
     title: project.title,

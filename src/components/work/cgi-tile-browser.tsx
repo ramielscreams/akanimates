@@ -118,10 +118,16 @@ function CgiTilePreviewVideo({
 
     let cancelled = false;
 
+    let previewTimer: number | null = null;
+    let previewStart = Math.max(0, project.previewStart ?? 0);
+    let previewEnd = previewStart + TILE_PREVIEW_SECONDS;
+
     const stopAtPreviewEnd = () => {
-      const previewEnd = Number.isFinite(video.duration)
-        ? Math.min(TILE_PREVIEW_SECONDS, video.duration)
-        : TILE_PREVIEW_SECONDS;
+      if (!Number.isFinite(video.duration)) {
+        return;
+      }
+
+      previewEnd = Math.min(previewEnd, video.duration);
 
       if (video.currentTime >= previewEnd) {
         video.currentTime = previewEnd;
@@ -129,29 +135,65 @@ function CgiTilePreviewVideo({
       }
     };
 
+    const stopPreview = () => {
+      if (previewTimer !== null) {
+        window.clearTimeout(previewTimer);
+        previewTimer = null;
+      }
+
+      video.pause();
+      video.currentTime = 0;
+      video.dataset.ready = "false";
+    };
+
     const startPreview = async () => {
       try {
-        video.currentTime = 0;
+        if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+          return;
+        }
+
+        previewStart = Math.min(previewStart, Math.max(0, video.duration - 0.05));
+        previewEnd = Math.min(previewStart + TILE_PREVIEW_SECONDS, video.duration);
+        video.currentTime = previewStart;
+
+        if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+          await new Promise<void>((resolve) => {
+            video.addEventListener("canplay", () => resolve(), { once: true });
+          });
+        }
+
+        if (cancelled) {
+          return;
+        }
+
+        video.dataset.ready = "true";
         await video.play();
+        previewTimer = window.setTimeout(() => {
+          stopAtPreviewEnd();
+        }, TILE_PREVIEW_SECONDS * 1000);
       } catch {
         if (!cancelled) {
-          video.pause();
+          stopPreview();
         }
       }
     };
 
     video.addEventListener("timeupdate", stopAtPreviewEnd);
     video.addEventListener("ended", stopAtPreviewEnd);
-    void startPreview();
+    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      void startPreview();
+    } else {
+      video.addEventListener("loadedmetadata", startPreview, { once: true });
+    }
 
     return () => {
       cancelled = true;
+      video.removeEventListener("loadedmetadata", startPreview);
       video.removeEventListener("timeupdate", stopAtPreviewEnd);
       video.removeEventListener("ended", stopAtPreviewEnd);
-      video.pause();
-      video.currentTime = 0;
+      stopPreview();
     };
-  }, [shouldPlay]);
+  }, [project.previewStart, shouldPlay]);
 
   return (
     <video
@@ -166,7 +208,7 @@ function CgiTilePreviewVideo({
         event.currentTarget.dataset.ready = "true";
       }}
       playsInline
-      preload="metadata"
+      preload="auto"
       src={source}
       tabIndex={-1}
     />

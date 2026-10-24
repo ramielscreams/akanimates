@@ -107,6 +107,78 @@ test.describe("responsive layout, assets, and controls", () => {
     });
   }
 
+  test("reflows the six-photo opening grid during live viewport resizing", async ({
+    page,
+  }) => {
+    const cases = [
+      { width: 320, height: 568, columns: 1, rows: 6 },
+      { width: 390, height: 844, columns: 1, rows: 6 },
+      { width: 768, height: 1024, columns: 2, rows: 3 },
+      { width: 900, height: 700, columns: 2, rows: 3 },
+      { width: 1280, height: 720, columns: 6, rows: 1 },
+      { width: 1440, height: 900, columns: 3, rows: 2 },
+      { width: 1920, height: 1080, columns: 3, rows: 2 },
+      { width: 2560, height: 1440, columns: 6, rows: 1 },
+    ] as const;
+
+    await page.goto("/work?mode=stills");
+    const grid = page.locator(".stills-selection__grid");
+    const tiles = page.locator(".stills-selection-tile");
+
+    for (const viewport of cases) {
+      await page.setViewportSize(viewport);
+      await expect(grid).toBeVisible();
+      await expect(tiles).toHaveCount(6);
+      await page.waitForFunction(() => {
+        const element = document.querySelector<HTMLElement>(
+          ".stills-selection__grid",
+        );
+        return Boolean(element && element.getBoundingClientRect().width > 0);
+      });
+
+      const layout = await grid.evaluate((element) => {
+        const cards = Array.from(
+          element.querySelectorAll<HTMLElement>(".stills-selection-tile"),
+        );
+        const positions = cards.map((card) => {
+          const rect = card.getBoundingClientRect();
+          return {
+            left: Math.round(rect.left),
+            top: Math.round(rect.top),
+            right: rect.right,
+            bottom: rect.bottom,
+          };
+        });
+        const unique = (values: number[]) => [...new Set(values)].length;
+        const rect = element.getBoundingClientRect();
+
+        return {
+          columns: unique(positions.map(({ left }) => left)),
+          rows: unique(positions.map(({ top }) => top)),
+          gridRight: rect.right,
+          viewportWidth: window.innerWidth,
+          contained: positions.every(
+            ({ left, right, top, bottom }) =>
+              left >= rect.left - 1 &&
+              right <= rect.right + 1 &&
+              top >= rect.top - 1 &&
+              bottom <= rect.bottom + 1,
+          ),
+        };
+      });
+
+      expect(layout.columns, `${viewport.width}x${viewport.height} columns`).toBe(
+        viewport.columns,
+      );
+      expect(layout.rows, `${viewport.width}x${viewport.height} rows`).toBe(
+        viewport.rows,
+      );
+      expect(layout.gridRight).toBeLessThanOrEqual(layout.viewportWidth + 1);
+      expect(layout.contained).toBe(true);
+      await expectNoHorizontalOverflow(page);
+    }
+  });
+
   test("serves the transparent SVG icon through the App Router icon route", async ({
     page,
     request,

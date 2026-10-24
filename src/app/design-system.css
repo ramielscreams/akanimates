@@ -259,6 +259,21 @@ body {
 .cgi-project-tile__media img { z-index: 0; }
 .cgi-project-tile__media::after, .cgi-project-tile__caption { z-index: 2; }
 
+/* Hover changes the footage, not the tile frame. Rotation is media-only and remains clipped by the tile. */
+@media (hover: hover) and (pointer: fine) {
+  .cgi-project-tile__button:hover .cgi-project-tile__media,
+  .cgi-project-tile__button:focus-visible .cgi-project-tile__media {
+    transform: none;
+  }
+
+  .cgi-project-tile__button:hover .cgi-project-tile__media img[data-rotation="rotated"],
+  .cgi-project-tile__button:hover .cgi-project-tile__media video[data-rotation="rotated"],
+  .cgi-project-tile__button:focus-visible .cgi-project-tile__media img[data-rotation="rotated"],
+  .cgi-project-tile__button:focus-visible .cgi-project-tile__media video[data-rotation="rotated"] {
+    transform: translate(-50%, -50%) rotate(var(--cgi-video-rotation, -90deg));
+  }
+}
+
 /* Player controls share the control material, without a second glass layer per button. */
 .cgi-player-controls { border: var(--border-hairline); border-radius: var(--radius-large); background: var(--material-regular); -webkit-backdrop-filter: var(--material-blur); backdrop-filter: var(--material-blur); box-shadow: var(--glass-inset), 0 8px 24px rgb(0 0 0 / .22); }
 .cgi-player-controls::before { content: none; }
@@ -314,4 +329,184 @@ body {
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .site-menu-trigger, .site-menu-surface, .work-mode-control, .cgi-player-controls, .contact-layer__panel { background: var(--background-elevated); -webkit-backdrop-filter: none; backdrop-filter: none; border: var(--border-interactive); }
+}
+
+/* Responsive containment: let every work surface size from its real parent box. */
+.home-entry,
+.home-entry__content,
+.section-work,
+.rolodex-shell,
+.rolodex-track,
+.stills-selection,
+.stills-selection__inner,
+.cgi-tile-browser,
+.cgi-tile-browser__intro,
+.cgi-tile-field,
+.cgi-featured-player,
+.cgi-expanded-player,
+.work-header {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.site-safe-x,
+.stills-selection__inner,
+.cgi-tile-browser__intro,
+.cgi-tile-field,
+.cgi-featured-player {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.home-entry__content,
+.rolodex-shell,
+.rolodex-track,
+.cgi-expanded-player,
+.cgi-featured-player {
+  min-height: 0;
+}
+
+.rolodex-scene-wrap[data-state="active"],
+.rolodex-panel[data-state="active"] {
+  width: 100%;
+  height: 100%;
+}
+
+.section-work .rolodex-track {
+  width: 100%;
+  max-width: 100%;
+}
+
+.stills-selection__grid,
+.cgi-tile-field {
+  min-width: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* The curated six-photo opening is a viewport-filling grid.  Its parent used
+ * to inherit the shared editorial max-width, which left the grid stranded on
+ * the left at large viewport sizes.  Keep the shared cap for other work
+ * surfaces, but let this opening use the full padded section width. */
+.stills-selection {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  container-type: inline-size;
+}
+
+.stills-selection__inner {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.stills-selection__grid {
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: row;
+}
+
+.stills-selection-tile {
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 3 / 2;
+}
+
+.stills-selection-tile,
+.cgi-project-tile,
+.cgi-project-tile__button,
+.cgi-project-tile__media {
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (max-width: 767px) {
+  .stills-selection__grid,
+  .cgi-tile-field {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cgi-project-tile {
+    min-height: min(14rem, calc((100vw - (2 * var(--space-gutter))) / 1.5));
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .stills-selection__grid,
+  .cgi-tile-field {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Layout modes are based on usable dimensions rather than device labels. */
+@media (min-width: 40rem) {
+  .stills-selection__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) and (min-height: 52rem) {
+  .stills-selection__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* A wide, short viewport benefits from a single horizontal strip. */
+@media (min-width: 64rem) and (max-height: 50rem) and (min-aspect-ratio: 1.6),
+  (min-width: 150rem) {
+  .stills-selection__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.cgi-expanded-player__stage,
+.cgi-expanded-player__media {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cgi-player-controls {
+  min-width: 0;
+}
+
+/* Size the mechanical stage from its archive shell, not a viewport fallback.
+ * Container units remain correct when the browser is maximised, restored, or
+ * the parent layout changes independently of the viewport. */
+.section-work .rolodex-shell {
+  container-type: size;
+  width: 100%;
+  min-width: 0;
+}
+
+.section-work .rolodex-track {
+  --rolodex-panel-width: min(
+    calc(100cqw - var(--rolodex-stage-inline-safe)),
+    calc((100cqh - var(--rolodex-stage-block-safe)) * 1.5)
+  );
+  --rolodex-panel-height: calc(var(--rolodex-panel-width) / 1.5);
+}
+
+.section-work .rolodex-scene-wrap[data-state="active"] {
+  width: 100%;
+  height: 100%;
+}
+
+.section-work .rolodex-panel[data-state="active"] {
+  --rolodex-frame-width: 100%;
+  --rolodex-frame-height: 100%;
+}
+
+@media (max-width: 767px) {
+  .home-entry {
+    min-height: 100dvh;
+  }
+
+  .home-entry__content {
+    min-height: 100dvh;
+  }
+
+  .section-work .rolodex-track {
+    inset-block-start: clamp(11rem, 20dvh, 13rem);
+    inset-block-end: clamp(4.5rem, 12dvh, 6.5rem);
+  }
 }

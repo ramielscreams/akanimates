@@ -387,17 +387,28 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
 
     let reducedTimer: number | undefined;
     let lastSettledAt = 0;
+    let resizeFrame: number | null = null;
     const loopLength = rolodexEntries.length;
     const measurePanel = () => {
+      // The Rolodex is nested inside the Stills archive. Measure its rendered
+      // stage rather than assuming the viewport is its containing block.
+      const trackRect = track.getBoundingClientRect();
+      const availableWidth = trackRect.width;
+      const availableHeight = trackRect.height;
+
+      if (availableWidth <= 0 || availableHeight <= 0) {
+        return false;
+      }
+
       const computedStyle = window.getComputedStyle(track);
       const width = resolveCssLength(
         computedStyle.getPropertyValue("--rolodex-panel-width"),
-        window.innerWidth * 0.6,
+        availableWidth * 0.6,
         track,
       );
       const height = resolveCssLength(
         computedStyle.getPropertyValue("--rolodex-panel-height"),
-        window.innerHeight * 0.55,
+        availableHeight * 0.55,
         track,
       );
       const reserve = resolveCssLength(
@@ -411,6 +422,8 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         reserve,
         width,
       };
+
+      return true;
     };
 
     const getFocusProgress = (logicalIndex: number, slot: number) => {
@@ -452,6 +465,12 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     const applyPhysicalState = () => {
       const currentPosition = positionRef.current;
       let strongestFocus = 0;
+      const availableWidth = track.clientWidth;
+      const availableHeight = track.clientHeight;
+
+      if (availableWidth <= 0 || availableHeight <= 0) {
+        return;
+      }
 
       for (let index = 0; index < loopLength; index += 1) {
         const scene = sceneRefs.current[index];
@@ -471,22 +490,22 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         const mechanicalPanelHeight = mechanicalPanelWidth / 1.5;
         const sceneWidth = interpolate(
           mechanicalSceneWidth,
-          window.innerWidth,
+          availableWidth,
           focusProgress,
         );
         const sceneHeight = interpolate(
           mechanicalSceneHeight,
-          track.clientHeight,
+          availableHeight,
           focusProgress,
         );
         const panelWidth = interpolate(
           mechanicalPanelWidth,
-          window.innerWidth,
+          availableWidth,
           focusProgress,
         );
         const panelHeight = interpolate(
           mechanicalPanelHeight,
-          track.clientHeight,
+          availableHeight,
           focusProgress,
         );
         const mechanicalHeadingSize = clamp(
@@ -495,9 +514,9 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
           112,
         );
         const focusedHeadingSize =
-          window.innerWidth <= 640
-            ? clamp(window.innerWidth * 0.25, 92, 132)
-            : clamp(window.innerWidth * 0.14, 112, 240);
+          availableWidth <= 640
+            ? clamp(availableWidth * 0.25, 92, 132)
+            : clamp(availableWidth * 0.14, 112, 240);
         const rawHeadingSize = interpolate(
           mechanicalHeadingSize,
           focusedHeadingSize,
@@ -510,8 +529,8 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         );
         const titleLength = rolodexEntries[index].title.length;
         const focusedFieldWidth = Math.min(
-          window.innerWidth - panelMetricsRef.current.reserve - 48,
-          clamp(window.innerWidth * 0.72, 448, 1216),
+          availableWidth - panelMetricsRef.current.reserve - 48,
+          clamp(availableWidth * 0.72, 448, 1216),
         );
         const headingAvailableWidth = interpolate(
           mechanicalPanelWidth - 32,
@@ -861,23 +880,39 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     const updateReducedMotion = () => {
       reducedMotionRef.current = motionQuery.matches;
     };
+    const refreshLayout = () => {
+      resizeFrame = null;
+      if (measurePanel()) {
+        applyPhysicalState();
+        updateEngagement();
+      }
+    };
     const onResize = () => {
-      measurePanel();
-      applyPhysicalState();
-      updateEngagement();
+      if (resizeFrame !== null) {
+        return;
+      }
+
+      resizeFrame = window.requestAnimationFrame(refreshLayout);
     };
 
     reducedMotionRef.current = motionQuery.matches;
-    measurePanel();
-    applyPhysicalState();
-
-    updateEngagement();
+    if (measurePanel()) {
+      applyPhysicalState();
+      updateEngagement();
+    }
     shell.addEventListener("wheel", onWheel, { passive: false });
     shell.addEventListener("touchstart", onTouchStart, { passive: true });
     shell.addEventListener("touchmove", onTouchMove, { passive: false });
     shell.addEventListener("touchend", onTouchEnd);
     window.addEventListener("scroll", updateEngagement, { passive: true });
+    window.addEventListener("pageshow", onResize);
     window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    document.addEventListener("fullscreenchange", onResize);
+    window.visualViewport?.addEventListener("resize", onResize);
+    const resizeObserver = new ResizeObserver(onResize);
+    resizeObserver.observe(track);
+    resizeObserver.observe(shell);
     motionQuery.addEventListener("change", updateReducedMotion);
 
     return () => {
@@ -894,7 +929,16 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       shell.removeEventListener("touchmove", onTouchMove);
       shell.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("scroll", updateEngagement);
+      window.removeEventListener("pageshow", onResize);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+      document.removeEventListener("fullscreenchange", onResize);
+      window.visualViewport?.removeEventListener("resize", onResize);
+      resizeObserver.disconnect();
+      if (resizeFrame !== null) {
+        window.cancelAnimationFrame(resizeFrame);
+        resizeFrame = null;
+      }
       motionQuery.removeEventListener("change", updateReducedMotion);
     };
   }, [rolodexEntries]);

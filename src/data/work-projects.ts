@@ -17,6 +17,7 @@ export type WorkProject = PortfolioCaseStudyProject & {
   manufacturer?: string;
   event?: string;
   mediaType?: string;
+  previewStart?: number;
   videoFit?: "contain" | "cover";
   videoRotation?: -90 | 0 | 90;
 };
