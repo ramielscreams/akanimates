@@ -40,7 +40,7 @@ const privacySections = [
 
 export default function PrivacyPage() {
   return (
-    <main className="privacy-page min-h-dvh bg-bg text-text-primary">
+    <main id="main" tabIndex={-1} className="privacy-page min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
       <section className="privacy-page__inner site-safe-x">
         <div className="privacy-page__header">

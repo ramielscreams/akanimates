@@ -314,7 +314,10 @@ test.describe("interior wayfinding and typography", () => {
     await expect(menuButton).toBeFocused();
     await page.keyboard.press("Enter");
 
-    const dialog = page.getByRole("dialog", { name: /site navigation/i });
+    // The menu is a disclosure (aria-expanded on the trigger), not a dialog. Audit A12.
+    const dialog = page.locator(".site-menu-surface");
+    await expect(page.locator(".site-menu-trigger")).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByRole("dialog", { name: /site navigation/i })).toHaveCount(0);
     await expect(dialog).toBeVisible();
     await expect(dialog).toHaveAttribute("data-open", "true");
     await expect(page.getByRole("link", { name: "Home", exact: true })).toBeVisible();

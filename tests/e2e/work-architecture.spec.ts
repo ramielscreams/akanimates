@@ -18,7 +18,7 @@ test("Home, menu and About use the reduced hierarchy", async ({ page }) => {
   await expect(page).toHaveURL(/\/about$/);
   await expect(page.getByRole("heading", { name: "About", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Open navigation menu" }).click();
-  const dialog = page.getByRole("dialog");
+  const dialog = page.locator(".site-menu-surface");
   await expect(dialog.getByRole("link")).toHaveCount(2);
   await dialog.getByRole("link", { name: /work/i }).click();
   await expect(page).toHaveURL(/\/work$/);

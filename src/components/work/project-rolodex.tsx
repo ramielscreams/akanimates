@@ -4,6 +4,7 @@ import {
   type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -329,6 +330,8 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
   const touchStartYRef = useRef<number | null>(null);
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [hasExplored, setHasExplored] = useState(false);
+  const hintId = useId();
+  const skipTargetId = `${useId().replace(/:/g, "")}-end`;
   const motionStateRef = useRef<MotionState>({
     direction: "none",
     isMoving: false,
@@ -755,10 +758,21 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
     let engaged = false;
     let released = false;
     let reverseGestures = 0;
+    let forwardGestures = 0;
     const overlayOpen = () => Boolean(document.querySelector('[role="dialog"][aria-modal="true"]'));
     const releaseInput = () => { released = true; setEngaged(false); };
+    // The archive loops, so it has no first or last panel. After one full turn in the same
+    // direction, the next gesture scrolls the page instead (audit A5: no wheel or key trap).
+    const turnComplete = (direction: Direction) =>
+      !committedGestureRef.current &&
+      !motionStateRef.current.isMoving &&
+      (direction === "next" ? forwardGestures : reverseGestures) >= loopLength;
+    const countGesture = (direction: Direction) => {
+      forwardGestures = direction === "next" ? forwardGestures + 1 : 0;
+      reverseGestures = direction === "previous" ? reverseGestures + 1 : 0;
+    };
     const onWheel = (event: WheelEvent) => {
-      if (overlayOpen() || event.ctrlKey) {
+      if (released || overlayOpen() || event.ctrlKey) {
         return;
       }
 
@@ -774,7 +788,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         return;
       }
 
-      if (normalizedDelta < 0 && reverseGestures >= loopLength && !committedGestureRef.current && !motionStateRef.current.isMoving) { releaseInput(); return; }
+      if (turnComplete(normalizedDelta > 0 ? "next" : "previous")) { releaseInput(); return; }
       event.preventDefault();
       lastWheelAtRef.current = window.performance.now();
 
@@ -789,7 +803,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       if (Math.abs(gestureDeltaRef.current) >= WHEEL_TRIGGER_THRESHOLD) {
         committedGestureRef.current = true;
         const direction = gestureDeltaRef.current > 0 ? "next" : "previous";
-        reverseGestures = direction === "previous" ? reverseGestures + 1 : 0;
+        countGesture(direction);
         triggerNavigation(direction, 1, clamp(Math.abs(gestureDeltaRef.current) / 160, 0, 1));
       }
     };
@@ -810,9 +824,12 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       }
 
       if (event.repeat || (event.target instanceof Element && event.target.closest('button, a, input, textarea, [role="dialog"]'))) return;
+      const keyDirection: Direction = event.key === "ArrowDown" || event.key === "PageDown" ? "next" : "previous";
+      if (turnComplete(keyDirection)) { releaseInput(); return; }
       event.preventDefault();
+      countGesture(keyDirection);
 
-      if (event.key === "ArrowDown" || event.key === "PageDown") {
+      if (keyDirection === "next") {
         triggerNavigation("next", 1, 0.2);
       } else {
         triggerNavigation("previous", 1, 0.2);
@@ -873,7 +890,9 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       const section = shell.getBoundingClientRect();
       const visible = Math.max(0, Math.min(frame.bottom, innerHeight) - Math.max(frame.top, 0));
       const arrived = section.top <= 2 && section.bottom >= innerHeight - 2 && visible / Math.max(frame.height, 1) >= 0.85;
-      if (!arrived) { released = false; reverseGestures = 0; }
+      // Re-arm only after the archive has mostly left the viewport, not after the first pixel of scroll.
+      const sectionVisible = Math.max(0, Math.min(section.bottom, innerHeight) - Math.max(section.top, 0)) / Math.max(innerHeight, 1);
+      if (sectionVisible < 0.5) { released = false; reverseGestures = 0; forwardGestures = 0; }
       setEngaged(arrived && !released);
     };
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -1015,6 +1034,10 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
   };
 
   return (
+    <>
+    <a className="skip-link" href={`#${skipTargetId}`}>
+      Skip archive
+    </a>
     <section
       id="stills-rolodex"
       ref={shellRef}
@@ -1022,6 +1045,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       data-explored={hasExplored ? "true" : "false"}
       aria-label="Stills archive year browser"
       aria-roledescription="rotary year selector"
+      aria-describedby={hintId}
       onKeyDown={onShellKeyDown}
       tabIndex={0}
     >
@@ -1038,7 +1062,13 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
       <div className="work-progress site-technical-label" aria-hidden="true">
         {String(activeIndex + 1).padStart(2, "0")} / {String(rolodexEntries.length).padStart(2, "0")}
       </div>
-      <p className="work-scroll-hint site-technical-label" data-hidden={hasExplored ? "true" : "false"}>Scroll to explore <span aria-hidden="true">↓</span></p>
+      <p id={hintId} className="sr-only">
+        Use the up and down arrow keys to change {mode === "stills" ? "year" : "project"}. Press Escape to leave the archive.
+      </p>
+      <p className="work-scroll-hint site-technical-label" data-hidden={hasExplored ? "true" : "false"} aria-hidden="true">
+        <span className="work-scroll-hint__pointer">Scroll to explore <span aria-hidden="true">↓</span></span>
+        <span className="work-scroll-hint__keys">Arrow keys to browse · Esc to exit</span>
+      </p>
       <div className="rolodex-atmosphere" aria-hidden="true" />
       <div
         ref={trackRef}
@@ -1081,5 +1111,7 @@ export function ProjectRolodex({ initialProjectSlug, mode, projects, rememberSta
         })}
       </div>
     </section>
+    <span id={skipTargetId} tabIndex={-1} className="rolodex-skip-target" />
+    </>
   );
 }

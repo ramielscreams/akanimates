@@ -3,7 +3,7 @@ import { LiquidGlassButton } from "@/components/ui/liquid-glass-button";
 
 export default function NotFound() {
   return (
-    <main className="relative isolate min-h-dvh bg-bg text-text-primary">
+    <main id="main" tabIndex={-1} className="relative isolate min-h-dvh bg-bg text-text-primary">
       <div
         className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_78%_18%,rgb(var(--brand-interactive-rgb)_/_0.28),transparent_32rem),radial-gradient(circle_at_10%_72%,rgb(var(--brand-rgb)_/_0.24),transparent_34rem),linear-gradient(180deg,var(--bg),var(--surface))]"
         aria-hidden="true"
