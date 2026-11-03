@@ -469,6 +469,46 @@ body {
   min-width: 0;
 }
 
+/* The CGI field uses its actual content width so it can reflow when the
+ * browser is resized, restored, or maximised without relying on a cached
+ * viewport measurement. The page-width cap keeps five-column layouts from
+ * stretching the tiles beyond their intended editorial scale. */
+.cgi-tile-browser {
+  container-type: inline-size;
+  width: 100%;
+  max-width: none;
+}
+
+.cgi-tile-field {
+  width: min(100%, var(--page-width));
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+@container (min-width: 44rem) {
+  .cgi-tile-field {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 64rem) {
+  .cgi-tile-field {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 90rem) {
+  .cgi-tile-field {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 108rem) {
+  .cgi-tile-field {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
 /* Size the mechanical stage from its archive shell, not a viewport fallback.
  * Container units remain correct when the browser is maximised, restored, or
  * the parent layout changes independently of the viewport. */
@@ -494,6 +534,64 @@ body {
 .section-work .rolodex-panel[data-state="active"] {
   --rolodex-frame-width: 100%;
   --rolodex-frame-height: 100%;
+}
+
+/* Keep the mechanical stack legible as separate photographic surfaces. The
+ * slot transforms remain JS-driven for scroll physics; these presentation
+ * rules give each surface a restrained silhouette without changing the
+ * existing interaction or active-panel layout. */
+.section-work .rolodex-track {
+  perspective: clamp(1100px, 118vw, 1800px);
+  perspective-origin: 50% 44%;
+}
+
+.section-work .rolodex-scene-wrap {
+  transform-origin: 50% 68%;
+  backface-visibility: hidden;
+}
+
+.section-work .rolodex-panel {
+  border: 1px solid rgb(var(--text-highlight-rgb) / 0.12);
+  border-radius: clamp(0.35rem, 0.7vw, 0.7rem);
+  box-shadow:
+    0 1.8rem 4.5rem rgb(var(--bg-rgb) / 0.62),
+    0 0.35rem 1.1rem rgb(var(--bg-rgb) / 0.48),
+    inset 0 1px 0 rgb(var(--text-highlight-rgb) / 0.08);
+  backface-visibility: hidden;
+}
+
+.section-work .rolodex-panel[data-state="active"] {
+  border-radius: 0;
+  border-color: rgb(var(--text-highlight-rgb) / 0.06);
+  box-shadow: inset 0 1px 0 rgb(var(--text-highlight-rgb) / 0.05);
+}
+
+.section-work .rolodex-atmosphere {
+  background:
+    radial-gradient(
+      ellipse 72vw 58dvh at 58% 42%,
+      rgb(var(--brand-soft-rgb) / 0.3) 0%,
+      rgb(var(--brand-soft-rgb) / 0.12) 32%,
+      rgb(var(--brand-rgb) / 0) 70%
+    ),
+    radial-gradient(
+      ellipse 96vw 84dvh at 42% 56%,
+      rgb(var(--brand-soft-rgb) / 0.12) 0%,
+      rgb(var(--brand-rgb) / 0.28) 58%,
+      var(--bg) 100%
+    ),
+    var(--bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-work .rolodex-track {
+    perspective: none;
+  }
+
+  .section-work .rolodex-panel {
+    border-radius: 0;
+    box-shadow: inset 0 1px 0 rgb(var(--text-highlight-rgb) / 0.05);
+  }
 }
 
 @media (max-width: 767px) {

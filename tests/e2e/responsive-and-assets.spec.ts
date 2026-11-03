@@ -179,6 +179,71 @@ test.describe("responsive layout, assets, and controls", () => {
     }
   });
 
+  test("reflows the CGI project field during live viewport resizing", async ({
+    page,
+  }) => {
+    const cases = [
+      { width: 320, height: 568, columns: 1 },
+      { width: 390, height: 844, columns: 1 },
+      { width: 768, height: 1024, columns: 2 },
+      { width: 900, height: 700, columns: 2 },
+      { width: 1280, height: 720, columns: 3 },
+      { width: 1440, height: 900, columns: 3 },
+      { width: 1600, height: 900, columns: 4 },
+      { width: 1920, height: 1080, columns: 5 },
+      { width: 2560, height: 1440, columns: 5 },
+    ] as const;
+
+    await page.goto("/work?mode=cgi");
+    const grid = page.locator(".cgi-tile-field");
+    const tiles = page.locator(".cgi-project-tile");
+
+    for (const viewport of cases) {
+      await page.setViewportSize(viewport);
+      await expect(grid).toBeVisible();
+      await expect(tiles).toHaveCount(10);
+
+      const layout = await grid.evaluate((element) => {
+        const cards = Array.from(
+          element.querySelectorAll<HTMLElement>(".cgi-project-tile"),
+        );
+        const positions = cards.map((card) => {
+          const rect = card.getBoundingClientRect();
+          return {
+            left: Math.round(rect.left),
+            top: Math.round(rect.top),
+            right: rect.right,
+            bottom: rect.bottom,
+          };
+        });
+        const unique = (values: number[]) => [...new Set(values)].length;
+        const rect = element.getBoundingClientRect();
+
+        return {
+          columns: unique(positions.map(({ left }) => left)),
+          rows: unique(positions.map(({ top }) => top)),
+          contained: positions.every(
+            ({ left, right, top, bottom }) =>
+              left >= rect.left - 1 &&
+              right <= rect.right + 1 &&
+              top >= rect.top - 1 &&
+              bottom <= rect.bottom + 1,
+          ),
+          gridRight: rect.right,
+          viewportWidth: window.innerWidth,
+        };
+      });
+
+      expect(layout.columns, `${viewport.width}x${viewport.height} columns`).toBe(
+        viewport.columns,
+      );
+      expect(layout.rows).toBe(Math.ceil(10 / viewport.columns));
+      expect(layout.contained).toBe(true);
+      expect(layout.gridRight).toBeLessThanOrEqual(layout.viewportWidth + 1);
+      await expectNoHorizontalOverflow(page);
+    }
+  });
+
   test("serves the transparent SVG icon through the App Router icon route", async ({
     page,
     request,
