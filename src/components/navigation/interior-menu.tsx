@@ -44,20 +44,18 @@ export function InteriorMenu() {
           contactButtonRef.current?.focus({ preventScroll: true });
         } else close();
       }
-      if (event.key !== "Tab") return;
-      const focusable = Array.from(panelRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []).filter((element) => element.tabIndex >= 0 && element.getClientRects().length > 0);
-      if (!focusable.length) return;
-      if (event.shiftKey && document.activeElement === focusable[0]) {
-        event.preventDefault();
-        focusable.at(-1)?.focus();
-      } else if (!event.shiftKey && document.activeElement === focusable.at(-1)) {
-        event.preventDefault();
-        focusable[0].focus();
+    };
+    const onFocusIn = (event: FocusEvent) => {
+      if (event.target instanceof Node && !panelRef.current?.contains(event.target) && !triggerRef.current?.contains(event.target)) {
+        setIsOpen(false);
+        setContactOpen(false);
       }
     };
     window.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("keydown", onKeyDown);
+    document.addEventListener("focusin", onFocusIn);
     return () => {
+      document.removeEventListener("focusin", onFocusIn);
       window.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("keydown", onKeyDown);
     };
@@ -83,10 +81,6 @@ export function InteriorMenu() {
         ref={panelRef}
         id={menuId}
         className="site-menu-surface"
-        role="dialog"
-        aria-label="Site navigation"
-        aria-modal="false"
-        aria-hidden={!isOpen}
         inert={!isOpen}
         data-open={isOpen ? "true" : "false"}
       >
@@ -99,7 +93,7 @@ export function InteriorMenu() {
           <span>Contact</span><span aria-hidden="true">{contactOpen ? "−" : "+"}</span>
         </button>
         <div id={contactId} className="site-menu-contact-list" hidden={!contactOpen}>
-          {contactMethods.map((method) => <a key={method.key} href={method.href} rel={method.external ? "noopener noreferrer" : undefined} target={method.external ? "_blank" : undefined}>{method.label}</a>)}
+          {contactMethods.map((method) => <a key={method.key} href={method.href} rel={method.external ? "noopener noreferrer" : undefined} target={method.external ? "_blank" : undefined}>{method.label}{method.external ? <span className="sr-only"> (opens in a new tab)</span> : null}</a>)}
         </div>
       </div>
     </>

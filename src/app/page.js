@@ -3,7 +3,7 @@ import { InteriorMenu } from "@/components/navigation/interior-menu";
 
 export default function Home() {
   return (
-    <main className="home-entry min-h-dvh bg-bg text-text-primary">
+    <main id="main" tabIndex={-1} className="home-entry min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
       <div className="home-entry__background" aria-hidden="true" />
       <div className="home-entry__content site-safe-x">

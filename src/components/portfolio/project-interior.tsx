@@ -34,7 +34,7 @@ export function ProjectInterior({ project }: { project: WorkProject }) {
   const returnHref = `/work?mode=${project.discipline}&project=${project.slug}`;
 
   return (
-    <main className={`section-${stills ? "photography" : "cgi"} project-interior min-h-dvh bg-bg text-text-primary`} data-discipline={project.discipline}>
+    <main id="main" tabIndex={-1} className={`section-${stills ? "photography" : "cgi"} project-interior min-h-dvh bg-bg text-text-primary`} data-discipline={project.discipline}>
       <InteriorMenu />
       <ProjectLocalNav
         discipline={project.discipline}

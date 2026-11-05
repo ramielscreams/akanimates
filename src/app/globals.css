@@ -105,8 +105,8 @@
 
 html {
   background: var(--bg);
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-color: rgb(255 255 255 / 0.25) transparent;
+  scrollbar-width: thin;
   overflow-x: hidden;
 }
 
@@ -115,13 +115,30 @@ body {
   color: var(--text-primary);
   font-family: var(--font-interface), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
+.skip-link {
+  position: fixed;
+  top: max(0.75rem, env(safe-area-inset-top));
+  left: max(0.75rem, env(safe-area-inset-left));
+  z-index: 1000;
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  background: var(--primary-label, #f5f5f7);
+  color: #050307;
+  font-weight: 600;
+  transform: translateY(calc(-100% - 2rem));
+}
+
+main[tabindex="-1"]:focus {
+  outline: none;
+}
+
+.skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid var(--focus-ring, #e6e6ed);
+  outline-offset: 2px;
 }
 
 ::selection {
@@ -3921,7 +3938,7 @@ body::-webkit-scrollbar {
 }
 
 .stills-archive .rolodex-panel .stills-year-collection-link:is(:hover, :focus-visible, :active) {
-  color: var(--signal);
+  color: var(--signal-text);
 }
 
 @media (max-width: 767px) {
@@ -4087,7 +4104,7 @@ body::-webkit-scrollbar {
 .cgi-player-icon-button:hover {
   border-color: rgb(var(--technical-rgb) / 0.36);
   background: rgb(var(--surface-rgb) / 0.44);
-  color: var(--technical);
+  color: var(--technical-text);
 }
 
 .cgi-player-controls button:focus-visible,
@@ -4257,7 +4274,7 @@ body::-webkit-scrollbar {
 }
 
 .cgi-expanded-player__details dt {
-  color: var(--technical);
+  color: var(--technical-text);
 }
 
 .cgi-expanded-player__details dd {
@@ -6384,4 +6401,23 @@ body::-webkit-scrollbar {
   .contact-layer__panel {
     background: var(--surface);
   }
+}
+
+/* Audit A5: keyboard hint and skip target for the rolodex. */
+.work-scroll-hint__keys {
+  display: none;
+}
+
+.rolodex-shell:focus-visible .work-scroll-hint__pointer {
+  display: none;
+}
+
+.rolodex-shell:focus-visible .work-scroll-hint__keys {
+  display: inline;
+}
+
+.rolodex-skip-target {
+  display: block;
+  height: 0;
+  outline: none;
 }

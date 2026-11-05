@@ -100,3 +100,39 @@ test("Stills Rolodex keeps its stage aligned during live viewport resizing", asy
   }
 
 });
+
+test("Stills Rolodex releases the wheel after one full turn (audit A5)", async ({ page }) => {
+  await page.goto("/work?mode=stills");
+  await page.waitForSelector(".rolodex-shell");
+  await page.evaluate(() => document.querySelector(".rolodex-shell")?.scrollIntoView());
+  await waitForRolodexIdle(page, "2026");
+  const years = await page.locator(".rolodex-nav-item").count();
+  await page.mouse.move(900, 500);
+
+  for (let turn = 0; turn < years; turn++) {
+    await page.mouse.wheel(0, 90);
+    await page.mouse.wheel(0, 65);
+    await page.mouse.wheel(0, 25);
+    await expect(page.locator(".rolodex-track")).toHaveAttribute("data-phase", "idle", { timeout: 4_000 });
+    await page.waitForTimeout(400);
+  }
+
+  await waitForRolodexIdle(page, "2026");
+  const before = await page.evaluate(() => window.scrollY);
+  await page.mouse.wheel(0, 400);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before);
+});
+
+test("Stills Rolodex has a skip link to the content after the archive (audit A5)", async ({ page }) => {
+  await page.goto("/work?mode=stills");
+  const skip = page.getByRole("link", { name: "Skip archive" });
+  await expect(skip).toHaveCount(1);
+  const href = await skip.getAttribute("href");
+  const targetFollowsArchive = await page.evaluate((id) => {
+    const target = document.getElementById(id!.slice(1));
+    const shell = document.querySelector(".rolodex-shell");
+    return Boolean(target && shell && shell.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING);
+  }, href);
+  expect(targetFollowsArchive).toBe(true);
+  await expect(page.locator(".rolodex-shell")).toHaveAttribute("aria-describedby", /.+/);
+});

@@ -43,6 +43,9 @@ export default function RootLayout({
       className={`${abrilFatface.variable} ${barlowCondensed.variable} ${robotoSerif.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-text-primary">
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         {children}
         <footer aria-label="Privacy information">
           <Link className="privacy-utility-link" href="/privacy">

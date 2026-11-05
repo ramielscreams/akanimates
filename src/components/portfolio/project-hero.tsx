@@ -71,7 +71,7 @@ export function ProjectHero({ discipline, meta, progress, project }: ProjectHero
             <>
               <div className="absolute inset-0 bg-surface" />
               <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0_16%,rgb(var(--border-rgb)_/_0.8)_16%_calc(16%+1px),transparent_calc(16%+1px)),linear-gradient(180deg,transparent_0_70%,rgb(var(--border-rgb)_/_0.7)_70%_calc(70%+1px),transparent_calc(70%+1px))] opacity-65" />
-              <figcaption className="site-technical-label caption-text absolute bottom-6 left-6 max-w-[calc(100%-3rem)] text-text-muted/65">
+              <figcaption className="site-technical-label caption-text absolute bottom-6 left-6 max-w-[calc(100%-3rem)] text-text-muted">
                 Hero {project.hero.type} placeholder / {discipline}
               </figcaption>
             </>

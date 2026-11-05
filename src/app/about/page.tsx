@@ -17,7 +17,7 @@ export default function AboutPage() {
 
 
   return (
-    <main className="section-about min-h-dvh bg-bg text-text-primary">
+    <main id="main" tabIndex={-1} className="section-about min-h-dvh bg-bg text-text-primary">
       <InteriorMenu />
 
       <section className="about-frame about-hero">

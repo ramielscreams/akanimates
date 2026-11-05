@@ -114,7 +114,7 @@ export function WorkBrowser() {
   }, [mode, queryProject]);
 
   return (
-    <main
+    <main id="main" tabIndex={-1}
       className={`section-work section-${mode === "stills" ? "photography" : "cgi"}`}
       data-mode-changing={isModeChanging ? "true" : "false"}
       data-work-browse={hasEnteredBrowse ? "true" : "false"}
